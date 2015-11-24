@@ -1,0 +1,9 @@
+*.view
+results*/
+*.data
+*.names
+*.csv
+box_counting/
+folds/
+stats/
+data/
