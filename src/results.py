@@ -88,6 +88,65 @@ class ResultsManager(object):
                 'ON statistics (train_set_id, test_set_id, '
                 'parameter_set_id, parameter_set_index, statistic_name_id)'
             )
+            #the following tables are especially for boosting 
+            connection.execute(
+                'CREATE TABLE IF NOT EXISTS statistics_boosting '
+                '(train_set_id integer, test_set_id integer, '
+                'parameter_set_id integer,  boosting_rounds integer, '
+                'statistic_name_id integer, statistic_value real)'
+            )
+            connection.execute(
+                'CREATE INDEX IF NOT EXISTS statistics_boosting_index '
+                'ON statistics_boosting (train_set_id, test_set_id, '
+                'parameter_set_id,  boosting_rounds, statistic_name_id)'
+            )
+	    connection.execute(
+                'CREATE TABLE IF NOT EXISTS instance_predictions_boosting '
+                '(train_set_id integer, test_set_id integer, '
+                'parameter_set_id integer, boosting_rounds integer,'
+                'bag_id text, instance_id text, label real)'
+            )
+            connection.execute(
+                'CREATE INDEX IF NOT EXISTS instance_prediction_boosting_index '
+                'ON instance_predictions_boosting (train_set_id, test_set_id, '
+                'parameter_set_id,  boosting_rounds)'
+            )
+ 	    connection.execute(
+                'CREATE TABLE IF NOT EXISTS bag_predictions_boosting '
+                '(train_set_id integer, test_set_id integer, '
+                'parameter_set_id integer, boosting_rounds integer,'
+                'bag_id text, label real)'
+            )
+            connection.execute(
+                'CREATE INDEX IF NOT EXISTS bag_prediction_boosting_index '
+                'ON instance_predictions_boosting (train_set_id, test_set_id, '
+                'parameter_set_id,  boosting_rounds)'
+            )
+	    connection.execute(
+                'CREATE TABLE IF NOT EXISTS instance_accum_predictions_boosting '
+                '(train_set_id integer, test_set_id integer, '
+                'parameter_set_id integer, boosting_rounds integer,'
+                'bag_id text, instance_id text, label real)'
+            )
+            connection.execute(
+                'CREATE INDEX IF NOT EXISTS instance_accum_prediction_boosting_index '
+                'ON instance_predictions_boosting (train_set_id, test_set_id, '
+                'parameter_set_id,  boosting_rounds)'
+            )
+ 	    connection.execute(
+                'CREATE TABLE IF NOT EXISTS bag_accum_predictions_boosting '
+                '(train_set_id integer, test_set_id integer, '
+                'parameter_set_id integer, boosting_rounds integer,'
+                'bag_id text, label real)'
+            )
+            connection.execute(
+                'CREATE INDEX IF NOT EXISTS bag_accum_prediction_boosting_index '
+                'ON instance_predictions_boosting (train_set_id, test_set_id, '
+                'parameter_set_id,  boosting_rounds)'
+            )
+
+
+		
 
         # Load existing name -> id mappings
         cursor = connection.cursor()
@@ -221,7 +280,7 @@ class ResultsManager(object):
 
     def get_bag_predictions(self, train, test,
             parameter_set, parameter_set_index, test_set_labels=True):
-
+        #import pdb;pdb.set_trace()
         train_id = self.get_dataset_id(train)
         if test_set_labels:
             test_id = self.get_dataset_id(test)
@@ -232,12 +291,12 @@ class ResultsManager(object):
         connection = self.get_connection()
         cursor = connection.cursor()
         cursor.execute(
-            'SELECT bag_id, label FROM bag_predictions '
+            'SELECT bag_id, label0, label1, label2, label3, label4 FROM bag_predictions '
             'WHERE train_set_id=? AND test_set_id=? AND '
             'parameter_set_id=? AND parameter_set_index=?',
             (train_id, test_id, parameter_set_id, parameter_set_index)
         )
-        predictions = dict([(bid, label) for bid, label in cursor.fetchall()])
+        predictions = dict([(bid, [label0, label1, label2, label3, label4]) for bid, label0, label1, label2, label3, label4 in cursor.fetchall()])
         return predictions
 
     def get_instance_predictions(self, train, test,
@@ -268,31 +327,42 @@ class ResultsManager(object):
         train_id = self.get_dataset_id(train)
         test_id = self.get_dataset_id(test)
         parameter_set_id = self.get_parameter_set_id(parameter_set)
-
-        instance_records = [
+        
+        instance_records=[]
+        if 'instance_predictions' in submission.keys():
+           instance_records = [
             (train_id, test_id,
              parameter_set_id, parameter_set_index,
              bid, iid, label)
             for (bid, iid), label in
                 submission['instance_predictions']['test'].items()
-        ]
+           ]
 
-        instance_records += [
+           instance_records += [
             (train_id, train_id,
              parameter_set_id, parameter_set_index,
              bid, iid, label)
             for (bid, iid), label in
                 submission['instance_predictions']['train'].items()
-        ]
+           ]
 
         bag_records = [
             (train_id, test_id,
              parameter_set_id, parameter_set_index,
-             bid, label)
-            for bid, label in
+             bid, label0, label1, label2, label3, label4)
+            for bid, (label0, label1, label2, label3, label4) in
                 submission['bag_predictions']['test'].items()
         ]
+        if 'train' in submission['bag_predictions'].keys():
+          bag_records += [
+            (train_id, train_id,
+             parameter_set_id, parameter_set_index,
+             bid, label0, label1, label2, label3, label4)
+            for bid, (label0, label1, label2, label3, label4) in
+                submission['bag_predictions']['train'].items()
+          ]
 
+	'''
         bag_records += [
             (train_id, train_id,
              parameter_set_id, parameter_set_index,
@@ -300,31 +370,121 @@ class ResultsManager(object):
             for bid, label in
                 submission['bag_predictions']['train'].items()
         ]
-
-        statistics_records = [
+	'''
+        statistics_records=[]
+        if 'statistics' in submission.keys():
+           statistics_records = [
             (train_id, test_id,
              parameter_set_id, parameter_set_index,
              self.get_statistic_id(sname), value)
             for sname, value in submission['statistics'].items()
-        ]
-        statistics_records.append(
+           ]
+           statistics_records.append(
             (train_id, test_id,
              parameter_set_id, parameter_set_index,
              self.get_statistic_id('FINISHED'), 1.0)
-        )
+           )
 
         connection = self.get_connection()
+
+	cc=connection.cursor()	
+	string_delete='delete from statistics where train_set_id = %d and test_set_id = %d and parameter_set_id = %d and parameter_set_index = %d and statistic_name_id = %d' % (train_id, test_id,
+             parameter_set_id, parameter_set_index,
+             self.get_statistic_id('AUC'))
+	cc.execute(string_delete  )	
+	connection.commit()
+
         with connection:
             if len(instance_records) > 0:
                 connection.executemany(
                     'INSERT INTO instance_predictions '
                     'VALUES (?, ?, ?, ?, ?, ?, ?)', instance_records
                 )
+	    #import pdb;pdb.set_trace() 
             connection.executemany(
                 'INSERT INTO bag_predictions '
-                'VALUES (?, ?, ?, ?, ?, ?)', bag_records
+                'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', bag_records
             )
-            connection.executemany(
+            if len(statistics_records) > 0:
+               connection.executemany(
                 'INSERT INTO statistics '
                 'VALUES (?, ?, ?, ?, ?, ?)', statistics_records
+               )
+     
+     
+    def store_results_boosting(self, submission, boosting_rounds, train, test, parameter_set, parameter_set_index):
+
+        train_id = self.get_dataset_id(train)
+        test_id = self.get_dataset_id(test)
+        parameter_set_id = self.get_parameter_set_id(parameter_set)
+        
+        instance_records=[]
+        if 'instance_predictions' in submission.keys():
+           instance_records = [
+            (train_id, test_id,
+             parameter_set_id,  boosting_rounds, 
+             bid, iid, label0, label1, label2, label3, label4)
+            for (bid, iid), (label0, label1, label2, label3, label4) in
+                submission['instance_predictions']['test'].items()
+           ]
+	   if 'train' in submission['instance_predictions'].keys():
+            instance_records += [
+              (train_id, train_id,
+                parameter_set_id, boosting_rounds,
+                bid, iid, label0, label1, label2, label3, label4)
+                for (bid, iid), (label0, label1, label2, label3, label4) in
+                submission['instance_predictions']['train'].items()
+              ]
+	'''
+        bag_records = [
+            (train_id, test_id,
+             parameter_set_id, parameter_set_index,
+             bid, label0, label1, label2, label3, label4)
+            for bid, (label0, label1, label2, label3, label4) in
+                submission['bag_predictions']['test'].items()
+        ]
+        if 'train' in submission['bag_predictions'].keys():
+          bag_records += [
+            (train_id, train_id,
+             parameter_set_id, parameter_set_index,
+             bid, label0, label1, label2, label3, label4)
+            for bid, (label0, label1, label2, label3, label4) in
+                submission['bag_predictions']['train'].items()
+          ]
+	'''
+        statistics_records=[]
+        if 'statistics_boosting' in submission.keys():
+           statistics_records = [
+            (train_id, test_id,
+             parameter_set_id,  boosting_rounds,
+             self.get_statistic_id(sname), value)
+            for sname, value in submission['statistics_boosting'].items()
+           ]
+           statistics_records.append(
+            (train_id, test_id,
+             parameter_set_id, boosting_rounds,
+             self.get_statistic_id('FINISHED'), 1.0)
+           )
+
+        connection = self.get_connection()
+
+ 
+
+        with connection:
+            if len(instance_records) > 0:
+                connection.executemany(
+                    'INSERT INTO instance_predictions_boosting '
+                    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', instance_records
+                )
+	    #import pdb;pdb.set_trace() 
+            '''
+            connection.executemany(
+                'INSERT INTO bag_predictions '
+                'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', bag_records
             )
+     	    '''
+            if len(statistics_records) > 0:
+               connection.executemany(
+                'INSERT INTO statistics_boosting '
+                'VALUES (?, ?, ?, ?, ?, ?)', statistics_records
+               )

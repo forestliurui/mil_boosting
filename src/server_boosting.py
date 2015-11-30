@@ -648,7 +648,8 @@ def start_experiment(configuration_file, results_root_dir):
     shared_variables['finished_set']={}    #the dictionary containing the finished tasks by client 
     #queues['finished']=queue_tasks_finished
     shared_variables['condition_lock']=threading.Condition() #condition variable used to synchronize server and controller
-    shared_variables['instance_weights']=[]
+    shared_variables['bag_weights']={}
+    
 
     server = ExperimentServer(task_dict, param_dict, render, shared_variables)
     cherrypy.config.update({'server.socket_port': PORT,
@@ -664,11 +665,6 @@ def start_experiment(configuration_file, results_root_dir):
     
 def server_experiment(configuration_file, task_dict, shared_variables, server):
     
-    auxiliary_structure ={}  #auxiliary structure to support parallelization
-    auxiliary_structure{'task_dict'}=task_dict
-    auxiliary_structure{'shared_variables'}=shared_variables
-    auxiliary_structure{'server'}=server
-
     print 'Loading configuration for experiments...'
     with open(configuration_file, 'r') as f:
         configuration = yaml.load(f)    
@@ -676,6 +672,16 @@ def server_experiment(configuration_file, task_dict, shared_variables, server):
     dataset_name=configuration['experiments'][0]['dataset']
 
     outer_folds, inner_folds=configuration['folds']
+    
+
+    shared_variables['bag_weights'][dataset_name]=[]
+
+    auxiliary_structure ={}  #auxiliary structure to support parallelization
+    auxiliary_structure{'task_dict'}=task_dict
+    auxiliary_structure{'shared_variables'}=shared_variables
+    auxiliary_structure{'server'}=server
+
+
 
     for set_index_boosting in range(outer_folds):
 	train_dataset_name=string.replace( 'natural_scene.fold_%4d_of_%4d.train' % (set_index_boosting, outer_folds),' ','0'  )
