@@ -679,15 +679,28 @@ def start_experiment(configuration_file, results_root_dir):
     thread_server=threading.Thread(target=cherrypy.quickstart, args=(server,))
     thread_server.start()    
     #cherrypy.quickstart(server)
-    server_experiment(configuration_file, task_dict, shared_variables, server)
+    experiment_dispatcher(configuration_file, task_dict, shared_variables, server)
     
-def server_experiment(configuration_file, task_dict, shared_variables, server):
+def experiment_dispatcher(configuration_file, task_dict, shared_variables, server):
+    print 'Loading configuration for experiments...'
+    with open(configuration_file, 'r') as f:
+        configuration = yaml.load(f)    
+
+    num_dataset = len(configuration['experiments'])
+    for index_dataset in range(num_dataset):
+	
+    	dataset_name=configuration['experiments'][index_dataset]['dataset']
+	thread_dataset=threading.Thread(target=server_experiment, args=(dataset_name, configuration_file, task_dict, shared_variables, server))
+    	thread_dataset.start()   
+
+
+def server_experiment(dataset_name, configuration_file, task_dict, shared_variables, server):
     
     print 'Loading configuration for experiments...'
     with open(configuration_file, 'r') as f:
         configuration = yaml.load(f)    
 
-    dataset_name=configuration['experiments'][0]['dataset']
+    #dataset_name=configuration['experiments'][0]['dataset']
 
     outer_folds, inner_folds=configuration['folds']
     
@@ -711,7 +724,7 @@ def server_experiment(configuration_file, task_dict, shared_variables, server):
 	
 	for iter_index in range(Ensemble_classifier.num_iter_boosting):
 		Ensemble_classifier.store_boosting_results(iter_index+1)
-	import pdb;pdb.set_trace()
+	#import pdb;pdb.set_trace()
 
 
 def server_experiment_backup(task_dict, shared_variables, server):

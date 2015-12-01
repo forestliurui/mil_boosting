@@ -107,8 +107,8 @@ class ResultsManager(object):
                 'bag_id text, instance_id text, label real)'
             )
             connection.execute(
-                'CREATE INDEX IF NOT EXISTS instance_prediction_boosting_index '
-                'ON instance_predictions_boosting (train_set_id, test_set_id, '
+                'CREATE INDEX IF NOT EXISTS instance_raw_prediction_boosting_index '
+                'ON instance_raw_predictions_boosting (train_set_id, test_set_id, '
                 'parameter_set_id,  boosting_rounds)'
             )
  	    connection.execute(
@@ -118,8 +118,8 @@ class ResultsManager(object):
                 'bag_id text, label real)'
             )
             connection.execute(
-                'CREATE INDEX IF NOT EXISTS bag_prediction_boosting_index '
-                'ON instance_predictions_boosting (train_set_id, test_set_id, '
+                'CREATE INDEX IF NOT EXISTS bag_raw_prediction_boosting_index '
+                'ON bag_raw_predictions_boosting (train_set_id, test_set_id, '
                 'parameter_set_id,  boosting_rounds)'
             )
 	    connection.execute(
@@ -130,7 +130,7 @@ class ResultsManager(object):
             )
             connection.execute(
                 'CREATE INDEX IF NOT EXISTS instance_accum_prediction_boosting_index '
-                'ON instance_predictions_boosting (train_set_id, test_set_id, '
+                'ON instance_accum_predictions_boosting (train_set_id, test_set_id, '
                 'parameter_set_id,  boosting_rounds)'
             )
  	    connection.execute(
@@ -141,7 +141,7 @@ class ResultsManager(object):
             )
             connection.execute(
                 'CREATE INDEX IF NOT EXISTS bag_accum_prediction_boosting_index '
-                'ON instance_predictions_boosting (train_set_id, test_set_id, '
+                'ON bag_accum_predictions_boosting (train_set_id, test_set_id, '
                 'parameter_set_id,  boosting_rounds)'
             )
 
