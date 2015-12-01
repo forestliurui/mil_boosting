@@ -709,7 +709,8 @@ def server_experiment(configuration_file, task_dict, shared_variables, server):
 	Ensemble_classifier.fit(train_dataset_name, auxiliary_structure)
 	Ensemble_classifier.predict()
 	
-	Ensemble_classifier.store_boosting_results(1)
+	for iter_index in range(Ensemble_classifier.num_iter_boosting):
+		Ensemble_classifier.store_boosting_results(iter_index+1)
 	import pdb;pdb.set_trace()
 
 

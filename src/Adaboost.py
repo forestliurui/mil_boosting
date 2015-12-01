@@ -4,6 +4,7 @@ import string
 import data
 import numpy as np
 
+
 INSTANCE_PREDICTIONS=True
 
 class Adaboost(object):
@@ -27,6 +28,8 @@ class Adaboost(object):
 
 		self.alphas=[]
 		self.errors=[]
+
+		self.results_manager=None
 		
 	def fit(self, train_dataset_name, auxiliary_struct):
 
@@ -46,6 +49,9 @@ class Adaboost(object):
 		self.train_dataset = train_dataset
 		self.test_dataset = test_dataset
 
+		self.train_dataset_name=train_dataset_name
+		self.test_dataset_name=test_dataset_name
+
 		max_iter_boosting=10
 
 		key_statistic='test_bag_balanced_accuracy'
@@ -60,6 +66,8 @@ class Adaboost(object):
 			task_key = run_tune_parameter(train_dataset_name, test_dataset_name , auxiliary_struct, key_statistic  ,label_index=None)
 			task = auxiliary_struct['task_dict'][task_key];
 			
+			if self.results_manager==None:
+				self.results_manager=task.results_manager
 			
 			task.store_boosting_raw_results(iter_boosting)
 
@@ -205,6 +213,7 @@ class Adaboost(object):
 	    		submission_boosting['statistics_boosting']['test_instance_accuracy']=test_instance_accuracy
 	    		submission_boosting['statistics_boosting']['test_instance_balanced_accuracy']=test_instance_balanced_accuracy
 
+		self.results_manager.store_results_boosting(submission_boosting, boosting_rounds, self.train_dataset_name, self.test_dataset_name, 100, 100)
 
 
 
