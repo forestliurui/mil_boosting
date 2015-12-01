@@ -41,7 +41,8 @@ class Adaboost(object):
 
 		train_dataset=data.get_dataset(train_dataset_name)
 		test_dataset=data.get_dataset(test_dataset_name)
-
+		self.train_dataset = train_dataset
+		self.test_dataset = test_dataset
 
 		max_iter_boosting=10
 
@@ -62,15 +63,15 @@ class Adaboost(object):
 			self.raw_predictions['bag']['train'].append(task.get_predictions('bag','train'))
 			self.raw_predictions['bag']['test'].append(task.get_predictions('bag','test'))
 
-			self.raw_predictions['bag']['train'].append(task.get_predictions('bag','train'))
-			self.raw_predictions['bag']['test'].append(task.get_predictions('bag','test'))
+			self.raw_predictions['instance']['train'].append(task.get_predictions('instance','train'))
+			self.raw_predictions['instance']['test'].append(task.get_predictions('instance','test'))
 			
 			self.errors.append(1-compute_statistic(self.raw_predictions['bag']['train'][-1], train_dataset.bag_labels ,bag_weight_temp ,train_dataset.bag_ids ,'accuracy') )
 			
 			self.alphas.append( np.log(  (1-self.errors[-1]) / self.errors[-1]  ) )
 
-			if self.aphas[-1]<0:
-				self.aphas.pop()
+			if self.alphas[-1]<0:
+				self.alphas.pop()
 				break
 			
 			
@@ -80,15 +81,61 @@ class Adaboost(object):
 				bag_weight_temp[bag_id] = bag_weight_temp[bag_id]*np.exp( self.alphas[-1]*    (2*( (self.raw_predictions['bag']['train'][-1][bag_id]>0 ) != train_dataset.bag_labels[bag_index] )-1 ) )
 			
 
-			import pdb;pdb.set_trace()
+		self.num_iter_boosting=len(self.alphas)	
+		#import pdb;pdb.set_trace()
 
 
 	def predict(self):
-		pass
+		predictions_list={}
+		predictions_list['bag']={}
+		predictions_list['instance']={}
+		predictions_list['bag']['train']=[]
+		predictions_list['bag']['test']=[]
+		predictions_list['instance']['train']=[]
+		predictions_list['instance']['test']=[]
+
+		for iter_index in range(self.num_iter_boosting):
+			predictions_list['bag']['train'].append([self.raw_predictions['bag']['train'][iter_index][x] for x in self.train_dataset.bag_ids  ])
+			predictions_list['bag']['test'].append([self.raw_predictions['bag']['test'][iter_index][x] for x in self.test_dataset.bag_ids  ])
+
+			predictions_list['instance']['train'].append([self.raw_predictions['instance']['train'][iter_index][x] for x in self.train_dataset.instance_ids  ])
+			predictions_list['instance']['test'].append([self.raw_predictions['instance']['test'][iter_index][x] for x in self.test_dataset.instance_ids  ])
+
+		predictions_matrix={}
+		predictions_matrix['bag']={}
+		predictions_matrix['instance']={}
+		predictions_matrix['bag']['train']=np.matrix( np.vstack((predictions_list['bag']['train']))  )
+		predictions_matrix['bag']['test']=np.matrix( np.vstack((predictions_list['bag']['test']))  )
+		predictions_matrix['instance']['train']=np.matrix( np.vstack((predictions_list['instance']['train']))  )
+		predictions_matrix['instance']['test']=np.matrix( np.vstack((predictions_list['instance']['test']))  )
+
+		for iter_index in range(self.num_iter_boosting):
+			#import pdb;pdb.set_trace()
+			temp_train=np.matrix(self.alphas[0:iter_index+1])*predictions_matrix['instance']['train'][0:iter_index+1, :]
+			self.accum_predictions['instance']['train'].append(dict(zip( self.train_dataset.instance_ids ,  temp_train.tolist()[0]     )))
+
+			temp_test=np.matrix(self.alphas[0:iter_index+1])*predictions_matrix['instance']['test'][0:iter_index+1, :] 
+			self.accum_predictions['instance']['test'].append(  dict(zip( self.test_dataset.instance_ids ,  temp_test.tolist()[0]     )) )
+
+			temp_bag_train={}
+			temp_bag_test={}
+			for bag_id in self.train_dataset.bag_ids:
+				#import pdb;pdb.set_trace()
+				temp_bag_train[bag_id]=np.max([self.accum_predictions['instance']['train'][-1][x] for x in self.train_dataset.instance_ids if bag_id in x   ])
+			for bag_id in self.test_dataset.bag_ids:
+				temp_bag_test[bag_id]=np.max([self.accum_predictions['instance']['test'][-1][x] for x in self.test_dataset.instance_ids if bag_id in x   ])
+
+			self.accum_predictions['bag']['train'].append(temp_bag_train)
+			self.accum_predictions['bag']['test'].append(temp_bag_test)
+			
+		#import pdb;pdb.set_trace()			
+
+
 	def store_boosting_results(self):
 		pass	
 
 def get_accum_results():
+	pass
 
 def compute_statistic(predictions, labels ,weights ,ids ,statistic_name):
 	# predicitons, weights are dictionaries; lables are list which is ordered by ids

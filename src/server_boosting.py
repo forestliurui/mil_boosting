@@ -548,7 +548,7 @@ class Task(object):
 	submission_boosting['raw']['bag_predictions']['train'] = self.get_predictions('bag','train')
 	submission_boosting['raw']['bag_predictions']['test'] = self.get_predictions('bag','test')
 
-
+	
 	self.results_manager.store_results_boosting(submission_boosting, boosting_rounds, self.train, self.test, self.parameter_id_str, self.parameter_set)
 
 	
@@ -707,7 +707,7 @@ def server_experiment(configuration_file, task_dict, shared_variables, server):
 
 	Ensemble_classifier=Adaboost()
 	Ensemble_classifier.fit(train_dataset_name, auxiliary_structure)
-
+	Ensemble_classifier.predict()
 	import pdb;pdb.set_trace()
 
 
