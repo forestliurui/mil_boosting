@@ -6,7 +6,26 @@ import numpy as np
 
 class Adaboost(object):
 	def __init__(self):
-		pass
+		self.raw_predictions = {}
+		self.raw_predictions['bag']={}
+		self.raw_predictions['bag']['train']=[]
+		self.raw_predictions['bag']['test']=[]
+		self.raw_predictions['instance']={}
+		self.raw_predictions['instance']['train']=[]
+		self.raw_predictions['instance']['test']=[]
+
+
+		self.accum_predictions = {}
+		self.accum_predictions['bag']={}
+		self.accum_predictions['bag']['train']=[]
+		self.accum_predictions['bag']['test']=[]
+		self.accum_predictions['instance']={}
+		self.accum_predictions['instance']['train']=[]
+		self.accum_predictions['instance']['test']=[]
+
+		self.alphas=[]
+		self.errors=[]
+		
 	def fit(self, train_dataset_name, auxiliary_struct):
 
 		#get the name of train and test dataset 
@@ -28,17 +47,39 @@ class Adaboost(object):
 
 		key_statistic='test_bag_balanced_accuracy'
 
-		auxiliary_struct['shared_variables']['bag_weights'][dataset_name] = dict.fromkeys(train_dataset.bag_ids,1)
+		bag_weight_temp = dict.fromkeys(train_dataset.bag_ids,1)
 
 
 		for iter_boosting in range(max_iter_boosting):
-			
+			auxiliary_struct['shared_variables']['bag_weights'][dataset_name] = bag_weight_temp
 
 			task_key = run_tune_parameter(train_dataset_name, test_dataset_name , auxiliary_struct, key_statistic  ,label_index=None)
 			task = auxiliary_struct['task_dict'][task_key];
-			aa = task.get_predictions('bag','test')
+			
 			
 			task.store_boosting_raw_results(iter_boosting)
+
+			self.raw_predictions['bag']['train'].append(task.get_predictions('bag','train'))
+			self.raw_predictions['bag']['test'].append(task.get_predictions('bag','test'))
+
+			self.raw_predictions['bag']['train'].append(task.get_predictions('bag','train'))
+			self.raw_predictions['bag']['test'].append(task.get_predictions('bag','test'))
+			
+			self.errors.append(1-compute_statistic(self.raw_predictions['bag']['train'][-1], train_dataset.bag_labels ,bag_weight_temp ,train_dataset.bag_ids ,'accuracy') )
+			
+			self.alphas.append( np.log(  (1-self.errors[-1]) / self.errors[-1]  ) )
+
+			if self.aphas[-1]<0:
+				self.aphas.pop()
+				break
+			
+			
+			for bag_index in range(len(train_dataset.bag_ids)):
+				bag_id=train_dataset.bag_ids[bag_index]
+				
+				bag_weight_temp[bag_id] = bag_weight_temp[bag_id]*np.exp( self.alphas[-1]*    (2*( (self.raw_predictions['bag']['train'][-1][bag_id]>0 ) != train_dataset.bag_labels[bag_index] )-1 ) )
+			
+
 			import pdb;pdb.set_trace()
 
 
@@ -46,6 +87,22 @@ class Adaboost(object):
 		pass
 	def store_boosting_results(self):
 		pass	
+
+def get_accum_results():
+
+def compute_statistic(predictions, labels ,weights ,ids ,statistic_name):
+	# predicitons, weights are dictionaries; lables are list which is ordered by ids
+	# statistic_name is string which specified the name of statistic to be compute
+	
+	predictions_list=[ predictions[x] for x in ids]
+		
+	weights_list=[ weights[x] for x in ids]
+
+	if statistic_name == 'accuracy':
+		statistic = np.average(( np.array(predictions_list)>0) == labels, weights=weights_list )
+
+	return statistic
+		
 
 
 def run_tune_parameter(train, test , auxiliary_struct, key_statistic  ,label_index=None):
