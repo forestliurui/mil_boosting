@@ -4,6 +4,8 @@ import string
 import data
 import numpy as np
 
+INSTANCE_PREDICTIONS=True
+
 class Adaboost(object):
 	def __init__(self):
 		self.raw_predictions = {}
@@ -52,6 +54,7 @@ class Adaboost(object):
 
 
 		for iter_boosting in range(max_iter_boosting):
+			print 'Boosting Iteration: %d' % iter_boosting
 			auxiliary_struct['shared_variables']['bag_weights'][dataset_name] = bag_weight_temp
 
 			task_key = run_tune_parameter(train_dataset_name, test_dataset_name , auxiliary_struct, key_statistic  ,label_index=None)
@@ -131,8 +134,80 @@ class Adaboost(object):
 		#import pdb;pdb.set_trace()			
 
 
-	def store_boosting_results(self):
-		pass	
+	def store_boosting_results(self, boosting_rounds):
+		#boosting_rounds starts from 1
+		submission_boosting={}
+
+		submission_boosting['accum']={}
+		submission_boosting['accum']['instance']={}
+		submission_boosting['accum']['bag']={}
+
+		submission_boosting['accum']['instance']['train']=self.accum_predictions['instance']['train'][boosting_rounds-1]
+		submission_boosting['accum']['instance']['test']=self.accum_predictions['instance']['test'][boosting_rounds-1]
+
+		submission_boosting['accum']['bag']['train']=self.accum_predictions['bag']['train'][boosting_rounds-1]
+		submission_boosting['accum']['bag']['test']=self.accum_predictions['bag']['test'][boosting_rounds-1]
+
+		train_bag_labels=np.array([submission_boosting['accum']['bag']['train'][x] for x in self.train_dataset.bag_ids ])
+		bag_predictions=np.array([submission_boosting['accum']['bag']['test'][x] for x in self.test_dataset.bag_ids ])
+
+		train_instance_labels=np.array([submission_boosting['accum']['instance']['train'][x] for x in self.train_dataset.instance_ids ])
+		instance_predictions=np.array([submission_boosting['accum']['instance']['test'][x] for x in self.test_dataset.instance_ids ])
+
+		try:
+            		from sklearn.metrics import roc_auc_score as score
+        	except:
+            		from sklearn.metrics import auc_score as score
+        	scorename = 'AUC'
+
+		submission_boosting['statistics_boosting']={}
+		
+		train=self.train_dataset
+		test=self.test_dataset
+		
+		if train.bag_labels.size > 1:
+	    		train_bag_accuracy = np.average( train.bag_labels== ( train_bag_labels > 0  )  )
+	    		train_bag_balanced_accuracy= np.average( [ np.average( train_bag_labels[train.bag_labels]>0 ) ,   np.average( train_bag_labels[train.bag_labels==False]<0 ) ] )
+            		print ('Training Bag %s score: %f, accuracy: %f, balanced accuracy: %f'
+                   		% (scorename, score(train.bag_labels, train_bag_labels) ,train_bag_accuracy, train_bag_balanced_accuracy ))
+	    		submission_boosting['statistics_boosting']['train_bag_'+scorename] = score(train.bag_labels, train_bag_labels)
+	    		submission_boosting['statistics_boosting']['train_bag_accuracy']=train_bag_accuracy
+	    		submission_boosting['statistics_boosting']['train_bag_balanced_accuracy']=train_bag_balanced_accuracy
+
+
+        	if INSTANCE_PREDICTIONS and train.instance_labels.size > 1:
+	    		train_instance_accuracy = np.average( train.instance_labels== ( train_instance_labels > 0  )  )
+	    		train_instance_balanced_accuracy= np.average( [ np.average( train_instance_labels[train.instance_labels]>0 ) ,   np.average( train_instance_labels[train.instance_labels==False]<0 ) ]  )
+            		print ('Training Inst. %s Score: %f, accuracy: %f, balanced accuracy: %f'
+                   		% (scorename, score(train.instance_labels, train_instance_labels) ,train_instance_accuracy, train_instance_balanced_accuracy ))
+            		submission_boosting['statistics_boosting']['train_instance_'+scorename] = score(train.instance_labels, train_instance_labels)
+	    		submission_boosting['statistics_boosting']['train_instance_accuracy']=train_instance_accuracy
+	    		submission_boosting['statistics_boosting']['train_instance_balanced_accuracy']=train_instance_balanced_accuracy
+
+        	if test.bag_labels.size > 1:
+	    		test_bag_accuracy = np.average( test.bag_labels== ( bag_predictions > 0  )  )
+	    		test_bag_balanced_accuracy= np.average( [ np.average( bag_predictions[test.bag_labels]>0 ) ,   np.average( bag_predictions[test.bag_labels==False]<0 ) ]  )
+            		   
+	    		print ('Test Bag %s Score: %f, accuracy: %f, balanced accuracy: %f'
+                   		% (scorename, score(test.bag_labels, bag_predictions), test_bag_accuracy, test_bag_balanced_accuracy ))
+
+	    		submission_boosting['statistics_boosting']['test_bag_'+scorename] = score(test.bag_labels, bag_predictions)
+  	    		submission_boosting['statistics_boosting']['test_bag_accuracy']=test_bag_accuracy
+	    		submission_boosting['statistics_boosting']['test_bag_balanced_accuracy']=test_bag_balanced_accuracy
+
+        	if INSTANCE_PREDICTIONS and test.instance_labels.size > 1:
+   	    		test_instance_accuracy = np.average( test.instance_labels== ( instance_predictions > 0  )  )
+	    		test_instance_balanced_accuracy= np.average( [ np.average( instance_predictions[test.instance_labels]>0 ) ,   np.average( instance_predictions[test.instance_labels==False]<0 ) ]  )
+
+           	 	print ('Test Inst. %s Score: %f, accuracy: %f, balanced accuracy: %f'
+                   		% (scorename, score(test.instance_labels, instance_predictions),test_instance_accuracy, test_instance_balanced_accuracy ))
+	    		submission_boosting['statistics_boosting']['test_instance_'+scorename] = score(test.instance_labels, instance_predictions)
+	    		submission_boosting['statistics_boosting']['test_instance_accuracy']=test_instance_accuracy
+	    		submission_boosting['statistics_boosting']['test_instance_balanced_accuracy']=test_instance_balanced_accuracy
+
+
+
+
 
 def get_accum_results():
 	pass
