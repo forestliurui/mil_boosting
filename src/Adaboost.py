@@ -1,6 +1,8 @@
 #This is the adaboost for server end
 
 import string
+import data
+import numpy as np
 
 class Adaboost(object):
 	def __init__(self):
@@ -15,7 +17,7 @@ class Adaboost(object):
 		test_dataset_name_list = train_dataset_name_list
 		test_dataset_name_list[-1] = 'test'
 
-		test_dataset_name = string.join(test_dataset_name_list,'.')\
+		test_dataset_name = string.join(test_dataset_name_list,'.')
 		#get the name of train and test dataset 
 
 		train_dataset=data.get_dataset(train_dataset_name)
@@ -32,12 +34,18 @@ class Adaboost(object):
 		for iter_boosting in range(max_iter_boosting):
 			
 
-			task=run_tune_parameter(train_dataset, test_dataset , auxiliary_struct, key_statistic  ,label_index=None):
+			task_key = run_tune_parameter(train_dataset_name, test_dataset_name , auxiliary_struct, key_statistic  ,label_index=None)
+			task = auxiliary_struct['task_dict'][task_key];
+			aa = task.get_predictions('bag','test')
+			
+			task.store_boosting_raw_results(iter_boosting)
+			import pdb;pdb.set_trace()
 
 
 	def predict(self):
-
-	def store_boosting_results(self):	
+		pass
+	def store_boosting_results(self):
+		pass	
 
 
 def run_tune_parameter(train, test , auxiliary_struct, key_statistic  ,label_index=None):

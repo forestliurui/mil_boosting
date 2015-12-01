@@ -28,7 +28,7 @@ from folds import FoldConfiguration
 from progress import ProgressMonitor
 from results import get_result_manager
 
-PORT = 2113
+PORT = 2114
 DEFAULT_TASK_EXPIRE = 120 # Seconds
 TEMPLATE = """
 <html>
@@ -150,7 +150,7 @@ class ExperimentServer(object):
          train, test, parameter_id, parameter_set) = key
         parameters = self.params[experiment_id].get_parameters(
             parameter_id=parameter_id, parameter_set=parameter_set)
-        arguments = {'key': key, 'parameters': parameters, 'instance_weights':self.shared_variables['instance_weights']}
+        arguments = {'key': key, 'parameters': parameters, 'bag_weights':self.shared_variables['bag_weights']}
         return yaml.dump(arguments, Dumper=Dumper)
 
     @plaintext
@@ -536,7 +536,25 @@ class Task(object):
         self.results_manager.store_results(submission,
             self.train, self.test, self.parameter_id_str, self.parameter_set)
 
-    def store_boosting_results(self, prediction_matrix_test_accumulated, boosting_rounds):
+    def store_boosting_raw_results(self, boosting_rounds):
+
+	submission_boosting={}
+	submission_boosting['raw']={} #without accumulating results from previous rounds
+	submission_boosting['raw']['instance_predictions']={}
+	submission_boosting['raw']['bag_predictions']={}
+
+	submission_boosting['raw']['instance_predictions']['test'] = self.get_predictions('instance','test')
+	submission_boosting['raw']['instance_predictions']['train']= self.get_predictions('instance','train')
+	submission_boosting['raw']['bag_predictions']['train'] = self.get_predictions('bag','train')
+	submission_boosting['raw']['bag_predictions']['test'] = self.get_predictions('bag','test')
+
+
+	self.results_manager.store_results_boosting(submission_boosting, boosting_rounds, self.train, self.test, self.parameter_id_str, self.parameter_set)
+
+	
+
+
+    def store_boosting_accum_results(self, prediction_matrix_test_accumulated, boosting_rounds):
         #this is used to store the prediction results for test dataset's each label from boosting
         #bag_predictions = np.hstack((bag_predictions0[:,np.newaxis], bag_predictions1[:,np.newaxis],bag_predictions2[:,np.newaxis],bag_predictions3[:,np.newaxis],bag_predictions4[:,np.newaxis]  ))
         data_test=data.get_dataset(self.test)
@@ -674,18 +692,18 @@ def server_experiment(configuration_file, task_dict, shared_variables, server):
     outer_folds, inner_folds=configuration['folds']
     
 
-    shared_variables['bag_weights'][dataset_name]=[]
+    shared_variables['bag_weights'][dataset_name]={}
 
     auxiliary_structure ={}  #auxiliary structure to support parallelization
-    auxiliary_structure{'task_dict'}=task_dict
-    auxiliary_structure{'shared_variables'}=shared_variables
-    auxiliary_structure{'server'}=server
+    auxiliary_structure['task_dict']=task_dict
+    auxiliary_structure['shared_variables']=shared_variables
+    auxiliary_structure['server']=server
 
 
 
     for set_index_boosting in range(outer_folds):
-	train_dataset_name=string.replace( 'natural_scene.fold_%4d_of_%4d.train' % (set_index_boosting, outer_folds),' ','0'  )
-    	test_dataset_name=string.replace( 'natural_scene.fold_%4d_of_%4d.test' % (set_index_boosting, outer_folds),' ','0'   )
+	train_dataset_name=string.replace( '%s.fold_%4d_of_%4d.train' % (dataset_name,set_index_boosting, outer_folds),' ','0'  )
+    	test_dataset_name=string.replace( '%s.fold_%4d_of_%4d.test' % (dataset_name,set_index_boosting, outer_folds),' ','0'   )
 
 	Ensemble_classifier=Adaboost()
 	Ensemble_classifier.fit(train_dataset_name, auxiliary_structure)
