@@ -10,6 +10,7 @@
 
 import sqlite3
 import yaml
+import numpy as np
 
 def compute_statistics(configuration_file, results_directory, train_or_test, bag_or_instance , statistic, outputfile):
 
@@ -27,7 +28,7 @@ def compute_statistics(configuration_file, results_directory, train_or_test, bag
 	else:
 		raise ValueError('Fourth argument must be "bag" or "instance"')
 
-	import pdb;pdb.set_trace()
+	#import pdb;pdb.set_trace()
 
 	if statistic.startswith('b'):	
 		statistic_name=statistic_name+'_balanced_accuracy'
@@ -48,19 +49,43 @@ def compute_statistics(configuration_file, results_directory, train_or_test, bag
     		dataset_name=configuration['experiments'][index_dataset]['dataset']
 		dataset_name='musk1'
 		
+		line=dataset_name
+		
 		dataset_result_path=results_directory+'/mi_kernels/'+ dataset_name+'.db'
 		conn=sqlite3.connect(dataset_result_path)
 		
 		c=conn.cursor()
-		import pdb;pdb.set_trace()
+		#for row in c.execute('select * from statistic_names'):
+			#print row  #row is of type tuple
+	
 
-		for row in c.execute('select * from statistics_boosting'):
-			print row  #row is of type tuple
-			import pdb;pdb.set_trace()
-				
+		#import pdb;pdb.set_trace()
+		string_to_be_exe = 'select statistic_name_id from statistic_names where statistic_name = "%s" ' % statistic_name
 
-	with open(outputfile, 'a+') as f:
-                f.write(line)
+		c.execute(string_to_be_exe)
+		stat_id=c.fetchone()[0]
+		
+		boosting_rounds_list=[]
+		string_to_be_exe = 'select boosting_rounds from statistics_boosting '
+		for row in c.execute(string_to_be_exe):
+			boosting_rounds_list.append(row[0])
+		iter_max_boosting=max(boosting_rounds_list)
+
+		for boosting_round in range(1,iter_max_boosting+1):
+
+			statistic_value_list=[]
+			string_to_be_exe = 'select  statistic_value from statistics_boosting where statistic_name_id = %d and boosting_rounds = %d' % (stat_id, boosting_round)
+
+			for row in c.execute(string_to_be_exe):
+				statistic_value_list.append(row[0])
+
+			
+			line += (',%f' % np.average(statistic_value_list)  )
+		line +='\n'
+		
+						
+		with open(outputfile, 'a+') as f:
+                	f.write(line)
 
 if __name__ == '__main__':
     from optparse import OptionParser, OptionGroup
