@@ -35,12 +35,18 @@ parameters:
     kernel: linear
     base_kernel: linear
     normalization: none
-    C: ['e-3', 'e5']
+    C: ['e3','e4']
     search:
         type: random
-        n: 25
+        n: 1
 
 experiments:
+    - dataset: musk1
+    - dataset: musk2
+    - dataset: trx
+    - dataset: elephant
+    - dataset: fox
+    - dataset: tiger
     - dataset: apple~cokecan
     - dataset: banana~goldmedal
     - dataset: dirtyworkgloves~dirtyrunningshoe
