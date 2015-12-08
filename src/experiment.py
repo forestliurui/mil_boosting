@@ -12,6 +12,7 @@ from vocabulary import EmbeddedSpaceSVM
 from Iterative_SVM import Iterative_SVM
 from Iterative_SVM_pn import Iterative_SVM_pn
 from MIBoosting_Xu import MIBoosting_Xu
+from sil import SIL
 
 INSTANCE_PREDICTIONS = True
 
@@ -22,6 +23,7 @@ CLASSIFIERS = {
     'Iterative_SVM': Iterative_SVM,
     'Iterative_SVM_pn': Iterative_SVM_pn,
     'MIBoosting_Xu': MIBoosting_Xu,
+    'SIL': SIL
 }
 
 IDX_DIR = os.path.join('box_counting', 'converted_datasets')
@@ -125,6 +127,10 @@ def client_target(task, callback):
 
     classifier_name = parameters.pop('classifier')
     if classifier_name in CLASSIFIERS:
+	if classifier_name == 'SIL':
+		parameters.pop('base_kernel')
+		parameters.pop('normalization')
+
         classifier = CLASSIFIERS[classifier_name](**parameters)
     else:
         print 'Technique "%s" not supported' % classifier_name

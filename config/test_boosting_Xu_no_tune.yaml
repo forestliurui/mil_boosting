@@ -31,7 +31,7 @@ folds: [10, 5]
 # A list of parameter settings
 # (can also be specified per experiment)
 parameters:
-  - classifier: Iterative_SVM_pn
+  - classifier: SIL
     kernel: linear
     base_kernel: linear
     normalization: none
@@ -41,11 +41,13 @@ parameters:
         n: 1
 
 experiments:
+#    - dataset: apple~cokecan
     - dataset: musk1
-    - dataset: musk2
-    - dataset: elephant
-    - dataset: fox
-    - dataset: tiger
-    - dataset: apple~cokecan
-    - dataset: banana~goldmedal
-    - dataset: dirtyworkgloves~dirtyrunningshoe
+
+#    - dataset: musk2
+#    - dataset: elephant
+#    - dataset: fox
+#    - dataset: tiger
+#    - dataset: apple~cokecan
+#    - dataset: banana~goldmedal
+#    - dataset: dirtyworkgloves~dirtyrunningshoe

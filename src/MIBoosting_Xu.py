@@ -3,9 +3,11 @@
 import string
 import data
 import numpy as np
+from scipy.optimize import minimize
 
 
-INSTANCE_PREDICTIONS=True
+INSTANCE_PREDICTIONS = True
+INNER_CROSS_VALIDATION = False
 
 class MIBoosting_Xu(object):
 	def __init__(self):
@@ -78,20 +80,22 @@ class MIBoosting_Xu(object):
 			self.raw_predictions['instance']['test'].append(task.get_predictions('instance','test'))
 
 			errors_per_bag={}
-			for bag_index in len(self.train_dataset.bag_ids):
+			for bag_index in range(len(self.train_dataset.bag_ids)):
 				bag_id = self.train_dataset.bag_ids[bag_index]
 				temp_dict=dict( (x, self.raw_predictions['instance']['train'][-1][x])  for x in self.raw_predictions['instance']['train'][-1].keys() if bag_id in x   )
 				temp_bag_size = len( temp_dict.keys()  )
 				temp_labels=[ train_dataset.bag_labels[bag_index] ]* temp_bag_size
-				errors_per_bag[bag_id]=  1-compute_statistic(temp_dict, temp_labels ,None ,temp_dict.keys() ,'accuracy')
+				errors_per_bag[bag_id]=  1-compute_statistic(temp_dict, temp_labels ,None ,temp_dict.keys() ,'accuracy')+0.7
 			
-			
+			self.errors_per_bag = errors_per_bag
 			if (np.average(map(lambda x: x<0.5,  errors_per_bag.values()  ))==1):
 				break	
 			#import pdb;pdb.set_trace()
 			res=minimize(  subproblem_MIBoosting([bag_weight_temp[x] for x in  train_dataset.bag_ids  ], [errors_per_bag[x] for x in  train_dataset.bag_ids  ],), 0 )
-			self.alphas.append(res['x'][0])			
-			
+			self.alphas.append(res['x'][0])	
+			self.alphas[-1]=2		
+			#import pdb;pdb.set_trace()
+
 			#self.alphas.append( np.log(  (1-self.errors[-1]) / self.errors[-1]  ) )
 
 			if self.alphas[-1]<0:
@@ -109,6 +113,9 @@ class MIBoosting_Xu(object):
 				bag_id=train_dataset.bag_ids[bag_index]
 				
 				bag_weight_temp[bag_id]=bag_weight_temp[bag_id] /float(sum( bag_weight_temp.values() ))
+
+		if len(self.alphas) == 0:
+			self.alphas.append(1)
 
 		self.num_iter_boosting=len(self.alphas)	
 		#import pdb;pdb.set_trace()
@@ -133,6 +140,7 @@ class MIBoosting_Xu(object):
 		predictions_matrix={}
 		predictions_matrix['bag']={}
 		predictions_matrix['instance']={}
+		#import pdb;pdb.set_trace()
 		predictions_matrix['bag']['train']=np.matrix( np.vstack((predictions_list['bag']['train']))  )
 		predictions_matrix['bag']['test']=np.matrix( np.vstack((predictions_list['bag']['test']))  )
 		predictions_matrix['instance']['train']=np.matrix( np.vstack((predictions_list['instance']['train']))  )
@@ -274,38 +282,43 @@ def run_tune_parameter(train, test , auxiliary_struct, key_statistic  ,label_ind
     tasks = auxiliary_struct['task_dict']
     shared_variables = auxiliary_struct['shared_variables']
     server = auxiliary_struct['server']
+    
+    if INNER_CROSS_VALIDATION == True:
+    	#import pdb; pdb.set_trace()
+    	#run the experiment train with the best parameter tuned on train
+    	subtasks=dict((k, tasks[k] ) for k in tasks.keys()  if k[2].find(train+'.')==0    ) #subtasks is the dictionary which contains the tasks to tune the parameters for train
+    	with server.status_lock:
+    		for sub_key in subtasks.keys():
+			subtasks[sub_key].finished = False
+    	shared_variables['to_be_run'].put(subtasks)
+    	shared_variables['condition_lock'].acquire()
+    
+    	#import pdb; pdb.set_trace()
+    	while(not reduce(lambda x, y: x and y, [ tasks[z].finished for z in subtasks.keys()   ]   )):  #if all tasks are finished
+    		print 'blocked by wait'
+       		shared_variables['condition_lock'].wait()
+		print 'awakened from wait'
+    
+    	shared_variables['condition_lock'].release()  
+    	print 'all subtasks used for tuning parameters are finished'
+    	print 'try to choose the optimal parameters for this training dataset'
+    
+    	num_para_combination=max([ subtasks.keys()[x][5] for x in range(len(subtasks) )  ])+1
+    	statistic_avg_per_para={}
+    
+    	if label_index is None:
+    		statisitic_name=key_statistic
+    	else:
+		statisitic_name=key_statistic+str(label_index)
 
-    #import pdb; pdb.set_trace()
-    #run the experiment train with the best parameter tuned on train
-    subtasks=dict((k, tasks[k] ) for k in tasks.keys()  if k[2].find(train+'.')==0    ) #subtasks is the dictionary which contains the tasks to tune the parameters for train
-    with server.status_lock:
-    	for sub_key in subtasks.keys():
-		subtasks[sub_key].finished = False
-    shared_variables['to_be_run'].put(subtasks)
-    shared_variables['condition_lock'].acquire()
+    	for para_index in range(num_para_combination):
+ 		statistic_avg_per_para[para_index]=np.mean( [tasks[x].get_statistic(statisitic_name)[0] for x in subtasks.keys() if x[5]==para_index] ) 
     
-    #import pdb; pdb.set_trace()
-    while(not reduce(lambda x, y: x and y, [ tasks[z].finished for z in subtasks.keys()   ]   )):  #if all tasks are finished
-    	print 'blocked by wait'
-       	shared_variables['condition_lock'].wait()
-	print 'awakened from wait'
-    
-    shared_variables['condition_lock'].release()  
-    print 'all subtasks used for tuning parameters are finished'
-    print 'try to choose the optimal parameters for this training dataset'
-    
-    num_para_combination=max([ subtasks.keys()[x][5] for x in range(len(subtasks) )  ])+1
-    statistic_avg_per_para={}
-    
-    if label_index is None:
-    	statisitic_name=key_statistic
+    	para_index_optimal = np.argmax(statistic_avg_per_para.values())
+
     else:
-	statisitic_name=key_statistic+str(label_index)
+	para_index_optimal = 0
 
-    for para_index in range(num_para_combination):
- 	statistic_avg_per_para[para_index]=np.mean( [tasks[x].get_statistic(statisitic_name)[0] for x in subtasks.keys() if x[5]==para_index] ) 
-    
-    para_index_optimal = np.argmax(statistic_avg_per_para.values())
     subtasks=dict((k, tasks[k] ) for k in tasks.keys()  if k[2]== train and k[5] == para_index_optimal    )
     
     with server.status_lock:
@@ -327,5 +340,6 @@ def run_tune_parameter(train, test , auxiliary_struct, key_statistic  ,label_ind
     #import pdb; pdb.set_trace()  
     
    
+  
 
 

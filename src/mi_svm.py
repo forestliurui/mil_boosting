@@ -28,6 +28,7 @@ class SVM(object):
         #  If you passed in a list of lists, if each bag is an array the asarray funciton just returns it
         #  but it converts a list of lists to a numpy array.
         self.gram_matrix = self.kernel(X, X)
+	#import pdb;pdb.set_trace()
         self.estimator.fit(self.gram_matrix, y, sample_weight = weights )
         return self
 
