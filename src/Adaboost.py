@@ -6,6 +6,7 @@ import numpy as np
 
 
 INSTANCE_PREDICTIONS=True
+INNER_CROSS_VALIDATION = False
 
 class Adaboost(object):
 	def __init__(self):
@@ -249,38 +250,43 @@ def run_tune_parameter(train, test , auxiliary_struct, key_statistic  ,label_ind
     tasks = auxiliary_struct['task_dict']
     shared_variables = auxiliary_struct['shared_variables']
     server = auxiliary_struct['server']
+    
+    if INNER_CROSS_VALIDATION == True:
+    	#import pdb; pdb.set_trace()
+    	#run the experiment train with the best parameter tuned on train
+    	subtasks=dict((k, tasks[k] ) for k in tasks.keys()  if k[2].find(train+'.')==0    ) #subtasks is the dictionary which contains the tasks to tune the parameters for train
+    	with server.status_lock:
+    		for sub_key in subtasks.keys():
+			subtasks[sub_key].finished = False
+    	shared_variables['to_be_run'].put(subtasks)
+    	shared_variables['condition_lock'].acquire()
+    
+    	#import pdb; pdb.set_trace()
+    	while(not reduce(lambda x, y: x and y, [ tasks[z].finished for z in subtasks.keys()   ]   )):  #if all tasks are finished
+    		print 'blocked by wait'
+       		shared_variables['condition_lock'].wait()
+		print 'awakened from wait'
+    
+    	shared_variables['condition_lock'].release()  
+    	print 'all subtasks used for tuning parameters are finished'
+    	print 'try to choose the optimal parameters for this training dataset'
+    
+    	num_para_combination=max([ subtasks.keys()[x][5] for x in range(len(subtasks) )  ])+1
+    	statistic_avg_per_para={}
+    
+    	if label_index is None:
+    		statisitic_name=key_statistic
+    	else:
+		statisitic_name=key_statistic+str(label_index)
 
-    #import pdb; pdb.set_trace()
-    #run the experiment train with the best parameter tuned on train
-    subtasks=dict((k, tasks[k] ) for k in tasks.keys()  if k[2].find(train+'.')==0    ) #subtasks is the dictionary which contains the tasks to tune the parameters for train
-    with server.status_lock:
-    	for sub_key in subtasks.keys():
-		subtasks[sub_key].finished = False
-    shared_variables['to_be_run'].put(subtasks)
-    shared_variables['condition_lock'].acquire()
+    	for para_index in range(num_para_combination):
+ 		statistic_avg_per_para[para_index]=np.mean( [tasks[x].get_statistic(statisitic_name)[0] for x in subtasks.keys() if x[5]==para_index] ) 
     
-    #import pdb; pdb.set_trace()
-    while(not reduce(lambda x, y: x and y, [ tasks[z].finished for z in subtasks.keys()   ]   )):  #if all tasks are finished
-    	print 'blocked by wait'
-       	shared_variables['condition_lock'].wait()
-	print 'awakened from wait'
-    
-    shared_variables['condition_lock'].release()  
-    print 'all subtasks used for tuning parameters are finished'
-    print 'try to choose the optimal parameters for this training dataset'
-    
-    num_para_combination=max([ subtasks.keys()[x][5] for x in range(len(subtasks) )  ])+1
-    statistic_avg_per_para={}
-    
-    if label_index is None:
-    	statisitic_name=key_statistic
+    	para_index_optimal = np.argmax(statistic_avg_per_para.values())
+
     else:
-	statisitic_name=key_statistic+str(label_index)
+	para_index_optimal = 0
 
-    for para_index in range(num_para_combination):
- 	statistic_avg_per_para[para_index]=np.mean( [tasks[x].get_statistic(statisitic_name)[0] for x in subtasks.keys() if x[5]==para_index] ) 
-    
-    para_index_optimal = np.argmax(statistic_avg_per_para.values())
     subtasks=dict((k, tasks[k] ) for k in tasks.keys()  if k[2]== train and k[5] == para_index_optimal    )
     
     with server.status_lock:

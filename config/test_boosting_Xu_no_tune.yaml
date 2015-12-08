@@ -42,4 +42,10 @@ parameters:
 
 experiments:
     - dataset: musk1
-
+    - dataset: musk2
+    - dataset: elephant
+    - dataset: fox
+    - dataset: tiger
+    - dataset: apple~cokecan
+    - dataset: banana~goldmedal
+    - dataset: dirtyworkgloves~dirtyrunningshoe

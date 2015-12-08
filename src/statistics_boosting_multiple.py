@@ -25,7 +25,9 @@ def compute_statistics(configuration_file, results_directory, outputfile):
     	for index_dataset in range(num_dataset):
 		   	    
     	     dataset_name=configuration['experiments'][index_dataset]['dataset']
-	     #dataset_name='trx'
+	     
+	     if	dataset_name == 'trx':
+		continue
 		
 	     line=dataset_name
 	     line+= ','
