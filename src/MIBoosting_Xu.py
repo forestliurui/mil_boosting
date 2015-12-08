@@ -85,7 +85,7 @@ class MIBoosting_Xu(object):
 				temp_dict=dict( (x, self.raw_predictions['instance']['train'][-1][x])  for x in self.raw_predictions['instance']['train'][-1].keys() if bag_id in x   )
 				temp_bag_size = len( temp_dict.keys()  )
 				temp_labels=[ train_dataset.bag_labels[bag_index] ]* temp_bag_size
-				errors_per_bag[bag_id]=  1-compute_statistic(temp_dict, temp_labels ,None ,temp_dict.keys() ,'accuracy')+0.7
+				errors_per_bag[bag_id]=  1-compute_statistic(temp_dict, temp_labels ,None ,temp_dict.keys() ,'accuracy')
 			
 			self.errors_per_bag = errors_per_bag
 			if (np.average(map(lambda x: x<0.5,  errors_per_bag.values()  ))==1):
@@ -93,7 +93,7 @@ class MIBoosting_Xu(object):
 			#import pdb;pdb.set_trace()
 			res=minimize(  subproblem_MIBoosting([bag_weight_temp[x] for x in  train_dataset.bag_ids  ], [errors_per_bag[x] for x in  train_dataset.bag_ids  ],), 0 )
 			self.alphas.append(res['x'][0])	
-			self.alphas[-1]=2		
+					
 			#import pdb;pdb.set_trace()
 
 			#self.alphas.append( np.log(  (1-self.errors[-1]) / self.errors[-1]  ) )
