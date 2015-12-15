@@ -41,9 +41,7 @@ parameters:
         n: 1
 
 experiments:
-#    - dataset: apple~cokecan
-    - dataset: musk1
-
+#    - dataset: musk1
 #    - dataset: musk2
 #    - dataset: elephant
 #    - dataset: fox
@@ -51,3 +49,29 @@ experiments:
 #    - dataset: apple~cokecan
 #    - dataset: banana~goldmedal
 #    - dataset: dirtyworkgloves~dirtyrunningshoe
+    - dataset: field
+    - dataset: flower
+    - dataset: mountain
+    - dataset: wd40can~largespoon
+    - dataset: checkeredscarf~dataminingbook
+    - dataset: juliespot~rapbook
+    - dataset: smileyfacedoll~feltflowerrug
+    - dataset: stripednotebook~greenteabox
+    - dataset: cardboardbox~candlewithholder
+    - dataset: bluescrunge~ajaxorange
+    - dataset: woodrollingpin~translucentbowl
+    - dataset: fabricsoftenerbox~glazedwoodpot
+    - dataset: BRCR
+    - dataset: WIWR
+    - dataset: PSFL
+    - dataset: RBNU
+    - dataset: DEJU
+    - dataset: OSFL
+    - dataset: HETH
+    - dataset: CBCH
+    - dataset: VATH
+    - dataset: HEWA
+    - dataset: SWTH
+    - dataset: HAFL
+    - dataset: WETA
+
