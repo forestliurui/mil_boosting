@@ -151,7 +151,7 @@ class ExperimentServer(object):
          train, test, parameter_id, parameter_set) = key
         parameters = self.params[experiment_id].get_parameters(
             parameter_id=parameter_id, parameter_set=parameter_set)
-        arguments = {'key': key, 'parameters': parameters, 'bag_weights':self.shared_variables['bag_weights']}
+        arguments = {'key': key, 'parameters': parameters, 'bag_weights':self.shared_variables['bag_weights'], 'inst_weights':self.shared_variables['inst_weights']}
         return yaml.dump(arguments, Dumper=Dumper)
 
     @plaintext
@@ -668,6 +668,7 @@ def start_experiment(configuration_file, results_root_dir):
     #queues['finished']=queue_tasks_finished
     shared_variables['condition_lock']=threading.Condition() #condition variable used to synchronize server and controller
     shared_variables['bag_weights']={}
+    shared_variables['inst_weights']={}
     
 
     server = ExperimentServer(task_dict, param_dict, render, shared_variables)

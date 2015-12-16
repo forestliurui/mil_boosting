@@ -79,9 +79,40 @@ def client_target(task, callback):
     train = get_dataset(train_dataset)
     test = get_dataset(test_dataset)
 
-    if 'bag_weights' in task.keys():
-	bag_weights_dict=task['bag_weights'][experiment_dataset]
+    if 'inst_weights' in task.keys() and len(task['inst_weights'])!= 0 :
+	instance_weights_dict=task['inst_weights'][experiment_dataset]
 
+	instance_weights_list = [instance_weights_dict[weight_key] for weight_key in train.instance_ids  ]
+    	instance_weights = np.array( instance_weights_list )  #inst_weights should be of type array in order to be used by sklearn module
+    
+    	if instance_weights_dict.has_key(test.instance_ids[0]):
+      		instance_weights_test_list = [instance_weights_dict[weight_key] for weight_key in test.instance_ids  ]
+		instance_weights_test = np.array( instance_weights_test_list )  #instance_weights should be of type array in order to be used by sklearn module
+    	else:
+   		instance_weights_test=None
+
+	print 'inst weights: %s' % instance_weights_dict.values()[:10]
+    else:
+	instance_weights=None
+	instance_weights_test=None	
+
+
+    if 'bag_weights' in task.keys():
+
+      	if len(task['inst_weights']) == 0:
+		bag_weights_dict=task['bag_weights'][experiment_dataset]
+	else:
+		bag_weights_dict={}
+
+		for inst_id in inst_weights_dict.keys():
+
+			if inst_id[0] not in bag_weights_dict.keys():
+				bag_weights_dict[inst_id[0]] = 0
+
+			bag_weights_dict[inst_id[0]]+=inst_weights_dict[inst_id]
+			
+				
+			
 	bag_weights_list = [bag_weights_dict[weight_key] for weight_key in train.bag_ids  ]
     	bag_weights = np.array( bag_weights_list )  #bag_weights should be of type array in order to be used by sklearn module
     
@@ -95,6 +126,11 @@ def client_target(task, callback):
     else:
 	bag_weights=None
 	bag_weights_test=None
+
+    if 'inst_weights' in task.keys() and len(task['inst_weights'])!= 0 :
+	weights_fit=instance_weights
+    else:
+	weights_fit=bag_weights
 
 
     submission = {
@@ -143,7 +179,7 @@ def client_target(task, callback):
     if train.regression:
         classifier.fit(train.bags, train.bag_labels)
     else:
-        classifier.fit(train.bags, train.pm1_bag_labels, bag_weights)
+        classifier.fit(train.bags, train.pm1_bag_labels, weights_fit)
     timer.stop('training')
 
     print 'Computing test bag predictions...'
@@ -209,11 +245,11 @@ def client_target(task, callback):
 
 
         if INSTANCE_PREDICTIONS and train.instance_labels.size > 1:
-	    train_instance_accuracy = np.average( train.instance_labels== ( train_instance_labels > 0  )  )
-	    train_instance_balanced_accuracy= np.average( [ np.average( train_instance_labels[train.instance_labels]>0 ) ,   np.average( train_instance_labels[train.instance_labels==False]<0 ) ]  )
-            print ('Training Inst. %s Score: %f, accuracy: %f, balanced accuracy: %f'
-                   % (scorename, score(train.instance_labels, train_instance_labels) ,train_instance_accuracy, train_instance_balanced_accuracy ))
-            submission['statistics']['train_instance_'+scorename] = score(train.instance_labels, train_instance_labels)
+	    train_instance_accuracy = np.average( train.instance_labels== ( train_instance_labels > 0  ) , weights= instance_weights )
+	    train_instance_balanced_accuracy= np.average( [ np.average( train_instance_labels[train.instance_labels]>0,  weights= instance_weights[train.instance_labels] ) ,   np.average( train_instance_labels[train.instance_labels==False]<0 ,  weights= instance_weights[train.instance_labels==False]) ] )
+            print ('Training Bag %s score: %f, accuracy: %f, balanced accuracy: %f'
+                   % (scorename, score(train.instance_labels, train_instance_labels,  sample_weight= instance_weights) ,train_instance_accuracy, train_instance_balanced_accuracy ))
+	    submission['statistics']['train_instance_'+scorename] = score(train.instance_labels, train_instance_labels,  sample_weight= instance_weights)
 	    submission['statistics']['train_instance_accuracy']=train_instance_accuracy
 	    submission['statistics']['train_instance_balanced_accuracy']=train_instance_balanced_accuracy
 
@@ -232,13 +268,17 @@ def client_target(task, callback):
 	    submission['statistics']['test_bag_balanced_accuracy']=test_bag_balanced_accuracy
 
         if INSTANCE_PREDICTIONS and test.instance_labels.size > 1:
-   	    test_instance_accuracy = np.average( test.instance_labels== ( instance_predictions > 0  )  )
-	    test_instance_balanced_accuracy= np.average( [ np.average( instance_predictions[test.instance_labels]>0 ) ,   np.average( instance_predictions[test.instance_labels==False]<0 ) ]  )
+   	    test_instance_accuracy = np.average( test.instance_labels== ( instance_predictions > 0  ) , weights= instance_weights_test )
+	    if instance_weights_test != None:
+	    	test_instance_balanced_accuracy= np.average( [ np.average( instance_predictions[test.instance_labels]>0 ,  weights= instance_weights_test[test.instance_labels]) ,   np.average( instance_predictions[test.instance_labels==False]<0 ,  weights= instance_weights_test[test.instance_labels==False]) ]  )
+            else:
+		test_instance_balanced_accuracy= np.average( [ np.average( instance_predictions[test.instance_labels]>0 ) ,   np.average( instance_predictions[test.instance_labels==False]<0 ) ]  )
+   
+	    print ('Test Bag %s Score: %f, accuracy: %f, balanced accuracy: %f'
+                   % (scorename, score(test.instance_labels, instance_predictions, sample_weight= instance_weights_test), test_instance_accuracy, test_instance_balanced_accuracy ))
 
-            print ('Test Inst. %s Score: %f, accuracy: %f, balanced accuracy: %f'
-                   % (scorename, score(test.instance_labels, instance_predictions),test_instance_accuracy, test_instance_balanced_accuracy ))
-	    submission['statistics']['test_instance_'+scorename] = score(test.instance_labels, instance_predictions)
-	    submission['statistics']['test_instance_accuracy']=test_instance_accuracy
+	    submission['statistics']['test_instance_'+scorename] = score(test.instance_labels, instance_predictions, sample_weight= instance_weights_test)
+  	    submission['statistics']['test_instance_accuracy']=test_instance_accuracy
 	    submission['statistics']['test_instance_balanced_accuracy']=test_instance_balanced_accuracy
 
     except Exception as e:

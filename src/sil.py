@@ -35,7 +35,7 @@ class SIL(SVM):
         @param bags : a sequence of n bags; each bag is an m-by-k array-like
                       object containing m instances with k features
         @param y : an array-like object of length n containing -1/+1 labels
-	@param weights: an array-like object of length n containing weights for each bag 
+	@param weights: an array-like object of length n containing weights for each bag or each instance
         """
         self._bags = [np.asmatrix(bag) for bag in bags]
         y = np.asmatrix(y).reshape((-1, 1))
@@ -45,11 +45,13 @@ class SIL(SVM):
 
 	if weights is None:
 		svm_weights = None
-	else:
+	elif len(bags) == len(weights.tolist()):
 		weights = np.asmatrix(weights).reshape((-1, 1))
 		svm_weights = np.vstack([float(cls) * np.matrix(np.ones((len(bag), 1)))
                            for bag, cls in zip(self._bags, weights)])
 		svm_weights = np.ravel(svm_weights)
+	else:
+		svm_weights = weights
 
         super(SIL, self).fit(svm_X, np.ravel(svm_y), svm_weights)
 
