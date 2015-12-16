@@ -30,8 +30,8 @@ class RankBoost(object):
 		self.accum_predictions['instance']['test']=[]
 
 		self.alphas=[]
-		self.errors_positive=[]
-		self.errors_negative=[]
+		self.epsilons_positive=[]
+		self.epsilons_negative=[]
 		self.Z_positive = []
 		self.Z_negative = []
 
@@ -63,7 +63,8 @@ class RankBoost(object):
 		instance_ids_train['negative']=[]
 
 		for inst_id in train_dataset.instance_ids: 
-			if train_dataset.bag_labels( train_dataset.bag_ids.index(inst_id[0]) ):
+			#import pdb;pdb.set_trace()
+			if train_dataset.bag_labels[ train_dataset.bag_ids.index(inst_id[0]) ]:
 				instance_ids_train['positive'].append(inst_id)
 			else:
 				instance_ids_train['negative'].append(inst_id)
@@ -74,9 +75,10 @@ class RankBoost(object):
 		key_statistic='test_instance_AUC'
 
 		inst_weight_temp = {}
-		
-		inst_weight_temp.update( dict.fromkeys(instance_ids_train['positive'] ), 1/len(instance_ids_train['positive'])  )
-		inst_weight_temp.update( dict.fromkeys(instance_ids_train['negative'] ), 1/len(instance_ids_train['negative'])  )
+		#import pdb;pdb.set_trace()
+
+		inst_weight_temp.update( dict.fromkeys(instance_ids_train['positive'] , float(1)/len(instance_ids_train['positive']) )  )
+		inst_weight_temp.update( dict.fromkeys(instance_ids_train['negative'] , float(1)/len(instance_ids_train['negative']) ) )
 		
 		
 
@@ -86,33 +88,49 @@ class RankBoost(object):
 			auxiliary_struct['shared_variables']['inst_weights'][dataset_name] = inst_weight_temp
 
 			task_key = run_tune_parameter(train_dataset_name, test_dataset_name , auxiliary_struct, key_statistic  ,label_index=None)
+			task = auxiliary_struct['task_dict'][task_key]
 
 			if self.results_manager==None:
 				self.results_manager=task.results_manager
 			
 			task.store_boosting_raw_results(iter_boosting)
 
-			self.raw_predictions['bag']['train'].append(task.get_predictions('bag','train'))
-			self.raw_predictions['bag']['test'].append(task.get_predictions('bag','test'))
+			for bag_or_inst in ['bag', 'instance']:
+				for train_or_test in ['train', 'test']:
 
-			self.raw_predictions['instance']['train'].append(task.get_predictions('instance','train'))
-			self.raw_predictions['instance']['test'].append(task.get_predictions('instance','test'))
+					self.raw_predictions[bag_or_inst][train_or_test].append(task.get_predictions(bag_or_inst,train_or_test))
+					for x in self.raw_predictions[bag_or_inst][train_or_test][-1].keys():
+						self.raw_predictions[bag_or_inst][train_or_test][-1][x] = (self.raw_predictions[bag_or_inst][train_or_test][-1][x] > 0 ) +0
+
+			#self.raw_predictions['bag']['test'].append(task.get_predictions('bag','test'))
+
+			#self.raw_predictions['instance']['train'].append(task.get_predictions('instance','train'))
+			#self.raw_predictions['instance']['test'].append(task.get_predictions('instance','test'))
+			
 			
 
 			
-			self.errors_positive.append( dict_average(self.raw_predictions['instance']['train'][-1],  inst_weight_temp, instance_ids_train['positive'] )    )
-			self.errors_negative.append(  dict_average(self.raw_predictions['instance']['train'][-1],  inst_weight_temp, instance_ids_train['negative'] )     )
+			self.epsilons_positive.append( dict_average(self.raw_predictions['instance']['train'][-1],  inst_weight_temp, instance_ids_train['positive'] )    )
+			self.epsilons_negative.append(  dict_average(self.raw_predictions['instance']['train'][-1],  inst_weight_temp, instance_ids_train['negative'] )     )
 
-			self.alphas.append(0.5*np.log(self.errors_positive[-1]/self.errors_negative[-1]))
+			if self.epsilons_negative[-1] == 0:
+				self.alphas.append(20)
+				break
+
+			self.alphas.append(0.5*np.log(self.epsilons_positive[-1]/self.epsilons_negative[-1]))
+			#self.alphas.append(0.5)
 			
-			self.Z_positive.append( 1-self.errors_positive[-1]+sqrt( self.errors_positive[-1]*self.errors_negative[-1] ) )
-			self.Z_negative.append( 1-self.errors_negative[-1]+sqrt( self.errors_positive[-1]*self.errors_negative[-1] ) )
+			self.Z_positive.append( 1-self.epsilons_positive[-1]+sqrt( self.epsilons_positive[-1]*self.epsilons_negative[-1] ) )
+			self.Z_negative.append( 1-self.epsilons_negative[-1]+sqrt( self.epsilons_positive[-1]*self.epsilons_negative[-1] ) )
 
 			for inst_id in instance_ids_train['positive']:
 				inst_weight_temp[inst_id] = inst_weight_temp[inst_id]*exp(-self.alphas[-1]*self.raw_predictions['instance']['train'][-1][inst_id] )/self.Z_positive[-1]
 
 			for inst_id in instance_ids_train['negative']:
-				inst_weight_temp[inst_id] = inst_weight_temp[inst_id]*exp(-self.alphas[-1]*self.raw_predictions['instance']['train'][-1][inst_id] )/self.Z_negative[-1]
+				inst_weight_temp[inst_id] = inst_weight_temp[inst_id]*exp(self.alphas[-1]*self.raw_predictions['instance']['train'][-1][inst_id] )/self.Z_negative[-1]
+			#import pdb;pdb.set_trace()
+
+		self.num_iter_boosting=len(self.alphas)
 
 	def predict(self):
 		predictions_list={}

@@ -52,7 +52,7 @@ class SIL(SVM):
 		svm_weights = np.ravel(svm_weights)
 	else:
 		svm_weights = weights
-
+	#import pdb;pdb.set_trace()
         super(SIL, self).fit(svm_X, np.ravel(svm_y), svm_weights)
 
     def _compute_separator(self, K):
