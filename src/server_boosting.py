@@ -684,7 +684,49 @@ def start_experiment(configuration_file, results_root_dir):
     #cherrypy.quickstart(server)
     experiment_dispatcher(configuration_file, task_dict, shared_variables, server)
     
+
 def experiment_dispatcher(configuration_file, task_dict, shared_variables, server):
+    print 'Loading configuration for experiments...'
+    with open(configuration_file, 'r') as f:
+        configuration = yaml.load(f)    
+
+    
+
+    auxiliary_structure ={}  #auxiliary structure to support parallelization
+    auxiliary_structure['task_dict']=task_dict
+    auxiliary_structure['shared_variables']=shared_variables
+    auxiliary_structure['server']=server
+
+    num_dataset = len(configuration['experiments'])
+    for index_dataset in range(num_dataset):
+	
+    	dataset_name=configuration['experiments'][index_dataset]['dataset']
+	outer_folds, inner_folds=configuration['folds']
+
+	for set_index_boosting in range(outer_folds):
+		train_dataset_name=string.replace( '%s.fold_%4d_of_%4d.train' % (dataset_name,set_index_boosting, outer_folds),' ','0'  )
+    		test_dataset_name=string.replace( '%s.fold_%4d_of_%4d.test' % (dataset_name,set_index_boosting, outer_folds),' ','0'   )
+	
+		
+		thread_dataset=threading.Thread(target=server_experiment, args=(train_dataset_name, test_dataset_name, auxiliary_structure))
+    		thread_dataset.start()  
+
+
+
+def server_experiment(train_dataset_name, test_dataset_name, auxiliary_structure):
+
+	#Ensemble_classifier=Adaboost()
+	#Ensemble_classifier=MIBoosting_Xu()
+	Ensemble_classifier=RankBoost()
+	Ensemble_classifier.fit(train_dataset_name, auxiliary_structure)
+	Ensemble_classifier.predict()
+	
+	for iter_index in range(Ensemble_classifier.num_iter_boosting):
+		Ensemble_classifier.store_boosting_results(iter_index+1)
+	#import pdb;pdb.set_trace()
+
+
+def experiment_dispatcher_backup1(configuration_file, task_dict, shared_variables, server):
     print 'Loading configuration for experiments...'
     with open(configuration_file, 'r') as f:
         configuration = yaml.load(f)    
@@ -697,7 +739,7 @@ def experiment_dispatcher(configuration_file, task_dict, shared_variables, serve
     	thread_dataset.start()   
 
 
-def server_experiment(dataset_name, configuration_file, task_dict, shared_variables, server):
+def server_experiment_backup1(dataset_name, configuration_file, task_dict, shared_variables, server):
     
     print 'Loading configuration for experiments...'
     with open(configuration_file, 'r') as f:

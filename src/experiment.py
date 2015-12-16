@@ -80,7 +80,7 @@ def client_target(task, callback):
     test = get_dataset(test_dataset)
 
     if 'inst_weights' in task.keys() and len(task['inst_weights'])!= 0 :
-	instance_weights_dict=task['inst_weights'][experiment_dataset]
+	instance_weights_dict=task['inst_weights'][train_dataset]
 
 	instance_weights_list = [instance_weights_dict[weight_key] for weight_key in train.instance_ids  ]
     	instance_weights = np.array( instance_weights_list )  #inst_weights should be of type array in order to be used by sklearn module
@@ -100,7 +100,7 @@ def client_target(task, callback):
     if 'bag_weights' in task.keys():
 
       	if len(task['inst_weights']) == 0:
-		bag_weights_dict=task['bag_weights'][experiment_dataset]
+		bag_weights_dict=task['bag_weights'][train_dataset]
 	else:
 		bag_weights_dict={}
 

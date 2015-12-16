@@ -85,7 +85,7 @@ class RankBoost(object):
 
 		for iter_boosting in range(max_iter_boosting):
 			print 'Boosting Iteration: %d' % iter_boosting
-			auxiliary_struct['shared_variables']['inst_weights'][dataset_name] = inst_weight_temp
+			auxiliary_struct['shared_variables']['inst_weights'][train_dataset_name] = inst_weight_temp
 
 			task_key = run_tune_parameter(train_dataset_name, test_dataset_name , auxiliary_struct, key_statistic  ,label_index=None)
 			task = auxiliary_struct['task_dict'][task_key]
