@@ -66,7 +66,7 @@ class MIBoosting_Xu(object):
 			auxiliary_struct['shared_variables']['bag_weights'][dataset_name] = bag_weight_temp
 
 			task_key = run_tune_parameter(train_dataset_name, test_dataset_name , auxiliary_struct, key_statistic  ,label_index=None)
-			task = auxiliary_struct['task_dict'][task_key];
+			task = auxiliary_struct['task_dict'][task_key]
 			
 			if self.results_manager==None:
 				self.results_manager=task.results_manager
