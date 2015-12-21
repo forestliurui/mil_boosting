@@ -1,4 +1,4 @@
-#This is the implementation of RankBoost for bipartite setting, described in Figure 9.2 at the book "Foundations of Machine Learning"
+#This is the implementation of RankBoost for bipartite setting with the third method for updating the alphas
 
 from math import sqrt, exp
 import string
@@ -10,7 +10,7 @@ INSTANCE_PREDICTIONS = True
 INNER_CROSS_VALIDATION = False
 
 
-class RankBoost(object):
+class RankBoost_m3(object):
 	def __init__(self):
 		self.raw_predictions = {}
 		self.raw_predictions['bag']={}
@@ -34,6 +34,8 @@ class RankBoost(object):
 		self.epsilons_negative=[]
 		self.Z_positive = []
 		self.Z_negative = []
+
+		self.d = {}
 
 		self.results_manager=None
 	
@@ -100,34 +102,46 @@ class RankBoost(object):
 
 					self.raw_predictions[bag_or_inst][train_or_test].append(task.get_predictions(bag_or_inst,train_or_test))
 					for x in self.raw_predictions[bag_or_inst][train_or_test][-1].keys():
-						self.raw_predictions[bag_or_inst][train_or_test][-1][x] = (self.raw_predictions[bag_or_inst][train_or_test][-1][x] > 0 ) +0
+						self.raw_predictions[bag_or_inst][train_or_test][-1][x] = sigmoid(self.raw_predictions[bag_or_inst][train_or_test][-1][x] )
 
 			#self.raw_predictions['bag']['test'].append(task.get_predictions('bag','test'))
 
 			#self.raw_predictions['instance']['train'].append(task.get_predictions('instance','train'))
 			#self.raw_predictions['instance']['test'].append(task.get_predictions('instance','test'))
 			
-			
+			inst_weight_temp_sum = {}
+			inst_weight_temp_sum['positive'] = sum([inst_weight_temp[inst_id] for inst_id in  instance_ids_train['positive']])
+			inst_weight_temp_sum['positive'] = sum([inst_weight_temp[inst_id] for inst_id in  instance_ids_train['negative']])
+
+			for inst_id  in instance_ids_train['positive']:
+				self.d[inst_id] = inst_weight_temp[inst_id]*inst_weight_temp_sum['negative']
+			for inst_id  in instance_ids_train['negative']:
+				self.d[inst_id] = inst_weight_temp[inst_id]*inst_weight_temp_sum['positive']
+
+			self.r = 0
+			for inst_id  in instance_ids_train['positive']:
+				self.r += self.d[inst_id]*self.raw_predictions['instance']['train'][-1][inst_id]
+			for inst_id  in instance_ids_train['negative']:
+				self.r -= self.d[inst_id]*self.raw_predictions['instance']['train'][-1][inst_id]
 
 			
-			self.epsilons_positive.append( dict_average(self.raw_predictions['instance']['train'][-1],  inst_weight_temp, instance_ids_train['positive'] )    )
-			self.epsilons_negative.append(  dict_average(self.raw_predictions['instance']['train'][-1],  inst_weight_temp, instance_ids_train['negative'] )     )
-
-			if self.epsilons_negative[-1] == 0:
-				self.alphas.append(20)
-				break
-
-			self.alphas.append(0.5*np.log(self.epsilons_positive[-1]/self.epsilons_negative[-1]))
+			self.alphas.append(  0.5*np.log( (1+ self.r )/(1-self.r) ) )
 			#self.alphas.append(0.5)
 			
-			self.Z_positive.append( 1-self.epsilons_positive[-1]+sqrt( self.epsilons_positive[-1]*self.epsilons_negative[-1] ) )
-			self.Z_negative.append( 1-self.epsilons_negative[-1]+sqrt( self.epsilons_positive[-1]*self.epsilons_negative[-1] ) )
+			self.Z_positive = 0
+			self.Z_negative = 0
 
 			for inst_id in instance_ids_train['positive']:
-				inst_weight_temp[inst_id] = inst_weight_temp[inst_id]*exp(-self.alphas[-1]*self.raw_predictions['instance']['train'][-1][inst_id] )/self.Z_positive[-1]
-
+				inst_weight_temp[inst_id] = inst_weight_temp[inst_id]*exp(-self.alphas[-1]*self.raw_predictions['instance']['train'][-1][inst_id] )
+				self.Z_positive +=inst_weight_temp[inst_id]
+			for inst_id in instance_ids_train['positive']:
+				inst_weight_temp[inst_id] = inst_weight_temp[inst_id]/self.Z_positive
+			
 			for inst_id in instance_ids_train['negative']:
-				inst_weight_temp[inst_id] = inst_weight_temp[inst_id]*exp(self.alphas[-1]*self.raw_predictions['instance']['train'][-1][inst_id] )/self.Z_negative[-1]
+				inst_weight_temp[inst_id] = inst_weight_temp[inst_id]*exp(self.alphas[-1]*self.raw_predictions['instance']['train'][-1][inst_id] )
+				self.Z_negative +=inst_weight_temp[inst_id]
+			for inst_id in instance_ids_train['negative']:
+				inst_weight_temp[inst_id] = inst_weight_temp[inst_id]/self.Z_negative
 			#import pdb;pdb.set_trace()
 
 		self.num_iter_boosting=len(self.alphas)
@@ -252,6 +266,8 @@ class RankBoost(object):
 
 		self.results_manager.store_results_boosting(submission_boosting, boosting_rounds, self.train_dataset_name, self.test_dataset_name, 100, 100)
 
+def sigmoid(x):
+	return float(1)/(1+exp(-x))
 
 			
 

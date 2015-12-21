@@ -24,6 +24,7 @@ import string
 from Adaboost import Adaboost
 from MIBoosting_Xu import MIBoosting_Xu
 from RankBoost import RankBoost
+from RankBoost_m3 import RankBoost_m3
 
 import evaluation_metric
 from folds import FoldConfiguration
@@ -723,7 +724,8 @@ def server_experiment(dataset_name, configuration_file, task_dict, shared_variab
 
 	#Ensemble_classifier=Adaboost()
 	#Ensemble_classifier=MIBoosting_Xu()
-	Ensemble_classifier=RankBoost()
+	#Ensemble_classifier=RankBoost()
+	Ensemble_classifier=RankBoost_m3()
 	Ensemble_classifier.fit(train_dataset_name, auxiliary_structure)
 	Ensemble_classifier.predict()
 	
