@@ -117,7 +117,5 @@ with open(outputfile_names, 'a+') as f:
 line = 'f2: continuous\n'
 with open(outputfile_names, 'a+') as f:
 	f.write(line)
-line = 'label: 0, 1'
-with open(outputfile_names, 'a+') as f:
-	f.write(line)
+
 
