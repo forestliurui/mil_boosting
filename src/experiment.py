@@ -243,11 +243,14 @@ def client_target(task, callback):
 	    submission['statistics']['train_bag_accuracy']=train_bag_accuracy
 	    submission['statistics']['train_bag_balanced_accuracy']=train_bag_balanced_accuracy
 
-	import pdb;pdb.set_trace()
+	#import pdb;pdb.set_trace()
 
         if INSTANCE_PREDICTIONS and train.instance_labels.size > 1:
 	    train_instance_accuracy = np.average( train.instance_labels== ( train_instance_labels > 0  ) , weights= instance_weights )
-	    train_instance_balanced_accuracy= np.average( [ np.average( train_instance_labels[train.instance_labels]>0,  weights= instance_weights[train.instance_labels] ) ,   np.average( train_instance_labels[train.instance_labels==False]<0 ,  weights= instance_weights[train.instance_labels==False]) ] )
+	    if instance_weights == None:
+		 train_instance_balanced_accuracy= np.average( [ np.average( train_instance_labels[train.instance_labels]>0,  weights= instance_weights ) ,   np.average( train_instance_labels[train.instance_labels==False]<0 ,  weights= instance_weights) ] )
+   	    else:
+	    	train_instance_balanced_accuracy= np.average( [ np.average( train_instance_labels[train.instance_labels]>0,  weights= instance_weights[train.instance_labels] ) ,   np.average( train_instance_labels[train.instance_labels==False]<0 ,  weights= instance_weights[train.instance_labels==False]) ] )
             print ('Training Instance %s score: %f, accuracy: %f, balanced accuracy: %f'
                    % (scorename, score(train.instance_labels, train_instance_labels,  sample_weight= instance_weights) ,train_instance_accuracy, train_instance_balanced_accuracy ))
 	    submission['statistics']['train_instance_'+scorename] = score(train.instance_labels, train_instance_labels,  sample_weight= instance_weights)
