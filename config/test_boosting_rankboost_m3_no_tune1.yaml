@@ -1,0 +1,77 @@
+
+# A key uniquely describing the
+# experiments (determines results
+# folder used by server)
+experiment_name: mi_kernels
+
+# A key uniquely describing each experiment
+experiment_key:
+    - dataset
+experiment_key_format:
+    - '%s'
+
+# The key that uniquely describes
+# parameter settings (other parameters
+# are searched)
+parameter_key:
+  - classifier
+  - kernel
+  - base_kernel
+  - normalization
+parameter_key_format:
+  - '%s'
+  - '%s'
+  - '%s'
+  - '%s'
+
+# The default [inner, outer] folds to use
+# (can also be specified per experiment)
+folds: [10, 5]
+
+# A list of parameter settings
+# (can also be specified per experiment)
+parameters:
+  - classifier: SIL
+    kernel: linear
+    base_kernel: linear
+    normalization: none
+    C: ['e3','e4']
+    search:
+        type: random
+        n: 1
+
+experiments:
+#    - dataset: musk1
+#    - dataset: musk2
+#    - dataset: elephant
+#    - dataset: fox
+#    - dataset: tiger
+#    - dataset: apple~cokecan
+#    - dataset: banana~goldmedal
+#    - dataset: dirtyworkgloves~dirtyrunningshoe
+    - dataset: field
+    - dataset: flower
+    - dataset: mountain
+    - dataset: wd40can~largespoon
+    - dataset: checkeredscarf~dataminingbook
+    - dataset: juliespot~rapbook
+    - dataset: smileyfacedoll~feltflowerrug
+    - dataset: stripednotebook~greenteabox
+    - dataset: cardboardbox~candlewithholder
+    - dataset: bluescrunge~ajaxorange
+    - dataset: woodrollingpin~translucentbowl
+    - dataset: fabricsoftenerbox~glazedwoodpot
+    - dataset: BRCR
+    - dataset: WIWR
+    - dataset: PSFL
+    - dataset: RBNU
+    - dataset: DEJU
+    - dataset: OSFL
+    - dataset: HETH
+    - dataset: CBCH
+    - dataset: VATH
+    - dataset: HEWA
+    - dataset: SWTH
+    - dataset: HAFL
+    - dataset: WETA
+

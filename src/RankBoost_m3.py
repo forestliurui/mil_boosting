@@ -72,7 +72,7 @@ class RankBoost_m3(object):
 				instance_ids_train['negative'].append(inst_id)
 
 			
-		max_iter_boosting=10
+		max_iter_boosting = 50
 
 		key_statistic='test_instance_AUC'
 
@@ -111,7 +111,7 @@ class RankBoost_m3(object):
 			
 			inst_weight_temp_sum = {}
 			inst_weight_temp_sum['positive'] = sum([inst_weight_temp[inst_id] for inst_id in  instance_ids_train['positive']])
-			inst_weight_temp_sum['positive'] = sum([inst_weight_temp[inst_id] for inst_id in  instance_ids_train['negative']])
+			inst_weight_temp_sum['negative'] = sum([inst_weight_temp[inst_id] for inst_id in  instance_ids_train['negative']])
 
 			for inst_id  in instance_ids_train['positive']:
 				self.d[inst_id] = inst_weight_temp[inst_id]*inst_weight_temp_sum['negative']
@@ -125,8 +125,11 @@ class RankBoost_m3(object):
 				self.r -= self.d[inst_id]*self.raw_predictions['instance']['train'][-1][inst_id]
 
 			
+
 			self.alphas.append(  0.5*np.log( (1+ self.r )/(1-self.r) ) )
 			#self.alphas.append(0.5)
+
+			#import pdb;pdb.set_trace()
 			
 			self.Z_positive = 0
 			self.Z_negative = 0

@@ -243,6 +243,7 @@ def client_target(task, callback):
 	    submission['statistics']['train_bag_accuracy']=train_bag_accuracy
 	    submission['statistics']['train_bag_balanced_accuracy']=train_bag_balanced_accuracy
 
+	import pdb;pdb.set_trace()
 
         if INSTANCE_PREDICTIONS and train.instance_labels.size > 1:
 	    train_instance_accuracy = np.average( train.instance_labels== ( train_instance_labels > 0  ) , weights= instance_weights )

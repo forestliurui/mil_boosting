@@ -32,22 +32,16 @@ folds: [10, 5]
 # (can also be specified per experiment)
 parameters:
   - classifier: SIL
-    kernel: linear
-    base_kernel: linear
+    kernel: rbf
+    base_kernel: rbf
     normalization: none
     C: ['e3','e4']
+    gamma: ['e-1', 'e1']
     search:
         type: random
         n: 1
 
 experiments:
-    - dataset: musk1
-    - dataset: musk2
-    - dataset: elephant
-    - dataset: fox
-    - dataset: tiger
-    - dataset: apple~cokecan
-    - dataset: banana~goldmedal
-    - dataset: dirtyworkgloves~dirtyrunningshoe
+    - dataset: HETH
 
 
