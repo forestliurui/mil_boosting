@@ -141,10 +141,10 @@ class MIBoosting_Xu(object):
 		predictions_matrix['bag']={}
 		predictions_matrix['instance']={}
 		#import pdb;pdb.set_trace()
-		predictions_matrix['bag']['train']=np.matrix( np.vstack((predictions_list['bag']['train']))  )
-		predictions_matrix['bag']['test']=np.matrix( np.vstack((predictions_list['bag']['test']))  )
-		predictions_matrix['instance']['train']=np.matrix( np.vstack((predictions_list['instance']['train']))  )
-		predictions_matrix['instance']['test']=np.matrix( np.vstack((predictions_list['instance']['test']))  )
+		predictions_matrix['bag']['train']=(np.matrix( np.vstack((predictions_list['bag']['train']))  )  >0 )+0
+		predictions_matrix['bag']['test']=( np.matrix( np.vstack((predictions_list['bag']['test']))  )  >0 ) +0
+		predictions_matrix['instance']['train']=(np.matrix( np.vstack((predictions_list['instance']['train']))  ) >0 )+0
+		predictions_matrix['instance']['test']=(np.matrix( np.vstack((predictions_list['instance']['test']))  ) >0 ) + 0
 
 		for iter_index in range(self.num_iter_boosting):
 			#import pdb;pdb.set_trace()
