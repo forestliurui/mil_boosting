@@ -8,6 +8,7 @@ import numpy as np
 
 INSTANCE_PREDICTIONS = True
 INNER_CROSS_VALIDATION = False
+PLOT = True
 
 
 class RankBoost(object):
@@ -151,11 +152,23 @@ class RankBoost(object):
 		predictions_matrix={}
 		predictions_matrix['bag']={}
 		predictions_matrix['instance']={}
-		import pdb;pdb.set_trace()
+		#import pdb;pdb.set_trace()
 		predictions_matrix['bag']['train']=np.matrix( np.vstack((predictions_list['bag']['train']))  )
 		predictions_matrix['bag']['test']=np.matrix( np.vstack((predictions_list['bag']['test']))  )
 		predictions_matrix['instance']['train']=np.matrix( np.vstack((predictions_list['instance']['train']))  )
 		predictions_matrix['instance']['test']=np.matrix( np.vstack((predictions_list['instance']['test']))  )
+
+		if PLOT:
+			import matplotlib.pyplot as plt
+			colors=['r','b']
+			for index_temp in range(self.train_dataset.instances.shape[0]):
+				plt.plot(self.train_dataset.instances[index_temp,0], self.train_dataset.instances[index_temp,1],colors[predictions_list['instance']['train'][0][index_temp]]+'o')
+			plt.axis([-100, 300, -100, 300])
+			plt.savefig('box_syn_weak_ranker.pdf')
+
+
+		import pdb;pdb.set_trace()
+
 
 		for iter_index in range(self.num_iter_boosting):
 			#import pdb;pdb.set_trace()

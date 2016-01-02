@@ -286,10 +286,12 @@ def _get_base_dataset(dataset_name):
         raise ValueError('Duplicate keys detected in %s!' % dataset_name)
 
     # Normalize
+    '''
     mean = np.average(X, axis=0)
     std = np.std(X, axis=0)
     std[np.nonzero(std == 0.0)] = 1.0
     X = ((X - mean) / std)
+    '''
 
     return MIDataset(ids, X, y, regression)
 
