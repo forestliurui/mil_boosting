@@ -54,7 +54,7 @@ class MIBoosting_Xu(object):
 		self.train_dataset_name=train_dataset_name
 		self.test_dataset_name=test_dataset_name
 
-		max_iter_boosting=10
+		max_iter_boosting=100
 
 		key_statistic='test_bag_balanced_accuracy'
 

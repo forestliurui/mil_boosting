@@ -77,8 +77,8 @@ class RankBoost(object):
 		inst_weight_temp = {}
 		#import pdb;pdb.set_trace()
 
-		inst_weight_temp.update( dict.fromkeys(instance_ids_train['positive'] , float(1)/len(instance_ids_train['positive']) )  )
-		inst_weight_temp.update( dict.fromkeys(instance_ids_train['negative'] , float(1)/len(instance_ids_train['negative']) ) )
+		inst_weight_temp.update( dict.fromkeys(instance_ids_train['positive'] , np.average([ len(instance_ids_train['positive']),len(instance_ids_train['negative']) ])*float(1)/len(instance_ids_train['positive']) )  )
+		inst_weight_temp.update( dict.fromkeys(instance_ids_train['negative'] , np.average([ len(instance_ids_train['positive']),len(instance_ids_train['negative']) ])*float(1)/len(instance_ids_train['negative']) ) )
 		
 		
 
@@ -151,7 +151,7 @@ class RankBoost(object):
 		predictions_matrix={}
 		predictions_matrix['bag']={}
 		predictions_matrix['instance']={}
-		#import pdb;pdb.set_trace()
+		import pdb;pdb.set_trace()
 		predictions_matrix['bag']['train']=np.matrix( np.vstack((predictions_list['bag']['train']))  )
 		predictions_matrix['bag']['test']=np.matrix( np.vstack((predictions_list['bag']['test']))  )
 		predictions_matrix['instance']['train']=np.matrix( np.vstack((predictions_list['instance']['train']))  )
