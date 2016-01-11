@@ -31,7 +31,7 @@ folds: [10, 5]
 # A list of parameter settings
 # (can also be specified per experiment)
 parameters:
-  - classifier: SIL
+  - classifier: SIL_Stump
     kernel: linear
     base_kernel: linear
     normalization: none

@@ -8,3 +8,4 @@ folds/
 stats/
 data/
 *.pyc
+*.pdf

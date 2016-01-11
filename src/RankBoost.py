@@ -4,6 +4,7 @@ from math import sqrt, exp
 import string
 import data
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 INSTANCE_PREDICTIONS = True
@@ -35,6 +36,8 @@ class RankBoost(object):
 		self.epsilons_negative=[]
 		self.Z_positive = []
 		self.Z_negative = []
+
+		self.weights = []
 
 		self.results_manager=None
 	
@@ -87,7 +90,7 @@ class RankBoost(object):
 		for iter_boosting in range(max_iter_boosting):
 			print 'Boosting Iteration: %d' % iter_boosting
 			auxiliary_struct['shared_variables']['inst_weights'][dataset_name] = inst_weight_temp
-
+			self.weights.append(inst_weight_temp)
 			task_key = run_tune_parameter(train_dataset_name, test_dataset_name , auxiliary_struct, key_statistic  ,label_index=None)
 			task = auxiliary_struct['task_dict'][task_key]
 
@@ -159,15 +162,22 @@ class RankBoost(object):
 		predictions_matrix['instance']['test']=np.matrix( np.vstack((predictions_list['instance']['test']))  )
 
 		if PLOT:
-			import matplotlib.pyplot as plt
+			
 			colors=['r','b']
-			for index_temp in range(self.train_dataset.instances.shape[0]):
-				plt.plot(self.train_dataset.instances[index_temp,0], self.train_dataset.instances[index_temp,1],colors[predictions_list['instance']['train'][0][index_temp]]+'o')
-			plt.axis([-100, 300, -100, 300])
-			plt.savefig('box_syn_weak_ranker.pdf')
+			shapes = ['o', '*']
+			for iter_index in range(self.num_iter_boosting):
+				for index_temp in range(self.train_dataset.instances.shape[0]):
+					plt.plot(self.train_dataset.instances[index_temp,0], self.train_dataset.instances[index_temp,1],colors[predictions_list['instance']['train'][iter_index][index_temp]]+shapes[self.train_dataset.instance_labels[index_temp]+0 ])
+				plt.axis([-100, 300, -100, 300])
+				plt.savefig('box_syn_weak_ranker_'+str(iter_index)+'iter'+str(0)+'.pdf')
+			for iter_index in range(self.num_iter_boosting):
+				for index_temp in range(self.train_dataset.instances.shape[0]):
+					plt.plot(self.train_dataset.instances[index_temp,0], self.train_dataset.instances[index_temp,1],colors[predictions_list['instance']['train'][iter_index][index_temp]]+shapes[self.train_dataset.instance_labels[index_temp]+0 ], markersize =self.weights[iter_index][self.train_dataset.instance_ids[index_temp]] )
+				plt.axis([-100, 300, -100, 300])
+				plt.savefig('box_syn_weak_ranker_'+str(iter_index)+'iter'+str(0)+'_scaled.pdf')
 
 
-		import pdb;pdb.set_trace()
+		#import pdb;pdb.set_trace()
 
 
 		for iter_index in range(self.num_iter_boosting):

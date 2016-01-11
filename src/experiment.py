@@ -13,6 +13,7 @@ from Iterative_SVM import Iterative_SVM
 from Iterative_SVM_pn import Iterative_SVM_pn
 from MIBoosting_Xu import MIBoosting_Xu
 from sil import SIL
+from sil_stump import SIL_Stump
 
 INSTANCE_PREDICTIONS = True
 
@@ -23,7 +24,8 @@ CLASSIFIERS = {
     'Iterative_SVM': Iterative_SVM,
     'Iterative_SVM_pn': Iterative_SVM_pn,
     'MIBoosting_Xu': MIBoosting_Xu,
-    'SIL': SIL
+    'SIL': SIL,
+    'SIL_Stump': SIL_Stump
 }
 
 IDX_DIR = os.path.join('box_counting', 'converted_datasets')
