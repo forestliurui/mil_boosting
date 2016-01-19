@@ -12,10 +12,14 @@ import sets
 
 class TreeNode(object):
 	def __init__(self):
-		
+		self.classifier = None
 		#self.weights = np.array(weights)
 		self.instances = None  #two-dimensional np-array (each row corresponds to each instance, each column corresponds to each feature)
 		self.labels = None   #one-dimensional np-array
+		self.indices = None #one-dimensional np-array which contains the indices of self.instances in the whole training instances array
+
+		self.instances_test = None
+		self.indices_test = None
 
 	def init_classifier(self, classifier):
 		self.classifier = copy.deepcopy( classifier )
@@ -35,14 +39,27 @@ class TreeNode(object):
 				else:
 					self.weights[inst_index] = float(1)/num_instances_negative
 
-	def update_instances_labels(self, instances, labels):
+	def update_instances_labels(self, instances, indices, labels): #update the training instances, indices and labels for each node
 		if instances.shape[0] != 0:
 			if self.instances is None:
 				self.instances = np.array(instances)
 				self.labels = np.array(labels)
+				self.indices = np.array(indices)
 			else:
 				self.instances = np.vstack((self.instances, instances))
 				self.labels = np.hstack((self.labels, labels))
+				self.labels = np.hstack((self.indices, indices))
+
+	def update_instances_test(self, instances, indices):
+		if instances.shape[0] != 0:
+			if self.instances_test is None:
+				self.instances_test = np.array(instances)
+				
+				self.indices_test = np.array(indices)
+			else:
+				self.instances_test = np.vstack((self.instances_test, instances))
+				
+				self.labels_test = np.hstack((self.indices_test, indices))		
 
 class SingleSideClassifier(object):  #classifier which give positive or negative prediction for every instance
 	def __init__(self, **parameters):
@@ -56,11 +73,21 @@ class SingleSideClassifier(object):  #classifier which give positive or negative
 		num_instances = X.shape[0]
 		return self.label*np.ones((num_instances))
 
+class RandomClassifier(object): #random classifier 
+	def __init__(self):
+		pass
+	def fit(self, X, y, weights =  None):
+		pass
+	def predict(self, X):
+		num_instances = X.shape[0]
+		return np.random.rand(num_instances)-0.5  
+
 class MartiBoost(object):
 	def __init__(self, **parameters):
 		self.weak_classifiers = {}
 		self.parameters = parameters
-		self.max_iter_boosting = 3
+		self.max_iter_boosting = 3  #the max num of layers of weak learners. Note that the predictions are according to the instances positions at (max+1)-th layer
+		self.actul_boosting_iter = self.max_iter_boosting
 
 	def fit(self, X_bags, y_labels):
 		'''
@@ -112,10 +139,12 @@ class MartiBoost(object):
 		'''
 
 		#instance_classifier=SVM(**self.parameters)
-		
+
+		indices = np.array(range(num_instances))		
+
 		self.weak_classifiers[0] = {}
 		self.weak_classifiers[0][0] = TreeNode() 
-		self.weak_classifiers[0][0].update_instances_labels(instances, instance_labels_generated_from_bag_labels )
+		self.weak_classifiers[0][0].update_instances_labels(instances, indices, instance_labels_generated_from_bag_labels )
 		
 		#current_level_list = []
 		#current_level_list.append(self.head)
@@ -144,7 +173,7 @@ class MartiBoost(object):
 				current.training_predictions = current.classifier.predict(current.instances)
 				current.errors_instance = {}
 				#import pdb;pdb.set_trace()
-				current.errors_instance["positive"] = np.average(current.training_predictions[current.labels == 1]>0)
+				current.errors_instance["positive"] = np.average(current.training_predictions[current.labels == 1]>=0)
 				current.errors_instance["negative"] = np.average(current.training_predictions[current.labels != 1]<0)
 			
 
@@ -155,18 +184,102 @@ class MartiBoost(object):
 
 				if current_key not in self.weak_classifiers[ index_Boosting+1 ].keys():
 					self.weak_classifiers[ index_Boosting+1 ][current_key] = TreeNode()	
-				self.weak_classifiers[ index_Boosting+1 ][current_key].update_instances_labels(current.instances[current.training_predictions <0], current.labels[ current.training_predictions <0 ])
+				self.weak_classifiers[ index_Boosting+1 ][current_key].update_instances_labels(current.instances[current.training_predictions <0], current.indices[current.training_predictions <0] , current.labels[ current.training_predictions <0 ])
 				
 		
 				instance_classifier=SVM(**self.parameters)
 
 				if current_key+1 not in self.weak_classifiers[ index_Boosting+1 ].keys():
 					self.weak_classifiers[ index_Boosting+1 ][current_key+1] = TreeNode()
-				self.weak_classifiers[ index_Boosting+1 ][current_key+1].update_instances_labels(current.instances[current.training_predictions >0], current.labels[ current.training_predictions >0 ])
+				self.weak_classifiers[ index_Boosting+1 ][current_key+1].update_instances_labels(current.instances[current.training_predictions >= 0], current.indices[current.training_predictions >=0] ,current.labels[ current.training_predictions >=0 ])
 
 				#next_level_list.append(current.right)
 			
 			#current_level_list = next_level_list
 		import pdb;pdb.set_trace()
 			
-	def predict(self, X_bags):		
+	def _predict(self, X, iter = None):
+
+		if iter == None or iter > self.actul_boosting_iter:
+			iter = self.actul_boosting_iter
+		num_instances_test = X.shape[0]		
+
+		self.weak_classifiers[0][0].instances_test = X
+		self.weak_classifiers[0][0].indices_test = np.array(range(num_instances_test))
+
+		for index_Boosting in range(iter):
+
+			current_level_dict = self.weak_classifiers[index_Boosting]
+			
+			for current_key in current_level_dict.keys():
+				current = current_level_dict[current_key]
+				if current.classifier is None:
+					current.init_classifier(RandomClassifier())
+				
+				current.predictions_test = current.classifier.predict(current.instances_test)
+
+				
+				if index_Boosting+1 not in self.weak_classifiers.keys():
+					self.weak_classifiers[ index_Boosting+1 ] = {}					
+
+				#instance_classifier=SVM(**self.parameters) #left child--baised to negative predictions
+
+				if current_key not in self.weak_classifiers[ index_Boosting+1 ].keys():
+					self.weak_classifiers[ index_Boosting+1 ][current_key] = TreeNode()	
+				self.weak_classifiers[ index_Boosting+1 ][current_key].update_instances_test(current.instances_test[current.predictions_test <0], current.indices_test[current.predictions_test <0])
+				
+		
+				instance_classifier=SVM(**self.parameters)
+
+				if current_key+1 not in self.weak_classifiers[ index_Boosting+1 ].keys():
+					self.weak_classifiers[ index_Boosting+1 ][current_key+1] = TreeNode()
+				self.weak_classifiers[ index_Boosting+1 ][current_key+1].update_instances_test(current.instances_test[current.predictions_test >= 0], current.indices_test[current.predictions_test >=0])
+
+		results = 0*np.ones((num_instances_test))
+		current_level_dict = self.weak_classifiers[iter]
+		for current_key in current_level_dict.keys():
+			current = current_level_dict[current_key]
+			
+			if current_key < iter/float(2):
+				results[current.indices_test] = -1
+			else:
+				results[current.indices_test] = 1
+
+
+		return results
+
+	def predict(self, X_bags, iter = None):		
+
+		#X_bags is a list of arrays, each bag is an array in the list
+		#The row of array corresponds to instances in the bag, column corresponds to feature
+
+		#predictions_bag is the returned array of predictions which are real values 
+		
+		if iter == None or iter > self.actul_boosting_iter:
+			iter = self.actul_boosting_iter
+	
+		
+		print self.c
+		if type(X_bags) != list:  # treat it as normal supervised learning setting
+			#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
+			
+			predictions_accum = self._predict(X_bags, iter)
+
+			return np.array(predictions_accum)
+		else:
+			num_bags=len(X_bags)
+
+			predictions_bag=[]
+			print len(self.c)
+			#print self.c
+			#print len(self.weak_classifiers)
+			for index_bag in range(num_bags):
+				#import pdb;pdb.set_trace()
+				predictions_bag_temp= np.max( self._predict(X_bags[index_bag], iter) ) 
+				predictions_bag.append(predictions_bag_temp)
+			#import pdb; pdb.set_trace()
+
+			predictions_bag=np.array( predictions_bag )
+			return predictions_bag
+
+

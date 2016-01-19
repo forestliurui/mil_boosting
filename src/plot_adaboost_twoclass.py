@@ -123,7 +123,7 @@ bdt = MartiBoost(**params)
 print "fitting the training set"
 bdt.fit(X, y)
 print "fitting completed"
-
+import pdb;pdb.set_trace()
 plot_colors = "br"
 plot_step = 0.02
 class_names = "AB"
