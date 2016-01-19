@@ -1,5 +1,7 @@
 """
 This is the implementation of Martingale Boosting in the paper "Philip Long, Rocco Servedio, Martingale Boosting"
+I didn't balance the output of each weak classifier as described in Section 5 of above paper, which is required for Theorem 2, i,e. any weak learner can be boosted to arbitrarily stong learner
+For the current implementation, Theorem 1 gurantees that any weak two-sided learner can be boosted to arbitrarily strong two-sided learner
 """
 
 import copy
@@ -48,7 +50,7 @@ class TreeNode(object):
 			else:
 				self.instances = np.vstack((self.instances, instances))
 				self.labels = np.hstack((self.labels, labels))
-				self.labels = np.hstack((self.indices, indices))
+				self.indices = np.hstack((self.indices, indices))
 
 	def update_instances_test(self, instances, indices):
 		if instances.shape[0] != 0:
@@ -59,7 +61,7 @@ class TreeNode(object):
 			else:
 				self.instances_test = np.vstack((self.instances_test, instances))
 				
-				self.labels_test = np.hstack((self.indices_test, indices))		
+				self.indices_test = np.hstack((self.indices_test, indices))		
 
 class SingleSideClassifier(object):  #classifier which give positive or negative prediction for every instance
 	def __init__(self, **parameters):
@@ -86,7 +88,7 @@ class MartiBoost(object):
 	def __init__(self, **parameters):
 		self.weak_classifiers = {}
 		self.parameters = parameters
-		self.max_iter_boosting = 3  #the max num of layers of weak learners. Note that the predictions are according to the instances positions at (max+1)-th layer
+		self.max_iter_boosting = 50  #the max num of layers of weak learners. Note that the predictions are according to the instances positions at (max+1)-th layer
 		self.actul_boosting_iter = self.max_iter_boosting
 
 	def fit(self, X_bags, y_labels):
@@ -204,6 +206,15 @@ class MartiBoost(object):
 			iter = self.actul_boosting_iter
 		num_instances_test = X.shape[0]		
 
+		#clear the data (instances_test and indices_test) for last test run
+		for index_Boosting in range(iter):
+			current_level_dict = self.weak_classifiers[index_Boosting]
+			for current_key in current_level_dict.keys():
+				current = current_level_dict[current_key]
+				current.instances_test = None
+				current.indices_test = None
+		#clear the data for last test run
+
 		self.weak_classifiers[0][0].instances_test = X
 		self.weak_classifiers[0][0].indices_test = np.array(range(num_instances_test))
 
@@ -213,6 +224,8 @@ class MartiBoost(object):
 			
 			for current_key in current_level_dict.keys():
 				current = current_level_dict[current_key]
+				if current.instances_test is None:
+					continue
 				if current.classifier is None:
 					current.init_classifier(RandomClassifier())
 				
@@ -234,18 +247,21 @@ class MartiBoost(object):
 				if current_key+1 not in self.weak_classifiers[ index_Boosting+1 ].keys():
 					self.weak_classifiers[ index_Boosting+1 ][current_key+1] = TreeNode()
 				self.weak_classifiers[ index_Boosting+1 ][current_key+1].update_instances_test(current.instances_test[current.predictions_test >= 0], current.indices_test[current.predictions_test >=0])
+		import pdb;pdb.set_trace()
 
 		results = 0*np.ones((num_instances_test))
 		current_level_dict = self.weak_classifiers[iter]
 		for current_key in current_level_dict.keys():
 			current = current_level_dict[current_key]
+			if current.indices_test is None:
+				continue
 			
 			if current_key < iter/float(2):
 				results[current.indices_test] = -1
 			else:
 				results[current.indices_test] = 1
 
-
+		import pdb;pdb.set_trace()
 		return results
 
 	def predict(self, X_bags, iter = None):		
@@ -259,10 +275,10 @@ class MartiBoost(object):
 			iter = self.actul_boosting_iter
 	
 		
-		print self.c
+		#print self.c
 		if type(X_bags) != list:  # treat it as normal supervised learning setting
 			#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
-			
+			import pdb;pdb.set_trace()
 			predictions_accum = self._predict(X_bags, iter)
 
 			return np.array(predictions_accum)

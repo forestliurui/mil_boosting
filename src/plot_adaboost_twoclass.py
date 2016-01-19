@@ -70,6 +70,14 @@ def plot_fig(classifier):
 	plt.title('Decision Boundary')
 	plt.savefig('Adaboost_twoclass.pdf')
 
+# Construct dataset v0
+X1, y1 = make_gaussian_quantiles(cov=2.,
+                                 n_samples=200, n_features=2,
+                                 n_classes=2, random_state=1)
+
+X = X1
+y = y1
+
 # Construct dataset v1
 '''
 X1, y1 = make_gaussian_quantiles(cov=2.,
@@ -80,24 +88,30 @@ X2, y2 = make_gaussian_quantiles(mean=(3, 3), cov=1.5,
                                  n_classes=2, random_state=1)
 X = np.concatenate((X1, X2))
 y = np.concatenate((y1, - y2 + 1))
-'
+
 # Construct dataset v2
 X=np.array([[2,2],[-2,-2],[2, -2], [-2, 2]])
 y=np.array([1,1, -1, -1])
-'''
+
 
 # Construct dataset v3
 X=np.array([[1,0],[-2,0],[0, -2], [0, 2]])
 y=np.array([1,1, -1, -1])
 #import pdb;pdb.set_trace()
-
+'''
 '''
 # Create and fit an AdaBoosted decision tree
 bdt = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1),
                          algorithm="SAMME",
-                         n_estimators=10)
+                         n_estimators=50)
 
-#svm+adaboost
+#linear svm+adaboost
+params = {'C': 10, 'kernel': 'linear'}
+bdt = AdaBoostClassifier(SVC(**params),
+                         algorithm="SAMME",
+                         n_estimators=50)
+
+#rbf svm+adaboost
 params = {'C': 10, 'kernel': 'rbf','gamma':1}
 bdt = AdaBoostClassifier(SVC(**params),
                          algorithm="SAMME",
@@ -123,6 +137,7 @@ bdt = MartiBoost(**params)
 print "fitting the training set"
 bdt.fit(X, y)
 print "fitting completed"
+bdt.predict(X)
 import pdb;pdb.set_trace()
 plot_colors = "br"
 plot_step = 0.02
