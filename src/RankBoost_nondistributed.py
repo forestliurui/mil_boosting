@@ -72,7 +72,7 @@ class RankBoost(object):
 		
 		for index_Boosting in range(max_iter_boosting):
 
-			self.weights_instance.append(dict(weights_inst))
+			self.weights_instance.append(np.array(weights_inst))
 			instance_classifier=SVM(**self.parameters)
 		
 			#import pdb;pdb.set_trace()

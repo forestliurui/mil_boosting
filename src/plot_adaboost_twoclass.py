@@ -25,8 +25,13 @@ print(__doc__)
 import numpy as np
 import matplotlib.pyplot as plt
 
+import sys
+
+sys.path.insert(0, "~/.lib/scikit-learn")
+
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.datasets import make_gaussian_quantiles
 from sklearn.svm import SVC
 from RankBoost_nondistributed import RankBoost
@@ -69,6 +74,7 @@ def plot_fig(classifier):
 	plt.ylabel('y')
 	plt.title('Decision Boundary')
 	plt.savefig('Adaboost_twoclass.pdf')
+print "load dataset"
 
 # Construct dataset v0
 X1, y1 = make_gaussian_quantiles(cov=2.,
@@ -77,9 +83,10 @@ X1, y1 = make_gaussian_quantiles(cov=2.,
 
 X = X1
 y = y1
-
-# Construct dataset v1
+import pdb;pdb.set_trace()
 '''
+# Construct dataset v1
+
 X1, y1 = make_gaussian_quantiles(cov=2.,
                                  n_samples=200, n_features=2,
                                  n_classes=2, random_state=1)
@@ -89,6 +96,12 @@ X2, y2 = make_gaussian_quantiles(mean=(3, 3), cov=1.5,
 X = np.concatenate((X1, X2))
 y = np.concatenate((y1, - y2 + 1))
 
+f0_max = np.max( abs(X)[:,0] ) #scale the data to be within the unit box
+f1_max = np.max( abs(X)[:,1] )
+import pdb;pdb.set_trace()
+X = np.vstack((X[:,0]/f0_max, X[:,1]/f1_max )).transpose()
+'''
+'''
 # Construct dataset v2
 X=np.array([[2,2],[-2,-2],[2, -2], [-2, 2]])
 y=np.array([1,1, -1, -1])
@@ -99,26 +112,34 @@ X=np.array([[1,0],[-2,0],[0, -2], [0, 2]])
 y=np.array([1,1, -1, -1])
 #import pdb;pdb.set_trace()
 '''
+
+#Adaboost + perceptron
+bdt = AdaBoostClassifier(MLPClassifier(hidden_layer_sizes = ()),
+			algorithm="SAMME",
+                         n_estimators=30)
+
 '''
-# Create and fit an AdaBoosted decision tree
+#AdaBoosted decision tree
 bdt = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1),
                          algorithm="SAMME",
-                         n_estimators=50)
+                         n_estimators=30)
 
 #linear svm+adaboost
-params = {'C': 10, 'kernel': 'linear'}
+params = {'C': 100000000, 'kernel': 'linear'}
 bdt = AdaBoostClassifier(SVC(**params),
                          algorithm="SAMME",
-                         n_estimators=50)
+                         n_estimators=2)
+
+
 
 #rbf svm+adaboost
-params = {'C': 10, 'kernel': 'rbf','gamma':1}
+params = {'C': 10000, 'kernel': 'rbf','gamma':1000}
 bdt = AdaBoostClassifier(SVC(**params),
                          algorithm="SAMME",
-                         n_estimators=40)
+                         n_estimators=15)
 
 #rankboost
-params = {'C': 10, 'kernel': 'linear', 'max_iter_boosting':1}
+params = {'C': 10, 'kernel': 'linear', 'max_iter_boosting':10}
 bdt = RankBoost(**params)
 
 #linear svm
@@ -128,11 +149,11 @@ bdt = SVC(**params)
 #rbf svm
 params = {'C': 10, 'kernel': 'rbf', 'gamma': 1}
 bdt = SVC(**params)
-'''
+
 #martiboost + linear svm
 params = {'C': 10, 'kernel': 'linear'}
 bdt = MartiBoost(**params)
-
+'''
 
 print "fitting the training set"
 bdt.fit(X, y)
