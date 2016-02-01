@@ -56,6 +56,8 @@ class MIDataset(object):
         # Group instances into bags
         bag_id_dict = defaultdict(list)
         bag_dict = defaultdict(list)
+	bag_inst_id_dict = defaultdict(list)
+
         if regression:
             bag_label_dict = dict()
         else:
@@ -64,6 +66,7 @@ class MIDataset(object):
         for (bid, iid), ex, yi in zip(ids, X, y.flat):
             self.instance_dict[bid, iid] = (ex, yi)
             bag_id_dict[bid].append(iid)
+	    bag_inst_id_dict[bid].append( (bid, iid))
             bag_dict[bid].append(ex)
             if regression:
                 if bid in bag_label_dict:
@@ -82,6 +85,21 @@ class MIDataset(object):
         self.bags = [np.vstack(bag_dict[bid]) for bid in self.bag_ids]
         self.bag_labels = np.array([bag_label_dict[bid]
                                     for bid in self.bag_ids])
+
+	#reorder the following instance-level variables to be consistent with the order in self.bag_ids
+	self.instance_labels =  np.vstack([ np.vstack( bag_inst_label_dict[bid])  for bid in self.bag_ids ])
+	self.instance_ids =   reduce( lambda x, y : x+y,   [  bag_inst_id_dict[bid]   for bid in self.bag_ids ]  )
+	self.instances = np.vstack(self.bags)
+	self.instances_as_bags = [xx.reshape((1, -1)) for xx in self.instances]
+
+
+	#get the SIL labels for instances, i.e. the label of instance in self.instance_label_SIL is simply the label of its bag
+	self._bags = [np.asmatrix(bag) for bag in self.bags]
+	self._y = np.asmatrix(self.bag_labels).reshape((-1, 1))
+	self.instance_labels_SIL = np.vstack([float(cls) * np.matrix(np.ones((len(bag), 1)))
+                           		for bag, cls in zip(self._bags, self._y)])
+
+
         if not regression:
             self.pm1_bag_labels = (2.0*self.bag_labels - 1)
         self.bag_dict = dict()

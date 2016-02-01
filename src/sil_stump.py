@@ -60,6 +60,7 @@ class SIL_Stump(DecisionTreeClassifier):
 		svm_weights = weights
 	#import pdb;pdb.set_trace()
         super(SIL_Stump, self).fit(svm_X, np.ravel(svm_y), svm_weights)
+	#import pdb;pdb.set_trace()
 
     def _compute_separator(self, K):
         super(SIL_Stump, self)._compute_separator(K)
@@ -73,7 +74,7 @@ class SIL_Stump(DecisionTreeClassifier):
                   (threshold at zero to produce binary predictions)
         """
         bags = [np.asmatrix(bag) for bag in bags]
-        inst_preds = super(SIL_Stump, self).predict_proba(np.vstack(bags))-0.5
+        inst_preds = super(SIL_Stump, self).predict(np.vstack(bags))
         return _inst_to_bag_preds(inst_preds, bags)
 
     def get_params(self, deep=True):

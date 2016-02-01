@@ -1,4 +1,5 @@
 #This is the adaboost for server end
+#Different from the Adaboost.py, this one apply adaboost directly on instance level to SIL
 
 import string
 import data
@@ -8,7 +9,7 @@ import numpy as np
 INSTANCE_PREDICTIONS=True
 INNER_CROSS_VALIDATION = False
 
-class Adaboost(object):
+class Adaboost_instance(object):
 	def __init__(self):
 		self.raw_predictions = {}
 		self.raw_predictions['bag']={}
@@ -55,20 +56,20 @@ class Adaboost(object):
 		self.train_dataset_name=train_dataset_name
 		self.test_dataset_name=test_dataset_name
 
-		import pdb; pdb.set_trace() 
+		
 
 		max_iter_boosting=10
 
-		key_statistic='test_bag_balanced_accuracy'
+		key_statistic='test_instance_balanced_accuracy'
 
-		bag_weight_temp = dict.fromkeys(train_dataset.bag_ids,1)
+		inst_weight_temp = dict.fromkeys(train_dataset.instance_ids,1)
 
 
 		for iter_boosting in range(max_iter_boosting):
 			print 'Boosting Iteration for %s : %d' % (dataset_name, iter_boosting)
 
 			self.bag_weights.append(  dict(bag_weight_temp) )
-			auxiliary_struct['shared_variables']['bag_weights'][dataset_name] = bag_weight_temp
+			auxiliary_struct['shared_variables']['inst_weights'][dataset_name] = inst_weight_temp
 
 			task_key = run_tune_parameter(train_dataset_name, test_dataset_name , auxiliary_struct, key_statistic  ,label_index=None)
 			task = auxiliary_struct['task_dict'][task_key];
@@ -84,7 +85,7 @@ class Adaboost(object):
 			self.raw_predictions['instance']['train'].append(task.get_predictions('instance','train'))
 			self.raw_predictions['instance']['test'].append(task.get_predictions('instance','test'))
 			
-			self.errors.append(1-compute_statistic(self.raw_predictions['bag']['train'][-1], train_dataset.bag_labels ,bag_weight_temp ,train_dataset.bag_ids ,'accuracy') )
+			self.errors.append(1-compute_statistic(self.raw_predictions['instance']['train'][-1], train_dataset.instance_labels ,inst_weight_temp ,train_dataset.instance_ids ,'accuracy') )
 			
 			self.alphas.append( np.log(  (1-self.errors[-1]) / self.errors[-1]  ) )
 
@@ -102,7 +103,7 @@ class Adaboost(object):
 			for bag_index in range(len(train_dataset.bag_ids)):
 				bag_id=train_dataset.bag_ids[bag_index]
 				
-				bag_weight_temp[bag_id] = bag_weight_temp[bag_id]*np.exp( self.alphas[-1]*    (2*( (self.raw_predictions['bag']['train'][-1][bag_id]>0 ) != train_dataset.bag_labels[bag_index] )-1 ) )
+				inst_weight_temp[bag_id] = inst_weight_temp[bag_id]*np.exp( self.alphas[-1]*    (2*( (self.raw_predictions['bag']['train'][-1][bag_id]>0 ) != train_dataset.bag_labels[bag_index] )-1 ) )
 			
 
 		self.num_iter_boosting=len(self.alphas)	

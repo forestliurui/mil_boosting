@@ -709,7 +709,9 @@ def server_experiment(dataset_name, configuration_file, task_dict, shared_variab
     outer_folds, inner_folds=configuration['folds']
     
 
-    shared_variables['bag_weights'][dataset_name]={}
+    #shared_variables['bag_weights'][dataset_name]={}
+    shared_variables['inst_weights'][dataset_name]={}
+
 
     auxiliary_structure ={}  #auxiliary structure to support parallelization
     auxiliary_structure['task_dict']=task_dict
@@ -722,9 +724,9 @@ def server_experiment(dataset_name, configuration_file, task_dict, shared_variab
 	train_dataset_name=string.replace( '%s.fold_%4d_of_%4d.train' % (dataset_name,set_index_boosting, outer_folds),' ','0'  )
     	test_dataset_name=string.replace( '%s.fold_%4d_of_%4d.test' % (dataset_name,set_index_boosting, outer_folds),' ','0'   )
 
-	#Ensemble_classifier=Adaboost()
+	Ensemble_classifier=Adaboost()
 	#Ensemble_classifier=MIBoosting_Xu()
-	Ensemble_classifier=RankBoost()
+	#Ensemble_classifier=RankBoost()
 	#Ensemble_classifier=RankBoost_m3()
 	Ensemble_classifier.fit(train_dataset_name, auxiliary_structure)
 	Ensemble_classifier.predict()
