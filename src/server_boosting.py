@@ -22,6 +22,7 @@ import sqlite3
 import string
 
 from Adaboost import Adaboost
+from Adaboost_instance import Adaboost_instance
 from MIBoosting_Xu import MIBoosting_Xu
 from RankBoost import RankBoost
 from RankBoost_m3 import RankBoost_m3
@@ -724,7 +725,8 @@ def server_experiment(dataset_name, configuration_file, task_dict, shared_variab
 	train_dataset_name=string.replace( '%s.fold_%4d_of_%4d.train' % (dataset_name,set_index_boosting, outer_folds),' ','0'  )
     	test_dataset_name=string.replace( '%s.fold_%4d_of_%4d.test' % (dataset_name,set_index_boosting, outer_folds),' ','0'   )
 
-	Ensemble_classifier=Adaboost()
+	#Ensemble_classifier=Adaboost()
+	Ensemble_classifier=Adaboost_instance()
 	#Ensemble_classifier=MIBoosting_Xu()
 	#Ensemble_classifier=RankBoost()
 	#Ensemble_classifier=RankBoost_m3()

@@ -87,7 +87,7 @@ class MIDataset(object):
                                     for bid in self.bag_ids])
 
 	#reorder the following instance-level variables to be consistent with the order in self.bag_ids
-	self.instance_labels =  np.vstack([ np.vstack( bag_inst_label_dict[bid])  for bid in self.bag_ids ])
+	self.instance_labels =  np.hstack([ np.hstack( bag_inst_label_dict[bid])  for bid in self.bag_ids ])
 	self.instance_ids =   reduce( lambda x, y : x+y,   [  bag_inst_id_dict[bid]   for bid in self.bag_ids ]  )
 	self.instances = np.vstack(self.bags)
 	self.instances_as_bags = [xx.reshape((1, -1)) for xx in self.instances]
@@ -96,8 +96,8 @@ class MIDataset(object):
 	#get the SIL labels for instances, i.e. the label of instance in self.instance_label_SIL is simply the label of its bag
 	self._bags = [np.asmatrix(bag) for bag in self.bags]
 	self._y = np.asmatrix(self.bag_labels).reshape((-1, 1))
-	self.instance_labels_SIL = np.vstack([float(cls) * np.matrix(np.ones((len(bag), 1)))
-                           		for bag, cls in zip(self._bags, self._y)])
+	self.instance_labels_SIL = (np.hstack([ np.array(float(cls) * np.matrix(np.ones(len(bag))))[0]
+                           		for bag, cls in zip(self._bags, self._y)]) == 1)
 
 
         if not regression:

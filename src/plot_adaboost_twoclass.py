@@ -83,7 +83,7 @@ X1, y1 = make_gaussian_quantiles(cov=2.,
 
 X = X1
 y = y1
-import pdb;pdb.set_trace()
+#import pdb;pdb.set_trace()
 '''
 # Construct dataset v1
 
@@ -112,13 +112,13 @@ X=np.array([[1,0],[-2,0],[0, -2], [0, 2]])
 y=np.array([1,1, -1, -1])
 #import pdb;pdb.set_trace()
 '''
-
+'''
 #Adaboost + perceptron
 bdt = AdaBoostClassifier(MLPClassifier(hidden_layer_sizes = ()),
 			algorithm="SAMME",
                          n_estimators=30)
 
-'''
+
 #AdaBoosted decision tree
 bdt = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1),
                          algorithm="SAMME",
@@ -154,12 +154,16 @@ bdt = SVC(**params)
 params = {'C': 10, 'kernel': 'linear'}
 bdt = MartiBoost(**params)
 '''
+#martiboost + balanced_decision_stump
+params = {'weak_classifier': 'dtree_stump_balanced'}
+bdt = MartiBoost(**params)
+
 
 print "fitting the training set"
 bdt.fit(X, y)
 print "fitting completed"
 bdt.predict(X)
-import pdb;pdb.set_trace()
+#import pdb;pdb.set_trace()
 plot_colors = "br"
 plot_step = 0.02
 class_names = "AB"

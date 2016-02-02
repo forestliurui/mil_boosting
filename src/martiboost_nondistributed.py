@@ -11,6 +11,14 @@ import string
 import data
 import numpy as np
 import sets
+from sklearn.tree import DecisionTreeClassifier
+from Dtree_Stump_Balanced import Dtree_Stump_Balanced
+
+WEAK_CLASSIFIERS = {
+	'svm': SVM,
+	'dtree_stump': DecisionTreeClassifier,
+	'dtree_stump_balanced': Dtree_Stump_Balanced
+}
 
 class TreeNode(object):
 	def __init__(self):
@@ -87,9 +95,11 @@ class RandomClassifier(object): #random classifier
 class MartiBoost(object):
 	def __init__(self, **parameters):
 		self.weak_classifiers = {}
+		self.weak_classifier_name = parameters.pop('weak_classifier')
 		self.parameters = parameters
 		self.max_iter_boosting = 50  #the max num of layers of weak learners. Note that the predictions are according to the instances positions at (max+1)-th layer
 		self.actul_boosting_iter = self.max_iter_boosting
+		
 
 	def fit(self, X_bags, y_labels):
 		'''
@@ -140,7 +150,7 @@ class MartiBoost(object):
 				weights_inst[inst_index] = float(1)/num_instances_negative
 		'''
 
-		#instance_classifier=SVM(**self.parameters)
+		#instance_classifier = WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
 
 		indices = np.array(range(num_instances))		
 
@@ -163,7 +173,7 @@ class MartiBoost(object):
 					continue
 
 				if len( sets.Set(current.labels) ) == 2:
-					current.init_classifier(SVM(**self.parameters)) #SVM only works for 2 classes
+					current.init_classifier( WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters) ) #SVM only works for 2 classes
 				else: 
 					current.init_classifier( SingleSideClassifier(**self.parameters) )  #use self-defined classifier for single class case
 
@@ -182,14 +192,14 @@ class MartiBoost(object):
 				if index_Boosting+1 not in self.weak_classifiers.keys():
 					self.weak_classifiers[ index_Boosting+1 ] = {}					
 
-				#instance_classifier=SVM(**self.parameters) #left child--baised to negative predictions
+				#instance_classifier = WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters) #left child--baised to negative predictions
 
 				if current_key not in self.weak_classifiers[ index_Boosting+1 ].keys():
 					self.weak_classifiers[ index_Boosting+1 ][current_key] = TreeNode()	
 				self.weak_classifiers[ index_Boosting+1 ][current_key].update_instances_labels(current.instances[current.training_predictions <0], current.indices[current.training_predictions <0] , current.labels[ current.training_predictions <0 ])
 				
 		
-				instance_classifier=SVM(**self.parameters)
+				instance_classifier = WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
 
 				if current_key+1 not in self.weak_classifiers[ index_Boosting+1 ].keys():
 					self.weak_classifiers[ index_Boosting+1 ][current_key+1] = TreeNode()
@@ -235,19 +245,19 @@ class MartiBoost(object):
 				if index_Boosting+1 not in self.weak_classifiers.keys():
 					self.weak_classifiers[ index_Boosting+1 ] = {}					
 
-				#instance_classifier=SVM(**self.parameters) #left child--baised to negative predictions
+				#instance_classifier = WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters) #left child--baised to negative predictions
 
 				if current_key not in self.weak_classifiers[ index_Boosting+1 ].keys():
 					self.weak_classifiers[ index_Boosting+1 ][current_key] = TreeNode()	
 				self.weak_classifiers[ index_Boosting+1 ][current_key].update_instances_test(current.instances_test[current.predictions_test <0], current.indices_test[current.predictions_test <0])
 				
 		
-				instance_classifier=SVM(**self.parameters)
+				instance_classifier = WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
 
 				if current_key+1 not in self.weak_classifiers[ index_Boosting+1 ].keys():
 					self.weak_classifiers[ index_Boosting+1 ][current_key+1] = TreeNode()
 				self.weak_classifiers[ index_Boosting+1 ][current_key+1].update_instances_test(current.instances_test[current.predictions_test >= 0], current.indices_test[current.predictions_test >=0])
-		import pdb;pdb.set_trace()
+		#import pdb;pdb.set_trace()
 
 		results = 0*np.ones((num_instances_test))
 		current_level_dict = self.weak_classifiers[iter]
@@ -261,7 +271,7 @@ class MartiBoost(object):
 			else:
 				results[current.indices_test] = 1
 
-		import pdb;pdb.set_trace()
+		#import pdb;pdb.set_trace()
 		return results
 
 	def predict(self, X_bags, iter = None):		
@@ -278,7 +288,7 @@ class MartiBoost(object):
 		#print self.c
 		if type(X_bags) != list:  # treat it as normal supervised learning setting
 			#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
-			import pdb;pdb.set_trace()
+			#import pdb;pdb.set_trace()
 			predictions_accum = self._predict(X_bags, iter)
 
 			return np.array(predictions_accum)

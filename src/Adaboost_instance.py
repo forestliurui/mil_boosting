@@ -7,6 +7,7 @@ import numpy as np
 
 
 INSTANCE_PREDICTIONS=True
+INSTANCE_PREDICTIONS_SIL = True
 INNER_CROSS_VALIDATION = False
 
 class Adaboost_instance(object):
@@ -31,7 +32,7 @@ class Adaboost_instance(object):
 		self.alphas=[]
 		self.errors=[]
 
-		self.bag_weights = []
+		self.inst_weights = []
 
 		self.results_manager=None
 		
@@ -58,7 +59,7 @@ class Adaboost_instance(object):
 
 		
 
-		max_iter_boosting=10
+		max_iter_boosting=20
 
 		key_statistic='test_instance_balanced_accuracy'
 
@@ -68,7 +69,7 @@ class Adaboost_instance(object):
 		for iter_boosting in range(max_iter_boosting):
 			print 'Boosting Iteration for %s : %d' % (dataset_name, iter_boosting)
 
-			self.bag_weights.append(  dict(bag_weight_temp) )
+			self.inst_weights.append(  dict(inst_weight_temp) )
 			auxiliary_struct['shared_variables']['inst_weights'][dataset_name] = inst_weight_temp
 
 			task_key = run_tune_parameter(train_dataset_name, test_dataset_name , auxiliary_struct, key_statistic  ,label_index=None)
@@ -85,7 +86,7 @@ class Adaboost_instance(object):
 			self.raw_predictions['instance']['train'].append(task.get_predictions('instance','train'))
 			self.raw_predictions['instance']['test'].append(task.get_predictions('instance','test'))
 			
-			self.errors.append(1-compute_statistic(self.raw_predictions['instance']['train'][-1], train_dataset.instance_labels ,inst_weight_temp ,train_dataset.instance_ids ,'accuracy') )
+			self.errors.append(1-compute_statistic(self.raw_predictions['instance']['train'][-1], train_dataset.instance_labels_SIL ,inst_weight_temp ,train_dataset.instance_ids ,'accuracy') )
 			
 			self.alphas.append( np.log(  (1-self.errors[-1]) / self.errors[-1]  ) )
 
@@ -98,16 +99,16 @@ class Adaboost_instance(object):
 				self.alphas.pop()
 				break
 			
-			import pdb;pdb.set_trace()
+			#import pdb;pdb.set_trace()
 
-			for bag_index in range(len(train_dataset.bag_ids)):
-				bag_id=train_dataset.bag_ids[bag_index]
+			for inst_index in range(len(train_dataset.instance_ids)):
+				inst_id=train_dataset.instance_ids[inst_index]
 				
-				inst_weight_temp[bag_id] = inst_weight_temp[bag_id]*np.exp( self.alphas[-1]*    (2*( (self.raw_predictions['bag']['train'][-1][bag_id]>0 ) != train_dataset.bag_labels[bag_index] )-1 ) )
+				inst_weight_temp[inst_id] = inst_weight_temp[inst_id]*np.exp( self.alphas[-1]*    (2*( (self.raw_predictions['instance']['train'][-1][inst_id]>0 ) != train_dataset.instance_labels_SIL[inst_index] )-1 ) )
 			
 
 		self.num_iter_boosting=len(self.alphas)	
-		import pdb;pdb.set_trace()
+		#import pdb;pdb.set_trace()
 
 
 	def predict(self):
@@ -227,6 +228,27 @@ class Adaboost_instance(object):
 	    		submission_boosting['statistics_boosting']['test_instance_accuracy']=test_instance_accuracy
 	    		submission_boosting['statistics_boosting']['test_instance_balanced_accuracy']=test_instance_balanced_accuracy
 
+		if INSTANCE_PREDICTIONS_SIL and train.instance_labels_SIL.size > 1:
+	    		train_instance_accuracy = np.average( train.instance_labels_SIL== ( train_instance_labels > 0  )  )
+			#import pdb; pdb.set_trace()
+	    		train_instance_balanced_accuracy= np.average( [ np.average( train_instance_labels[train.instance_labels_SIL]>0 ) ,   np.average( train_instance_labels[train.instance_labels_SIL==False]<0 ) ]  )
+            		print ('SIL: Training Inst. %s Score: %f, accuracy: %f, balanced accuracy: %f'
+                   		% (scorename, score(train.instance_labels_SIL, train_instance_labels) ,train_instance_accuracy, train_instance_balanced_accuracy ))
+            		submission_boosting['statistics_boosting']['SIL_train_instance_'+scorename] = score(train.instance_labels_SIL, train_instance_labels)
+	    		submission_boosting['statistics_boosting']['SIL_train_instance_accuracy']=train_instance_accuracy
+	    		submission_boosting['statistics_boosting']['SIL_train_instance_balanced_accuracy']=train_instance_balanced_accuracy
+
+
+        	if INSTANCE_PREDICTIONS_SIL and test.instance_labels_SIL.size > 1:
+   	    		test_instance_accuracy = np.average( test.instance_labels_SIL== ( instance_predictions > 0  )  )
+	    		test_instance_balanced_accuracy= np.average( [ np.average( instance_predictions[test.instance_labels_SIL]>0 ) ,   np.average( instance_predictions[test.instance_labels_SIL==False]<0 ) ]  )
+
+           	 	print ('SIL: Test Inst. %s Score: %f, accuracy: %f, balanced accuracy: %f'
+                   		% (scorename, score(test.instance_labels_SIL, instance_predictions),test_instance_accuracy, test_instance_balanced_accuracy ))
+	    		submission_boosting['statistics_boosting']['SIL_test_instance_'+scorename] = score(test.instance_labels_SIL, instance_predictions)
+	    		submission_boosting['statistics_boosting']['SIL_test_instance_accuracy']=test_instance_accuracy
+	    		submission_boosting['statistics_boosting']['SIL_test_instance_balanced_accuracy']=test_instance_balanced_accuracy
+
 		self.results_manager.store_results_boosting(submission_boosting, boosting_rounds, self.train_dataset_name, self.test_dataset_name, 100, 100)
 
 
@@ -242,7 +264,7 @@ def compute_statistic(predictions, labels ,weights ,ids ,statistic_name):
 	predictions_list=[ predictions[x] for x in ids]
 		
 	weights_list=[ weights[x] for x in ids]
-
+	#import pdb;pdb.set_trace()
 	if statistic_name == 'accuracy':
 		statistic = np.average(( np.array(predictions_list)>0) == labels, weights=weights_list )
 
