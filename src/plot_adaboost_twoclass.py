@@ -38,6 +38,8 @@ from RankBoost_nondistributed import RankBoost
 from martiboost_nondistributed import MartiBoost
 
 from mi_svm import SVM
+import data
+import dill
 
 def plot_fig(classifier):
 
@@ -74,8 +76,20 @@ def plot_fig(classifier):
 	plt.ylabel('y')
 	plt.title('Decision Boundary')
 	plt.savefig('Adaboost_twoclass.pdf')
-print "load dataset"
 
+def get_bag_label(instance_predictions, bags):
+	num_bag = len(bags)
+	p_index= 0
+	bag_predictions = []
+	for bag_index in range(num_bag):
+		n_index =p_index+ bags[bag_index].shape[0]
+		
+		bag_predictions.append( np.max(instance_predictions[p_index: n_index]) )
+		p_index = n_index
+	return np.array(bag_predictions)
+
+print "load dataset"
+'''
 # Construct dataset v0
 X1, y1 = make_gaussian_quantiles(cov=2.,
                                  n_samples=200, n_features=2,
@@ -84,7 +98,7 @@ X1, y1 = make_gaussian_quantiles(cov=2.,
 X = X1
 y = y1
 #import pdb;pdb.set_trace()
-'''
+
 # Construct dataset v1
 
 X1, y1 = make_gaussian_quantiles(cov=2.,
@@ -100,8 +114,8 @@ f0_max = np.max( abs(X)[:,0] ) #scale the data to be within the unit box
 f1_max = np.max( abs(X)[:,1] )
 import pdb;pdb.set_trace()
 X = np.vstack((X[:,0]/f0_max, X[:,1]/f1_max )).transpose()
-'''
-'''
+
+
 # Construct dataset v2
 X=np.array([[2,2],[-2,-2],[2, -2], [-2, 2]])
 y=np.array([1,1, -1, -1])
@@ -112,6 +126,14 @@ X=np.array([[1,0],[-2,0],[0, -2], [0, 2]])
 y=np.array([1,1, -1, -1])
 #import pdb;pdb.set_trace()
 '''
+
+# construct dataset v4 -- banana~goldmedal
+pkl_file = open('banana_goldmedal.pkl', 'rb')
+train_class = dill.load(pkl_file)
+test_class = dill.load(pkl_file)
+X = train_class.instances
+y= 2*train_class.instance_labels_SIL - 1 #convert the boolean values to +1/-1 values for the labels
+
 '''
 #Adaboost + perceptron
 bdt = AdaBoostClassifier(MLPClassifier(hidden_layer_sizes = ()),
@@ -162,8 +184,21 @@ bdt = MartiBoost(**params)
 print "fitting the training set"
 bdt.fit(X, y)
 print "fitting completed"
-bdt.predict(X)
+
 #import pdb;pdb.set_trace()
+predictions_test = bdt.predict(test_class.instances)
+bag_predictions_test = get_bag_label(predictions_test, test_class.bags)
+predictions_train = bdt.predict(train_class.instances)
+bag_predictions_train = get_bag_label(predictions_train, train_class.bags)
+
+print np.average((bag_predictions_test==1) == test_class.bag_labels)
+print np.average((bag_predictions_train==1) == train_class.bag_labels)
+print np.average( (predictions_test == 1 )== test_class.instance_labels  )
+print np.average( (predictions_train == 1 )== train_class.instance_labels  )
+print np.average( (predictions_test == 1 )== test_class.instance_labels_SIL  )
+print np.average( (predictions_train == 1 )== train_class.instance_labels_SIL  )
+import pdb;pdb.set_trace()
+
 plot_colors = "br"
 plot_step = 0.02
 class_names = "AB"

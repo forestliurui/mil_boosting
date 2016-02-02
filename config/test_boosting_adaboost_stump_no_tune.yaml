@@ -43,7 +43,7 @@ parameters:
 experiments:
 #    - dataset: apple~cokecan
     - dataset: banana~goldmedal
-    - dataset: dirtyworkgloves~dirtyrunningshoe
-    - dataset: BRCR
-    - dataset: WIWR
-    - dataset: PSFL
+#    - dataset: dirtyworkgloves~dirtyrunningshoe
+#    - dataset: BRCR
+#    - dataset: WIWR
+#    - dataset: PSFL

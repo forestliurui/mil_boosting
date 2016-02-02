@@ -16,8 +16,8 @@ def compute_statistics(configuration_file, results_directory, outputfile):
 
 	
 	statistics_name=['train_bag_AUC', 'train_bag_accuracy', 'train_bag_balanced_accuracy', 'train_instance_AUC', 'train_instance_accuracy', 'train_instance_balanced_accuracy', 'test_bag_AUC', 'test_bag_accuracy', 'test_bag_balanced_accuracy', 'test_instance_AUC', 'test_instance_accuracy', 'test_instance_balanced_accuracy']
-
-		
+	statistics_name_SIL = ['SIL_train_instance_AUC', 'SIL_train_instance_accuracy', 'SIL_train_instance_balanced_accuracy', 'SIL_test_instance_AUC', 'SIL_test_instance_accuracy', 'SIL_test_instance_balanced_accuracy']
+	statistics_name = statistics_name + statistics_name_SIL
     	with open(configuration_file, 'r') as f:
         	configuration = yaml.load(f)    
 

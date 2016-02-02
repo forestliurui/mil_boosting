@@ -97,7 +97,7 @@ class MartiBoost(object):
 		self.weak_classifiers = {}
 		self.weak_classifier_name = parameters.pop('weak_classifier')
 		self.parameters = parameters
-		self.max_iter_boosting = 50  #the max num of layers of weak learners. Note that the predictions are according to the instances positions at (max+1)-th layer
+		self.max_iter_boosting = 200  #the max num of layers of weak learners. Note that the predictions are according to the instances positions at (max+1)-th layer
 		self.actul_boosting_iter = self.max_iter_boosting
 		
 
@@ -208,7 +208,7 @@ class MartiBoost(object):
 				#next_level_list.append(current.right)
 			
 			#current_level_list = next_level_list
-		import pdb;pdb.set_trace()
+		#import pdb;pdb.set_trace()
 			
 	def _predict(self, X, iter = None):
 
@@ -284,7 +284,8 @@ class MartiBoost(object):
 		if iter == None or iter > self.actul_boosting_iter:
 			iter = self.actul_boosting_iter
 	
-		
+		#import pdb;pdb.set_trace()
+
 		#print self.c
 		if type(X_bags) != list:  # treat it as normal supervised learning setting
 			#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
@@ -300,7 +301,7 @@ class MartiBoost(object):
 			#print self.c
 			#print len(self.weak_classifiers)
 			for index_bag in range(num_bags):
-				#import pdb;pdb.set_trace()
+				import pdb;pdb.set_trace()
 				predictions_bag_temp= np.max( self._predict(X_bags[index_bag], iter) ) 
 				predictions_bag.append(predictions_bag_temp)
 			#import pdb; pdb.set_trace()
