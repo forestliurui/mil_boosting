@@ -9,11 +9,12 @@ import matplotlib.pyplot as plt
 
 INSTANCE_PREDICTIONS = True
 INNER_CROSS_VALIDATION = False
-PLOT = True
+PLOT = False
 
 
 class RankBoost(object):
 	def __init__(self):
+		print "RankBoost Initializing"
 		self.raw_predictions = {}
 		self.raw_predictions['bag']={}
 		self.raw_predictions['bag']['train']=[]
@@ -88,7 +89,7 @@ class RankBoost(object):
 
 
 		for iter_boosting in range(max_iter_boosting):
-			print 'Boosting Iteration: %d' % iter_boosting
+			print 'Rankboost Boosting Iteration: %d' % iter_boosting
 			auxiliary_struct['shared_variables']['inst_weights'][dataset_name] = inst_weight_temp
 			self.weights.append(inst_weight_temp)
 			task_key = run_tune_parameter(train_dataset_name, test_dataset_name , auxiliary_struct, key_statistic  ,label_index=None)
@@ -137,6 +138,7 @@ class RankBoost(object):
 		self.num_iter_boosting=len(self.alphas)
 
 	def predict(self):
+		print "begin the prediction of rankboost"
 		predictions_list={}
 		predictions_list['bag']={}
 		predictions_list['instance']={}

@@ -4,6 +4,17 @@
 from mi_svm import SVM
 import numpy as np
 from scipy.optimize import minimize
+from sklearn.tree import DecisionTreeClassifier
+from Dtree_Stump_Balanced import Dtree_Stump_Balanced
+from mi_svm import SVM
+import copy
+
+
+WEAK_CLASSIFIERS = {
+	'svm': SVM,
+	'dtree_stump': DecisionTreeClassifier,
+	'dtree_stump_balanced': Dtree_Stump_Balanced
+}
 
 def subproblem_MIBoosting(weights, errors): 
 	#This is the subproblem that needs to be solved in order to get weight c for each weak classifier
@@ -13,20 +24,26 @@ def subproblem_MIBoosting(weights, errors):
 
 class MIBoosting_Xu(object):
 	def __init__(self, **parameters):
+		self.weak_classifier_name = parameters.pop('weak_classifier')
+		if 'max_iter_boosting' in parameters:
+			self.max_iter_boosting =  parameters.pop('max_iter_boosting')
+		else:
+			self.max_iter_boosting = 10
+
 		self.parameters=parameters
 		self.weak_classifiers=[]
 	def fit(self, X_bags, y_labels):
 		#X_bags is a list of arrays, each bag is an array in the list
 		#The row of array corresponds to instances in the bag, column corresponds to feature
 		#y_labels is the list which contains the labels of bags. Here, binary labels are assumed, i.e. +1/-1
-
+		#import pdb;pdb.set_trace()
 		if type(y_labels)!=list:
 			y_labels=y_labels.tolist()
 		
-		if(type( y_labels[0] )==bool):
-			y_labels = 2*y_labels-1
+		if type( y_labels[0] )==bool or 0 in y_labels:  #convert the boolean labels into +1/-1 labels
+			y_labels = map(lambda x:2*x-1, y_labels )
 	
-		max_iter_boosting=10
+		max_iter_boosting=self.max_iter_boosting
 		num_bags=len(X_bags)
 				
 		num_instance_each_bag=[x.shape[0] for x in X_bags]
@@ -49,7 +66,7 @@ class MIBoosting_Xu(object):
 			weights_instance= [( weights_bag[bag_index]/float(num_instance_each_bag[bag_index]) )*np.ones((1, num_instance_each_bag[bag_index]))[0] for bag_index in range(num_bags)]
 			weights_instance=np.hstack((weights_instance))
 			
-			instance_classifier=SVM(**self.parameters)
+			instance_classifier=WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
 
 			instance_classifier.fit(instances, instance_labels_generated_from_bag_labels, weights_instance)
 

@@ -41,8 +41,9 @@ parameters:
         n: 1
 
 experiments:
+    - dataset: musk2
 #    - dataset: apple~cokecan
-    - dataset: banana~goldmedal
+#    - dataset: banana~goldmedal
 #    - dataset: dirtyworkgloves~dirtyrunningshoe
 #    - dataset: BRCR
 #    - dataset: WIWR

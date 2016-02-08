@@ -5,6 +5,7 @@ from mi_svm import SVM
 import string
 import data
 import numpy as np
+import copy
 
 class RankBoost(object):
 	def __init__(self, **parameters):
@@ -78,7 +79,7 @@ class RankBoost(object):
 			#import pdb;pdb.set_trace()
 
 			instance_classifier.fit(instances, instance_labels_generated_from_bag_labels.tolist(), weights_inst)
-			self.weak_classifiers.append(instance_classifier)
+			self.weak_classifiers.append(copy.deepcopy(instance_classifier))
 			predictions = (instance_classifier.predict(instances) >0 )+0
 			self.epsilon["positive"].append( np.average( predictions[instance_labels_generated_from_bag_labels == 1] ) )
 			self.epsilon["negative"].append( np.average( predictions[instance_labels_generated_from_bag_labels == -1] ) )

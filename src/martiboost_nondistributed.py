@@ -96,10 +96,14 @@ class MartiBoost(object):
 	def __init__(self, **parameters):
 		self.weak_classifiers = {}
 		self.weak_classifier_name = parameters.pop('weak_classifier')
-		self.parameters = parameters
-		self.max_iter_boosting = 200  #the max num of layers of weak learners. Note that the predictions are according to the instances positions at (max+1)-th layer
+		
+		if 'max_iter_boosting' not in parameters:
+			self.max_iter_boosting = 100  #the max num of layers of weak learners. Note that the predictions are according to the instances positions at (max+1)-th layer
+		else:
+			self.max_iter_boosting =  parameters.pop('max_iter_boosting')
 		self.actul_boosting_iter = self.max_iter_boosting
 		
+		self.parameters = parameters
 
 	def fit(self, X_bags, y_labels):
 		'''
@@ -214,23 +218,28 @@ class MartiBoost(object):
 
 		if iter == None or iter > self.actul_boosting_iter:
 			iter = self.actul_boosting_iter
-		num_instances_test = X.shape[0]		
+		num_instances_test = X.shape[0]	
 
+		self.weakers = copy.deepcopy( self.weak_classifiers )		
+		
+		#import pdb;pdb.set_trace()
 		#clear the data (instances_test and indices_test) for last test run
+		'''
 		for index_Boosting in range(iter):
-			current_level_dict = self.weak_classifiers[index_Boosting]
+			current_level_dict = self.weakers[index_Boosting]
 			for current_key in current_level_dict.keys():
 				current = current_level_dict[current_key]
 				current.instances_test = None
 				current.indices_test = None
+		'''
 		#clear the data for last test run
 
-		self.weak_classifiers[0][0].instances_test = X
-		self.weak_classifiers[0][0].indices_test = np.array(range(num_instances_test))
+		self.weakers[0][0].instances_test = X
+		self.weakers[0][0].indices_test = np.array(range(num_instances_test))
 
 		for index_Boosting in range(iter):
 
-			current_level_dict = self.weak_classifiers[index_Boosting]
+			current_level_dict = self.weakers[index_Boosting]
 			
 			for current_key in current_level_dict.keys():
 				current = current_level_dict[current_key]
@@ -242,25 +251,25 @@ class MartiBoost(object):
 				current.predictions_test = current.classifier.predict(current.instances_test)
 
 				
-				if index_Boosting+1 not in self.weak_classifiers.keys():
-					self.weak_classifiers[ index_Boosting+1 ] = {}					
+				if index_Boosting+1 not in self.weakers.keys():
+					self.weakers[ index_Boosting+1 ] = {}					
 
 				#instance_classifier = WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters) #left child--baised to negative predictions
 
-				if current_key not in self.weak_classifiers[ index_Boosting+1 ].keys():
-					self.weak_classifiers[ index_Boosting+1 ][current_key] = TreeNode()	
-				self.weak_classifiers[ index_Boosting+1 ][current_key].update_instances_test(current.instances_test[current.predictions_test <0], current.indices_test[current.predictions_test <0])
+				if current_key not in self.weakers[ index_Boosting+1 ].keys():
+					self.weakers[ index_Boosting+1 ][current_key] = TreeNode()	
+				self.weakers[ index_Boosting+1 ][current_key].update_instances_test(current.instances_test[current.predictions_test <0], current.indices_test[current.predictions_test <0])
 				
 		
 				instance_classifier = WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
 
-				if current_key+1 not in self.weak_classifiers[ index_Boosting+1 ].keys():
-					self.weak_classifiers[ index_Boosting+1 ][current_key+1] = TreeNode()
-				self.weak_classifiers[ index_Boosting+1 ][current_key+1].update_instances_test(current.instances_test[current.predictions_test >= 0], current.indices_test[current.predictions_test >=0])
+				if current_key+1 not in self.weakers[ index_Boosting+1 ].keys():
+					self.weakers[ index_Boosting+1 ][current_key+1] = TreeNode()
+				self.weakers[ index_Boosting+1 ][current_key+1].update_instances_test(current.instances_test[current.predictions_test >= 0], current.indices_test[current.predictions_test >=0])
 		#import pdb;pdb.set_trace()
 
 		results = 0*np.ones((num_instances_test))
-		current_level_dict = self.weak_classifiers[iter]
+		current_level_dict = self.weakers[iter]
 		for current_key in current_level_dict.keys():
 			current = current_level_dict[current_key]
 			if current.indices_test is None:

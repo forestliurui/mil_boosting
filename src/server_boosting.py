@@ -32,6 +32,14 @@ from folds import FoldConfiguration
 from progress import ProgressMonitor
 from results import get_result_manager
 
+BOOSTERS = {
+	'rankboost': RankBoost,
+	'rankboost_m3': RankBoost_m3,
+	'adaboost': Adaboost,
+	'miboosting_xu': MIBoosting_Xu,
+#	'martiboost': MartiBoost,
+}
+
 PORT = 2114
 DEFAULT_TASK_EXPIRE = 120 # Seconds
 TEMPLATE = """
@@ -709,6 +717,7 @@ def server_experiment(dataset_name, configuration_file, task_dict, shared_variab
 
     outer_folds, inner_folds=configuration['folds']
     
+    booster_name = configuration['booster_name']
 
     #shared_variables['bag_weights'][dataset_name]={}
     shared_variables['inst_weights'][dataset_name]={}
@@ -725,8 +734,10 @@ def server_experiment(dataset_name, configuration_file, task_dict, shared_variab
 	train_dataset_name=string.replace( '%s.fold_%4d_of_%4d.train' % (dataset_name,set_index_boosting, outer_folds),' ','0'  )
     	test_dataset_name=string.replace( '%s.fold_%4d_of_%4d.test' % (dataset_name,set_index_boosting, outer_folds),' ','0'   )
 
+	print 'The booster which is currently running: %s' % booster_name
+	Ensemble_classifier = BOOSTERS[booster_name]()	
 	#Ensemble_classifier=Adaboost()
-	Ensemble_classifier=Adaboost_instance()
+	#Ensemble_classifier=Adaboost_instance()
 	#Ensemble_classifier=MIBoosting_Xu()
 	#Ensemble_classifier=RankBoost()
 	#Ensemble_classifier=RankBoost_m3()
@@ -889,6 +900,7 @@ def run_tune_parameter(train, test , tasks, shared_variables, server, label_inde
 
 
 def load_config(configuration_file, results_root_dir):
+    
     tasks = {}
     parameter_dict = {}
 
@@ -898,6 +910,8 @@ def load_config(configuration_file, results_root_dir):
 
     experiment_key = configuration['experiment_key']
     experiment_name = configuration['experiment_name']
+    
+    configuration.pop('booster_name')
 
     if experiment_name == 'mi_kernels':
         from resampling import NullResamplingConfiguration

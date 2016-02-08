@@ -1,0 +1,53 @@
+
+# A key uniquely describing the
+# experiments (determines results
+# folder used by server)
+experiment_name: mi_kernels
+
+# A key uniquely describing each experiment
+experiment_key:
+    - dataset
+experiment_key_format:
+    - '%s'
+
+# The key that uniquely describes
+# parameter settings (other parameters
+# are searched)
+parameter_key:
+  - classifier
+  - kernel
+  - base_kernel
+  - normalization
+parameter_key_format:
+  - '%s'
+  - '%s'
+  - '%s'
+  - '%s'
+
+# The default [inner, outer] folds to use
+# (can also be specified per experiment)
+folds: [10, 5]
+
+# the boosting algorithm to be used
+booster_name: rankboost
+
+# A list of parameter settings
+# (can also be specified per experiment)
+parameters:
+  - classifier: SIL_Stump
+    kernel: linear
+    base_kernel: linear
+    normalization: none
+    C: ['e4', 'e5']
+    search:
+        type: random
+        n: 1
+
+experiments:
+    - dataset: musk2
+    - dataset: apple~cokecan
+#    - dataset: banana~goldmedal
+#    - dataset: dirtyworkgloves~dirtyrunningshoe
+    - dataset: BRCR
+#    - dataset: WIWR
+#    - dataset: PSFL
