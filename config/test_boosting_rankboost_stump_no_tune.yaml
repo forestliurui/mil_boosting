@@ -29,7 +29,9 @@ parameter_key_format:
 folds: [10, 5]
 
 # the boosting algorithm to be used
-booster_name: rankboost
+booster_params: 
+   - booster_name: rankboost
+     max_iter: 30
 
 # A list of parameter settings
 # (can also be specified per experiment)

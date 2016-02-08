@@ -13,8 +13,11 @@ PLOT = False
 
 
 class RankBoost(object):
-	def __init__(self):
+	def __init__(self, max_iter_boosting = 10):
 		print "RankBoost Initializing"
+
+		self.max_iter_boosting = max_iter_boosting
+
 		self.raw_predictions = {}
 		self.raw_predictions['bag']={}
 		self.raw_predictions['bag']['train']=[]
@@ -75,7 +78,7 @@ class RankBoost(object):
 				instance_ids_train['negative'].append(inst_id)
 
 			
-		max_iter_boosting=10
+		max_iter_boosting = self.max_iter_boosting
 
 		key_statistic='test_instance_AUC'
 

@@ -717,8 +717,8 @@ def server_experiment(dataset_name, configuration_file, task_dict, shared_variab
 
     outer_folds, inner_folds=configuration['folds']
     
-    booster_name = configuration['booster_name']
-
+    booster_name = configuration['booster_params'][0]['booster_name']
+    max_iter_boosting = configuration['booster_params'][0]['max_iter']
     #shared_variables['bag_weights'][dataset_name]={}
     shared_variables['inst_weights'][dataset_name]={}
 
@@ -735,7 +735,7 @@ def server_experiment(dataset_name, configuration_file, task_dict, shared_variab
     	test_dataset_name=string.replace( '%s.fold_%4d_of_%4d.test' % (dataset_name,set_index_boosting, outer_folds),' ','0'   )
 
 	print 'The booster which is currently running: %s' % booster_name
-	Ensemble_classifier = BOOSTERS[booster_name]()	
+	Ensemble_classifier = BOOSTERS[booster_name](max_iter_boosting)	
 	#Ensemble_classifier=Adaboost()
 	#Ensemble_classifier=Adaboost_instance()
 	#Ensemble_classifier=MIBoosting_Xu()
@@ -911,7 +911,7 @@ def load_config(configuration_file, results_root_dir):
     experiment_key = configuration['experiment_key']
     experiment_name = configuration['experiment_name']
     
-    configuration.pop('booster_name')
+    configuration.pop('booster_params')
 
     if experiment_name == 'mi_kernels':
         from resampling import NullResamplingConfiguration
