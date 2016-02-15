@@ -7,8 +7,23 @@ import data
 import numpy as np
 import copy
 
+from sklearn.tree import DecisionTreeClassifier
+from Dtree_Stump_Balanced import Dtree_Stump_Balanced
+
+WEAK_CLASSIFIERS = {
+	'svm': SVM,
+	'dtree_stump': DecisionTreeClassifier,
+	'dtree_stump_balanced': Dtree_Stump_Balanced
+}
+
 class RankBoost(object):
 	def __init__(self, **parameters):
+
+		self.max_iter_boosting = parameters.pop("max_iter_boosting", 10)
+		self.weak_classifier_name = parameters.pop('weak_classifier', 'dtree_stump') 
+		if self.weak_classifier_name == 'dtree_stump':
+			parameters['max_depth'] = 1
+		parameters.pop('normalization', 0)
 		self.parameters = parameters
 		self.weak_classifiers = []
 		self.epsilon = {}
@@ -17,10 +32,8 @@ class RankBoost(object):
 		self.alphas = []
 		self.weights_instance=[]
 
-		if "max_iter_boosting" in parameters.keys():
-			self.max_iter_boosting = parameters.pop("max_iter_boosting")
-		else:
-			self.max_iter_boosting = 20
+		
+
 
 	def fit(self, X_bags, y_labels):
 		'''
@@ -74,7 +87,7 @@ class RankBoost(object):
 		for index_Boosting in range(max_iter_boosting):
 
 			self.weights_instance.append(np.array(weights_inst))
-			instance_classifier=SVM(**self.parameters)
+			instance_classifier=WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
 		
 			#import pdb;pdb.set_trace()
 
@@ -92,7 +105,7 @@ class RankBoost(object):
 					weights_inst[inst_index] = weights_inst[inst_index]*np.exp(-self.alphas[-1]*predictions[inst_index])/Z["positive"]
 				else:
 					weights_inst[inst_index] = weights_inst[inst_index]*np.exp(+self.alphas[-1]*predictions[inst_index])/Z["negative"]
-
+		self.actual_rounds_of_boosting = len(self.alphas)
 			
 
 	def predict(self, X_bags, iter = None):
@@ -104,7 +117,7 @@ class RankBoost(object):
 		if iter == None or iter > len(self.c):
 			iter = len(self.c)
 	
-		
+		print "self.c: ",
 		print self.c
 		if type(X_bags) != list:  # treat it as normal supervised learning setting
 			#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
@@ -117,7 +130,7 @@ class RankBoost(object):
 			num_bags=len(X_bags)
 
 			predictions_bag=[]
-			print len(self.c)
+			#print len(self.c)
 			#print self.c
 			#print len(self.weak_classifiers)
 			for index_bag in range(num_bags):

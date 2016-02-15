@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 
 
 INSTANCE_PREDICTIONS = True
+INSTANCE_PREDICTIONS_SIL = True
 INNER_CROSS_VALIDATION = False
 PLOT = False
 
@@ -277,6 +278,28 @@ class RankBoost(object):
 	    		submission_boosting['statistics_boosting']['test_instance_'+scorename] = score(test.instance_labels, instance_predictions)
 	    		submission_boosting['statistics_boosting']['test_instance_accuracy']=test_instance_accuracy
 	    		submission_boosting['statistics_boosting']['test_instance_balanced_accuracy']=test_instance_balanced_accuracy
+
+		if INSTANCE_PREDICTIONS_SIL and train.instance_labels_SIL.size > 1:
+	    		train_instance_accuracy = np.average( train.instance_labels_SIL== ( train_instance_labels > 0  )  )
+			#import pdb; pdb.set_trace()
+	    		train_instance_balanced_accuracy= np.average( [ np.average( train_instance_labels[train.instance_labels_SIL]>0 ) ,   np.average( train_instance_labels[train.instance_labels_SIL==False]<0 ) ]  )
+            		print ('SIL: Training Inst. %s Score: %f, accuracy: %f, balanced accuracy: %f'
+                   		% (scorename, score(train.instance_labels_SIL, train_instance_labels) ,train_instance_accuracy, train_instance_balanced_accuracy ))
+            		submission_boosting['statistics_boosting']['SIL_train_instance_'+scorename] = score(train.instance_labels_SIL, train_instance_labels)
+	    		submission_boosting['statistics_boosting']['SIL_train_instance_accuracy']=train_instance_accuracy
+	    		submission_boosting['statistics_boosting']['SIL_train_instance_balanced_accuracy']=train_instance_balanced_accuracy
+
+
+        	if INSTANCE_PREDICTIONS_SIL and test.instance_labels_SIL.size > 1:
+   	    		test_instance_accuracy = np.average( test.instance_labels_SIL== ( instance_predictions > 0  )  )
+	    		test_instance_balanced_accuracy= np.average( [ np.average( instance_predictions[test.instance_labels_SIL]>0 ) ,   np.average( instance_predictions[test.instance_labels_SIL==False]<0 ) ]  )
+
+           	 	print ('SIL: Test Inst. %s Score: %f, accuracy: %f, balanced accuracy: %f'
+                   		% (scorename, score(test.instance_labels_SIL, instance_predictions),test_instance_accuracy, test_instance_balanced_accuracy ))
+	    		submission_boosting['statistics_boosting']['SIL_test_instance_'+scorename] = score(test.instance_labels_SIL, instance_predictions)
+	    		submission_boosting['statistics_boosting']['SIL_test_instance_accuracy']=test_instance_accuracy
+	    		submission_boosting['statistics_boosting']['SIL_test_instance_balanced_accuracy']=test_instance_balanced_accuracy
+
 
 		self.results_manager.store_results_boosting(submission_boosting, boosting_rounds, self.train_dataset_name, self.test_dataset_name, 100, 100)
 
