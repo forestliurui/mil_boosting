@@ -30,15 +30,37 @@ folds: [10, 5]
 parameters:
   - classifier: rankboost
     weak_classifier: dtree_stump
-    max_iter_boosting: 100
+    max_iter_boosting: 500
+    normalization: none
+    search:
+        type: random
+        n: 1
+  - classifier: martiboost
+    weak_classifier: dtree_stump
+    max_iter_boosting: 500
+    normalization: none
+    search:
+        type: random
+        n: 1
+  - classifier: martiboost_median
+    weak_classifier: dtree_stump
+    max_iter_boosting: 500
+    normalization: none
+    search:
+        type: random
+        n: 1
+  - classifier: martiboost_max
+    weak_classifier: dtree_stump
+    max_iter_boosting: 500
     normalization: none
     search:
         type: random
         n: 1
 
+
 experiments:
-    - dataset: musk1
-#   - dataset: apple~cokecan
+#    - dataset: musk1
+#    - dataset: apple~cokecan
 #    - dataset: banana~goldmedal
 #    - dataset: dirtyworkgloves~dirtyrunningshoe
 #    - dataset: wd40can~largespoon
@@ -52,4 +74,49 @@ experiments:
 #    - dataset: DEJU
 #    - dataset: OSFL
 #    - dataset: HETH
+    - dataset: apple~cokecan
+    - dataset: banana~goldmedal
+    - dataset: dirtyworkgloves~dirtyrunningshoe
+    - dataset: wd40can~largespoon
+    - dataset: checkeredscarf~dataminingbook
+    - dataset: juliespot~rapbook
+    - dataset: smileyfacedoll~feltflowerrug
+    - dataset: stripednotebook~greenteabox
+    - dataset: cardboardbox~candlewithholder
+    - dataset: bluescrunge~ajaxorange
+    - dataset: woodrollingpin~translucentbowl
+    - dataset: fabricsoftenerbox~glazedwoodpot
+    - dataset: BRCR
+    - dataset: WIWR
+    - dataset: PSFL
+    - dataset: RBNU
+    - dataset: DEJU
+    - dataset: OSFL
+    - dataset: HETH
+    - dataset: CBCH
+    - dataset: VATH
+    - dataset: HEWA
+    - dataset: SWTH
+    - dataset: HAFL
+    - dataset: WETA
+    - dataset: alt.atheism
+    - dataset: comp.graphics
+    - dataset: comp.os.ms-windows.misc
+    - dataset: comp.sys.ibm.pc.hardware
+    - dataset: comp.sys.mac.hardware
+    - dataset: comp.windows.x
+    - dataset: misc.forsale
+    - dataset: rec.autos
+    - dataset: rec.motorcycles
+    - dataset: rec.sport.baseball
+    - dataset: rec.sport.hockey
+    - dataset: sci.crypt
+    - dataset: sci.electronics
+    - dataset: sci.med
+    - dataset: sci.space
+    - dataset: soc.religion.christian
+    - dataset: talk.politics.guns
+    - dataset: talk.politics.mideast
+    - dataset: talk.politics.misc
+    - dataset: talk.religion.misc
 

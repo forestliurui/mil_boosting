@@ -24,12 +24,12 @@ def subproblem_MIBoosting(weights, errors):
 
 class MIBoosting_Xu(object):
 	def __init__(self, **parameters):
-		self.weak_classifier_name = parameters.pop('weak_classifier')
-		if 'max_iter_boosting' in parameters:
-			self.max_iter_boosting =  parameters.pop('max_iter_boosting')
-		else:
-			self.max_iter_boosting = 10
+		self.weak_classifier_name = parameters.pop('weak_classifier', 'dtree_stump') 
 
+		self.max_iter_boosting =  parameters.pop('max_iter_boosting', 10)
+		if self.weak_classifier_name == 'dtree_stump':
+			parameters['max_depth'] = 1
+		parameters.pop('normalization', 0)
 		self.parameters=parameters
 		self.weak_classifiers=[]
 	def fit(self, X_bags, y_labels):
@@ -90,25 +90,32 @@ class MIBoosting_Xu(object):
 			
 			#save current weak classifier 
 			self.weak_classifiers.append(instance_classifier)
+		self.actual_rounds_of_boosting = len(self.c)
 		#import pdb; pdb.set_trace()	
 
-	def predict(self, X_bags):
+	def predict(self, X_bags, iter = None):
 		#X_bags is a list of arrays, each bag is an array in the list
 		#The row of array corresponds to instances in the bag, column corresponds to feature
 
 		#predictions_bag is the returned list of predictions which are real values 
 		
+		threshold = 0.5
+		
+		if iter == None or iter > len(self.c):
+			iter = len(self.c)
+
 		num_bags=len(X_bags)
 
 		predictions_bag=[]
+		print "self.c: ",
 		print len(self.c)
 		#print self.c
 		#print len(self.weak_classifiers)
 		for index_bag in range(num_bags):
 			#import pdb;pdb.set_trace()
-			predictions_bag_temp=np.average( [ np.average( instance_classifier.predict(X_bags[index_bag]) )  for instance_classifier in self.weak_classifiers  ]  ,  weights=self.c )
+			predictions_bag_temp=np.average( [ np.average( instance_classifier.predict(X_bags[index_bag]) )  for instance_classifier in self.weak_classifiers  ][0:iter]  ,  weights=self.c[0:iter]  )/np.sum(self.c[0:iter]) - threshold
 			predictions_bag.append(predictions_bag_temp)
-		#import pdb; pdb.set_trace()
+		import pdb; pdb.set_trace()
 
 		predictions_bag=np.array( predictions_bag )
 		return predictions_bag

@@ -973,7 +973,7 @@ def load_config(configuration_file, results_root_dir):
 	    #import pdb;pdb.set_trace()
             key = experiment_config.get_key(**setting)
 	    if not INNER_CROSS_VALIDATION:
-		if key[2].count('fold') > 1:  #key[2] corresponds to the name string for training set. We only add tasks for outer layer cross validation
+		if key[2].count('fold_') > 1:  #key[2] corresponds to the name string for training set. We only add tasks for outer layer cross validation
 		   continue
             task = experiment_config.get_task(**setting)
             task.priority_adjustment = priority

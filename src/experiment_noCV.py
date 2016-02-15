@@ -11,16 +11,24 @@ from mi_svm import MIKernelSVM, MIKernelSVR
 from vocabulary import EmbeddedSpaceSVM
 from Iterative_SVM import Iterative_SVM
 from Iterative_SVM_pn import Iterative_SVM_pn
-from MIBoosting_Xu import MIBoosting_Xu
+
 from sil import SIL
 from sil_stump import SIL_Stump
 from RankBoost_nondistributed import RankBoost
+from MIBoosting_Xu_nondistributed import MIBoosting_Xu
+from martiboost_nondistributed import MartiBoost
+from martiboost_max_nondistributed import MartiBoost_max
+from martiboost_median_nondistributed import MartiBoost_median
 
 INSTANCE_PREDICTIONS = True
 INSTANCE_PREDICTIONS_SIL = True
 
 CLASSIFIERS = {
     'rankboost': RankBoost,	
+    'miboosting_xu': MIBoosting_Xu,
+    'martiboost': MartiBoost,
+    'martiboost_max': MartiBoost_max,
+    'martiboost_median': MartiBoost_median,	
     'svm': MIKernelSVM,
     'svr': MIKernelSVR,
     'embedded_svm' : EmbeddedSpaceSVM,

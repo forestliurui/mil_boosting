@@ -94,8 +94,12 @@ class RankBoost(object):
 			instance_classifier.fit(instances, instance_labels_generated_from_bag_labels.tolist(), weights_inst)
 			self.weak_classifiers.append(copy.deepcopy(instance_classifier))
 			predictions = (instance_classifier.predict(instances) >0 )+0
-			self.epsilon["positive"].append( np.average( predictions[instance_labels_generated_from_bag_labels == 1] ) )
-			self.epsilon["negative"].append( np.average( predictions[instance_labels_generated_from_bag_labels == -1] ) )
+			self.epsilon["positive"].append( np.average( predictions[instance_labels_generated_from_bag_labels == 1], weights = weights_inst[instance_labels_generated_from_bag_labels == 1] ) )
+			self.epsilon["negative"].append( np.average( predictions[instance_labels_generated_from_bag_labels != 1], weights = weights_inst[instance_labels_generated_from_bag_labels != 1] ) )
+
+			if self.epsilon["negative"][-1] == 0:
+				self.alphas.append(20)
+				break
 			self.alphas.append(0.5*np.log(self.epsilon["positive"][-1]/self.epsilon["negative"][-1]))
 			Z={}
 			Z["positive"]=1-self.epsilon["positive"][-1]+np.sqrt( self.epsilon["positive"][-1]*self.epsilon["negative"][-1] )
@@ -113,34 +117,44 @@ class RankBoost(object):
 		#The row of array corresponds to instances in the bag, column corresponds to feature
 
 		#predictions_bag is the returned array of predictions which are real values 
+		threshold = 0.5
 		self.c=self.alphas
 		if iter == None or iter > len(self.c):
 			iter = len(self.c)
 	
 		print "self.c: ",
-		print self.c
+		print len(self.c)
 		if type(X_bags) != list:  # treat it as normal supervised learning setting
 			#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
 			predictions_list = [instance_classifier.predict(X_bags).reshape((1, -1)) for instance_classifier in self.weak_classifiers ]
 			#import pdb;pdb.set_trace()
-			predictions_accum = np.matrix(self.c[0:iter])*np.matrix( np.vstack((predictions_list[0:iter])) )
-			#import pdb;pdb.set_trace()
-			return np.array(predictions_accum)[0]-np.sum(self.c)
-		else:
-			num_bags=len(X_bags)
+			predictions_accum = np.matrix(self.c[0:iter])*np.matrix( np.vstack((predictions_list[0:iter])) )/np.sum(self.c[0:iter])
 
+			#import pdb;pdb.set_trace()
+			return np.array(predictions_accum)[0] - threshold
+		else:
+
+			X_instances = np.vstack(X_bags)
+			predictions_accum = self.predict(X_instances, iter)
+			predictions_bag = get_bag_label(predictions_accum, X_bags)
+			return predictions_bag
+
+			'''slow way
+			num_bags=len(X_bags)
 			predictions_bag=[]
 			#print len(self.c)
 			#print self.c
 			#print len(self.weak_classifiers)
 			for index_bag in range(num_bags):
 				#import pdb;pdb.set_trace()
-				predictions_bag_temp=np.average( [ np.max( instance_classifier.predict(X_bags[index_bag]) )  for instance_classifier in self.weak_classifiers  ][0:iter]  ,  weights=self.c[0:iter] )
+				predictions_bag_temp=np.average( [ np.max( instance_classifier.predict(X_bags[index_bag]) )  for instance_classifier in self.weak_classifiers  ][0:iter]  ,  weights=self.c[0:iter] )/np.sum(self.c[0:iter]) - threshold 
+
 				predictions_bag.append(predictions_bag_temp)
 			#import pdb; pdb.set_trace()
 
 			predictions_bag=np.array( predictions_bag )
 			return predictions_bag
+			'''
 
 	def predict_inst(self, X_bags):
 		#X_bags is a list of arrays, each bag is an array in the list
@@ -157,3 +171,14 @@ class RankBoost(object):
 		import pdb; pdb.set_trace()
 
 		return predictions_inst
+
+def get_bag_label(instance_predictions, bags):
+	num_bag = len(bags)
+	p_index= 0
+	bag_predictions = []
+	for bag_index in range(num_bag):
+		n_index =p_index+ bags[bag_index].shape[0]
+		
+		bag_predictions.append( np.average(instance_predictions[p_index: n_index]) )
+		p_index = n_index
+	return np.array(bag_predictions)
