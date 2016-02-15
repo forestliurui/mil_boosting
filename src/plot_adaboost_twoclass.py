@@ -91,7 +91,7 @@ def get_bag_label(instance_predictions, bags):
 
 print "load dataset"
 #import pdb;pdb.set_trace()
-'''
+
 # Construct dataset v0
 X1, y1 = make_gaussian_quantiles(cov=2.,
                                  n_samples=200, n_features=2,
@@ -100,7 +100,7 @@ X1, y1 = make_gaussian_quantiles(cov=2.,
 X = X1
 y = y1
 #import pdb;pdb.set_trace()
-
+'''
 # Construct dataset v1
 
 X1, y1 = make_gaussian_quantiles(cov=2.,
@@ -127,7 +127,7 @@ y=np.array([1,1, -1, -1])
 X=np.array([[1,0],[-2,0],[0, -2], [0, 2]])
 y=np.array([1,1, -1, -1])
 #import pdb;pdb.set_trace()
-'''
+
 
 # construct dataset v4 -- banana~goldmedal
 pkl_file = open('banana_goldmedal.pkl', 'rb')
@@ -136,7 +136,7 @@ test_class = dill.load(pkl_file)
 X = train_class.instances
 y= 2*train_class.instance_labels_SIL - 1 #convert the boolean values to +1/-1 values for the labels
 
-'''
+
 # construct dataset v5 -- musk1
 pkl_file = open('musk1.pkl', 'rb')
 train_class = dill.load(pkl_file)
@@ -151,18 +151,19 @@ test_class = dill.load(pkl_file)
 X = train_class.instances
 y= 2*train_class.instance_labels_SIL - 1 #convert the boolean values to +1/-1 values for the labels
 '''
+
 '''
 #Adaboost + perceptron
 bdt = AdaBoostClassifier(MLPClassifier(hidden_layer_sizes = ()),
 			algorithm="SAMME",
                          n_estimators=30)
-
+'''
 
 #AdaBoosted decision tree
 bdt = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1),
                          algorithm="SAMME",
                          n_estimators=30)
-
+'''
 #linear svm+adaboost
 params = {'C': 100000000, 'kernel': 'linear'}
 bdt = AdaBoostClassifier(SVC(**params),
@@ -192,7 +193,7 @@ bdt = SVC(**params)
 #martiboost + linear svm
 params = {'C': 10, 'kernel': 'linear'}
 bdt = MartiBoost(**params)
-'''
+
 #martiboost + balanced_decision_stump
 params = {'weak_classifier': 'dtree_stump_balanced', 'max_iter_boosting': 200}
 bdt = MartiBoost(**params)
@@ -200,13 +201,13 @@ bdt = MartiBoost(**params)
 #MIBoosting + decision_stump
 params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 200}
 bdt1 = MIBoosting_Xu(**params)
-
+'''
 print "fitting the training set"
 bdt.fit(X, y)
-bdt1.fit(train_class.bags, train_class.bag_labels)
+#bdt1.fit(train_class.bags, train_class.bag_labels)
 print "fitting completed"
 
-#import pdb;pdb.set_trace()
+import pdb;pdb.set_trace()
 predictions_test = bdt.predict(test_class.instances)
 bag_predictions_test = get_bag_label(predictions_test, test_class.bags)
 predictions_train = bdt.predict(train_class.instances)
