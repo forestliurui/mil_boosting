@@ -20,7 +20,7 @@ import threading
 import Queue
 import sqlite3
 import string
-
+import gc
 
 import evaluation_metric
 from folds import FoldConfiguration
@@ -130,6 +130,7 @@ class ExperimentServer(object):
     @plaintext
     @expose
     def request(self):
+	gc.collect()
         with self.status_lock:
             self.clean()
             # Select a job to perform

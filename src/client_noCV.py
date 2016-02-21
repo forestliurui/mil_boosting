@@ -8,6 +8,7 @@ from threading import RLock, Thread
 from httplib import HTTPConnection
 from urllib import urlencode
 from itertools import count
+import gc
 
 from server_boosting_noCV import PORT
 
@@ -25,6 +26,7 @@ class StatusCallback(object):
 
 def do_request(host, port):
     try:
+	gc.collect()
         connection = HTTPConnection(host, port)
         req = connection.request('GET', '/request')
         resp = connection.getresponse()
