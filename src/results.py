@@ -268,13 +268,23 @@ class ResultsManager(object):
         test_id = self.get_dataset_id(test)
         parameter_set_id = self.get_parameter_set_id(parameter_set)
         stat_id = self.get_statistic_id('FINISHED')
-        cursor.execute(
+        '''
+	cursor.execute(
             'SELECT * FROM statistics WHERE '
             'train_set_id=? AND test_set_id=? AND '
             'parameter_set_id=? AND parameter_set_index=? '
             'AND statistic_name_id=?',
             (train_id, test_id, parameter_set_id,
              parameter_set_index, stat_id)
+        )
+	'''
+	cursor.execute(
+            'SELECT * FROM statistics_boosting WHERE '
+            'train_set_id=? AND test_set_id=? AND '
+            'parameter_set_id=? '
+            'AND statistic_name_id=?',
+            (train_id, test_id, parameter_set_id,
+              stat_id)
         )
         return (cursor.fetchone() is not None)
 

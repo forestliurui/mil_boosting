@@ -158,7 +158,8 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
             submission['statistics_boosting'][attribute] = getattr(classifier,
                                                           attribute)
     submission['statistics_boosting'].update(timer.get_all('_time'))
-
+    """
+    #construct submission for predictions
     for i, y in zip(test.bag_ids, bag_predictions.flat):
         submission['bag_predictions']['test'][i] = float(y)
     for i, y in zip(train.bag_ids, train_bag_labels.flat):
@@ -168,7 +169,7 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
             submission['instance_predictions']['test'][i] = float(y)
         for i, y in zip(train.instance_ids, train_instance_labels.flat):
             submission['instance_predictions']['train'][i] = float(y)
-
+    """
     # For backwards compatibility with older versions of scikit-learn
     if train.regression:
         from sklearn.metrics import r2_score as score
