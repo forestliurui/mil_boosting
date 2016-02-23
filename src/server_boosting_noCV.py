@@ -15,7 +15,7 @@ from collections import defaultdict
 from random import shuffle
 import numpy as np
 from math import log, exp
-import editdistance
+#import editdistance
 import threading
 import Queue
 import sqlite3

@@ -32,6 +32,9 @@ class MIBoosting_Xu(object):
 		parameters.pop('normalization', 0)
 		self.parameters=parameters
 		self.weak_classifiers=[]
+		self.error_bags = []
+		self.weights_bags = []
+		self.weights_instances = []
 	def fit(self, X_bags, y_labels):
 		#X_bags is a list of arrays, each bag is an array in the list
 		#The row of array corresponds to instances in the bag, column corresponds to feature
@@ -59,19 +62,21 @@ class MIBoosting_Xu(object):
 		self.c=[] #the list of weights for weak classifiers
 
 		#initial bag weights
-		weights_bag=np.ones((num_bags))
+		weights_bag=np.ones((num_bags))/float(num_bags)
+		self.weights_bags.append(weights_bag)
 
 		for index_Boosting in range(max_iter_boosting):
 			
 			weights_instance= [( weights_bag[bag_index]/float(num_instance_each_bag[bag_index]) )*np.ones((1, num_instance_each_bag[bag_index]))[0] for bag_index in range(num_bags)]
 			weights_instance=np.hstack((weights_instance))
-			
+			self.weights_instances.append(weights_instance)
 			instance_classifier=WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
 
 			instance_classifier.fit(instances, instance_labels_generated_from_bag_labels, weights_instance)
 
 			error_bag=[ np.average( ( instance_classifier.predict(X_bags[index_bag]) >0  ) != (y_labels[index_bag]==1) )  for index_bag in range(num_bags)  ]
-		
+			self.error_bags.append(error_bag)
+
 			if (np.average(error_bag<0.5)==1):
 				break	
 			#import pdb;pdb.set_trace()
@@ -84,9 +89,12 @@ class MIBoosting_Xu(object):
 				break
 
 			#update the bag weights
-			weights_bag=[weights_bag[index_bag]*np.exp( (2*error_bag[bag_index]-1)*self.c[-1]  ) for index_bag in range(num_bags) ]
+			weights_bag=[weights_bag[index_bag]*np.exp( (2*error_bag[index_bag]-1)*self.c[-1]  ) for index_bag in range(num_bags) ]
 			sum_weights=float(sum(weights_bag)) 
 			weights_bag= map( lambda x: x/sum_weights , weights_bag )
+			self.weights_bags.append(weights_bag)
+
+
 			
 			#save current weak classifier 
 			self.weak_classifiers.append(instance_classifier)
@@ -97,28 +105,45 @@ class MIBoosting_Xu(object):
 		#X_bags is a list of arrays, each bag is an array in the list
 		#The row of array corresponds to instances in the bag, column corresponds to feature
 
-		#predictions_bag is the returned list of predictions which are real values 
-		
+		#predictions_bag is the returned array of predictions which are real values 
 		threshold = 0.5
 		
 		if iter == None or iter > len(self.c):
 			iter = len(self.c)
-
-		num_bags=len(X_bags)
-
-		predictions_bag=[]
+	
 		print "self.c: ",
 		print len(self.c)
-		#print self.c
-		#print len(self.weak_classifiers)
-		for index_bag in range(num_bags):
+		if type(X_bags) != list:  # treat it as normal supervised learning setting
+			#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
+			predictions_list = [instance_classifier.predict(X_bags).reshape((1, -1)) for instance_classifier in self.weak_classifiers ]
 			#import pdb;pdb.set_trace()
-			predictions_bag_temp=np.average( [ np.average( instance_classifier.predict(X_bags[index_bag]) )  for instance_classifier in self.weak_classifiers  ][0:iter]  ,  weights=self.c[0:iter]  )/np.sum(self.c[0:iter]) - threshold
-			predictions_bag.append(predictions_bag_temp)
-		import pdb; pdb.set_trace()
+			predictions_accum = np.matrix(self.c[0:iter])*np.matrix( np.vstack((predictions_list[0:iter])) )/np.sum(self.c[0:iter])
 
-		predictions_bag=np.array( predictions_bag )
-		return predictions_bag
+			#import pdb;pdb.set_trace()
+			return np.array(predictions_accum)[0] - threshold
+		else:
+
+			X_instances = np.vstack(X_bags)
+			predictions_accum = self.predict(X_instances, iter)
+			predictions_bag = get_bag_label(predictions_accum, X_bags)
+			return predictions_bag
+
+			'''slow way
+			num_bags=len(X_bags)
+			predictions_bag=[]
+			#print len(self.c)
+			#print self.c
+			#print len(self.weak_classifiers)
+			for index_bag in range(num_bags):
+				#import pdb;pdb.set_trace()
+				predictions_bag_temp=np.average( [ np.max( instance_classifier.predict(X_bags[index_bag]) )  for instance_classifier in self.weak_classifiers  ][0:iter]  ,  weights=self.c[0:iter] )/np.sum(self.c[0:iter]) - threshold 
+
+				predictions_bag.append(predictions_bag_temp)
+			#import pdb; pdb.set_trace()
+
+			predictions_bag=np.array( predictions_bag )
+			return predictions_bag
+			'''
 
 	def predict_inst(self, X_bags):
 		#X_bags is a list of arrays, each bag is an array in the list
@@ -136,4 +161,13 @@ class MIBoosting_Xu(object):
 
 		return predictions_inst
 
+def get_bag_label(instance_predictions, bags):
+	num_bag = len(bags)
+	p_index= 0
+	bag_predictions = []
+	for bag_index in range(num_bag):
+		n_index =p_index+ bags[bag_index].shape[0]
 		
+		bag_predictions.append( np.average(instance_predictions[p_index: n_index]) )
+		p_index = n_index
+	return np.array(bag_predictions)
