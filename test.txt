@@ -1,0 +1,50 @@
+F S UID        PID  PPID  C PRI  NI ADDR SZ WCHAN  STIME TTY          TIME CMD
+0 S rui        731 10293  0  80   0 - 29168 n_tty_ Feb14 pts/36   00:00:00 /bin/bash
+5 S rui       1328  1324  0  80   0 - 34117 poll_s 09:50 ?        00:00:00 sshd: rui@notty
+0 S rui       1329  1328  0  80   0 - 13245 poll_s 09:50 ?        00:00:00 /usr/libexec/openssh/sftp-server
+0 S rui       3554 10293  0  80   0 - 29168 wait   Feb14 pts/10   00:00:00 /bin/bash
+0 S rui       5649 10293  0  80   0 - 29168 n_tty_ Feb14 pts/37   00:00:00 /bin/bash
+5 S rui       5836  5831  0  80   0 - 33844 poll_s 10:31 ?        00:00:00 sshd: rui@notty
+0 S rui       5882  5836  0  80   0 - 13197 poll_s 10:31 ?        00:00:00 /usr/libexec/openssh/sftp-server
+5 S rui       8329  8324  0  80   0 - 33841 poll_s 11:13 ?        00:00:00 sshd: rui@pts/48
+0 S rui       8375  8329  0  80   0 - 29164 wait   11:13 pts/48   00:00:00 -bash
+0 S rui       8457  8375  0  80   0 - 32427 pause  11:13 pts/48   00:00:00 screen -r
+5 S rui       8773  8768  0  80   0 - 33808 poll_s 11:21 ?        00:00:00 sshd: rui@pts/49
+0 S rui       8812  8773  0  80   0 - 29190 wait   11:21 pts/49   00:00:00 -bash
+0 S rui       8919  8812  0  80   0 - 32427 pause  11:21 pts/49   00:00:00 screen
+1 S rui       8920  8919  0  80   0 - 32494 poll_s 11:21 ?        00:00:00 SCREEN
+0 S rui       8921  8920  0  80   0 - 29168 n_tty_ 11:21 pts/50   00:00:00 /bin/bash
+1 S rui      10293     1  0  80   0 - 34621 poll_s Feb03 ?        00:06:36 SCREEN
+0 S rui      17972 10293  0  80   0 - 29168 n_tty_ Feb15 pts/0    00:00:00 /bin/bash
+0 S rui      18023 10293  0  80   0 - 29168 n_tty_ Feb15 pts/38   00:00:00 /bin/bash
+0 S rui      18065 10293  0  80   0 - 29168 n_tty_ Feb15 pts/39   00:00:00 /bin/bash
+0 S rui      18116 10293  0  80   0 - 29168 n_tty_ Feb15 pts/40   00:00:00 /bin/bash
+0 S rui      18219 10293  0  80   0 - 29168 n_tty_ Feb15 pts/41   00:00:00 /bin/bash
+0 S rui      18361 10293  0  80   0 - 29168 wait   Feb15 pts/42   00:00:00 /bin/bash
+0 S rui      18508 10293  0  80   0 - 29168 n_tty_ Feb15 pts/43   00:00:00 /bin/bash
+0 S rui      18638 10293  0  80   0 - 29168 wait   Feb15 pts/44   00:00:00 /bin/bash
+0 S rui      18694 18638  0  80   0 - 32649 poll_s Feb15 pts/44   00:46:27 top
+0 S rui      28757 10293  0  80   0 - 29168 n_tty_ Feb06 pts/2    00:00:00 /bin/bash
+0 S rui      29311 10293  0  80   0 - 29168 n_tty_ Feb10 pts/12   00:00:00 /bin/bash
+0 S rui      29532 47680  1  80   0 - 556038 poll_s Feb21 pts/9   00:27:15 /home/rui/virtualenvs/mlenv/bin/python src/server_boosting_noCV.py config/test_boosting_rankboost_stump_noCV.yaml results_test_boosting_rankboost_stump_noCV/
+0 S rui      29555  3554 99  80   0 - 1907142 poll_s Feb21 pts/10 1-18:59:37 python -m pdb src/client_noCV.py chronos.case.edu
+0 S rui      29559 45961 99  80   0 - 3447170 poll_s Feb21 pts/7  1-18:54:34 python ./src/client_noCV.py chronos.case.edu
+0 S rui      29728 18361 99  80   0 - 2043745 poll_s Feb21 pts/42 1-18:59:06 python src/client_noCV.py chronos.case.edu
+0 S rui      30891 10293  0  80   0 - 29193 n_tty_ Feb10 pts/20   00:00:00 /bin/bash
+0 S rui      30940 10293  0  80   0 - 29168 n_tty_ Feb10 pts/22   00:00:00 /bin/bash
+0 R rui      31066 45572  0  80   0 - 30844 -      12:10 pts/5    00:00:00 ps -lf -u rui
+0 S rui      33077 10293  0  80   0 - 29168 n_tty_ Feb11 pts/23   00:00:00 /bin/bash
+0 S rui      33134 10293  0  80   0 - 29168 n_tty_ Feb11 pts/24   00:00:00 /bin/bash
+0 S rui      33175 10293  0  80   0 - 29193 n_tty_ Feb11 pts/25   00:00:00 /bin/bash
+0 S rui      33987 10293  0  80   0 - 29168 wait   Feb11 pts/26   00:00:00 /bin/bash
+0 S rui      34027 33987  0  80   0 - 32637 poll_s Feb11 pts/26   01:07:44 top
+0 S rui      36094 10293  0  80   0 - 29168 n_tty_ Feb11 pts/27   00:00:00 /bin/bash
+0 S rui      36136 10293  0  80   0 - 29168 n_tty_ Feb11 pts/29   00:00:00 /bin/bash
+0 S rui      39929 10293  0  80   0 - 29193 n_tty_ Feb08 pts/4    00:00:00 /bin/bash
+0 S rui      45450 10293  0  80   0 - 29192 n_tty_ Feb08 pts/1    00:00:00 /bin/bash
+0 S rui      45572 10293  0  80   0 - 29193 wait   Feb08 pts/5    00:00:00 /bin/bash
+0 S rui      45706 10293  0  80   0 - 29168 n_tty_ Feb14 pts/34   00:00:00 /bin/bash
+0 S rui      45882 10293  0  80   0 - 29193 n_tty_ Feb08 pts/6    00:00:00 /bin/bash
+0 S rui      45961 10293  0  80   0 - 29193 wait   Feb08 pts/7    00:00:00 /bin/bash
+0 S rui      47346 10293  0  80   0 - 29168 n_tty_ Feb14 pts/35   00:00:00 /bin/bash
+0 S rui      47680 10293  0  80   0 - 29193 wait   Feb08 pts/9    00:00:00 /bin/bash

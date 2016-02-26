@@ -84,7 +84,7 @@ class AdaBoost(object):
 
 		staged_generator = self.ensemble_classifier.staged_decision_function(instances)
 
-		staged_decision_function_output = [x for x in staged_generator]  #a list of one dimensional array
+		staged_decision_function_output = [x for x in staged_generator]  #a list of one dimensional array, contained entries with positive values for postive class and negative values for negative class
 		return staged_decision_function_output[iter - 1] 
 
 	def predict(self, X_bags, iter = None):
