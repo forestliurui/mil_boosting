@@ -126,12 +126,12 @@ class RankBoost(object):
 		print len(self.c)
 		if type(X_bags) != list:  # treat it as normal supervised learning setting
 			#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
-			predictions_list = [instance_classifier.predict(X_bags).reshape((1, -1)) for instance_classifier in self.weak_classifiers ]
+			predictions_list = [( instance_classifier.predict(X_bags).reshape((1, -1))>0 )+ 0 for instance_classifier in self.weak_classifiers ]
 			#import pdb;pdb.set_trace()
 			predictions_accum = np.matrix(self.c[0:iter])*np.matrix( np.vstack((predictions_list[0:iter])) )/np.sum(self.c[0:iter])
 
 			#import pdb;pdb.set_trace()
-			return np.array(predictions_accum)[0] - threshold
+			return np.array(predictions_accum)[0] - threshold   #we need to deduct a threshold because (instance_classifier.predict > 0) + 0 is either 0 or 1
 		else:
 
 			X_instances = np.vstack(X_bags)

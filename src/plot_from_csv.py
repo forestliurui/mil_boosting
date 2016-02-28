@@ -71,7 +71,8 @@ def draw_plot1(directory, outputfile_name):
 	colors={'rankboost':'r', 'miboosting_xu':'b','adaboost':'k', 'martiboost':'c', 'martiboost_median':'y','martiboost_max':'m'}
 
 
-	statistics_name = ['test_instance_AUC', 'train_instance_AUC', 'test_bag_AUC', 'train_bag_AUC', 'test_instance_balanced_accuracy', 'train_instance_balanced_accuracy', 'test_bag_balanced_accuracy', 'train_bag_balanced_accuracy']
+	#statistics_name = ['test_instance_AUC', 'train_instance_AUC', 'test_bag_AUC', 'train_bag_AUC', 'test_instance_balanced_accuracy', 'train_instance_balanced_accuracy', 'test_bag_balanced_accuracy', 'train_bag_balanced_accuracy']
+	statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
 	results = {}
 	dataset_names = []
 	for statistic in statistics_name:
@@ -85,11 +86,13 @@ def draw_plot1(directory, outputfile_name):
 	for dataset_name in dataset_names:
 		
 		output_name = dataset_name + outputfile_name
-		plt.figure(figsize=(6*len(statistics_name), 6*len(statistics_name)))
+		plt.figure(figsize=(14*len(statistics_name), 6*len(statistics_name)))
 		index_dataset += 1
+		subplot_handle = {}
 		for stat_index in range(len(statistics_name)):
 			stat_name = statistics_name[stat_index]
-			plt.subplot(math.ceil( len(statistics_name)/2 + 1), 2, stat_index+1)
+			#plt.subplot(4, math.ceil( len(statistics_name)/3), stat_index+1)
+			plt.subplot(2, 2, stat_index+1)
 			plt.yticks(fontsize = 25)
 			plt.xticks(fontsize = 25)
 			plt.xlabel('Boosting Iterations', fontsize = 30)
@@ -101,11 +104,14 @@ def draw_plot1(directory, outputfile_name):
 		
 			for method_name in method_names:
 				color_index +=1
-				plt.plot(results[stat_name][dataset_name][method_name], colors[method_name]+'.-')
+				subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name]+'.-')
 
-			plt.legend(method_names, fontsize = 35)
-	     		plt.title(dataset_name, fontsize = 30)
-		plt.savefig(output_name)
+			#plt.legend(method_names, fontsize = 35)
+	     		#plt.title(dataset_name, fontsize = 30)
+		plt.suptitle(dataset_name, fontsize = 35)
+		#plt.legend(method_names, fontsize = 35)
+		plt.figlegend([subplot_handle[x] for x in method_names], method_names, loc = 'upper right',  fontsize = 35)
+		plt.savefig(output_name, orientation = 'landscape')
 
 		#break
 
