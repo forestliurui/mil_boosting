@@ -35,7 +35,27 @@ parameters:
     search:
         type: random
         n: 1
-
+  - classifier: martiboost
+    weak_classifier: dtree_stump
+    max_iter_boosting: 500
+    normalization: none
+    search:
+        type: random
+        n: 1
+  - classifier: martiboost_median
+    weak_classifier: dtree_stump
+    max_iter_boosting: 500
+    normalization: none
+    search:
+        type: random
+        n: 1
+  - classifier: martiboost_max
+    weak_classifier: dtree_stump
+    max_iter_boosting: 500
+    normalization: none
+    search:
+        type: random
+        n: 1
 
 
 experiments:
