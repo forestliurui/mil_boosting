@@ -23,6 +23,7 @@ from Adaboost_nondistributed import AdaBoost
 
 INSTANCE_PREDICTIONS = True
 INSTANCE_PREDICTIONS_SIL = True
+BEST_BALANCED_ACCURACY = True
 
 CLASSIFIERS = {
     'rankboost': RankBoost,	
@@ -120,14 +121,16 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
     print ""
     print "computing the submission for boosting round: # %d" % boosting_round
     submission = {
-        'instance_predictions' : {
-            'train' : {},
-            'test'  : {},
-        },
-        'bag_predictions' : {
-            'train' : {},
-            'test'  : {},
-        },
+        'accum':{
+        	'instance_predictions' : {
+            		'train' : {},
+            		'test'  : {},
+        	},
+        	'bag_predictions' : {
+            		'train' : {},
+            		'test'  : {},
+        	},
+	},
         'statistics_boosting' : {}
     }
 
@@ -160,18 +163,18 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
             submission['statistics_boosting'][attribute] = getattr(classifier,
                                                           attribute)
     submission['statistics_boosting'].update(timer.get_all('_time'))
-    """
+    
     #construct submission for predictions
     for i, y in zip(test.bag_ids, bag_predictions.flat):
-        submission['bag_predictions']['test'][i] = float(y)
+        submission['accum']['bag_predictions']['test'][i] = float(y)
     for i, y in zip(train.bag_ids, train_bag_labels.flat):
-        submission['bag_predictions']['train'][i] = float(y)
+        submission['accum']['bag_predictions']['train'][i] = float(y)
     if INSTANCE_PREDICTIONS:
         for i, y in zip(test.instance_ids, instance_predictions.flat):
-            submission['instance_predictions']['test'][i] = float(y)
+            submission['accum']['instance_predictions']['test'][i] = float(y)
         for i, y in zip(train.instance_ids, train_instance_labels.flat):
-            submission['instance_predictions']['train'][i] = float(y)
-    """
+            submission['accum']['instance_predictions']['train'][i] = float(y)
+    
     # For backwards compatibility with older versions of scikit-learn
     if train.regression:
         from sklearn.metrics import r2_score as score
@@ -269,7 +272,22 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
 	    submission['statistics_boosting']['SIL_test_instance_accuracy']=test_instance_accuracy
 	    submission['statistics_boosting']['SIL_test_instance_balanced_accuracy']=test_instance_balanced_accuracy
 
-	
+        if BEST_BALANCED_ACCURACY:
+		
+		if train.bag_labels.size > 1:
+			submission['statistics_boosting']['train_bag_best_threshold_for_balanced_accuracy'], submission['statistics_boosting']['train_bag_best_balanced_accuracy'] = getBestBalancedAccuracy(train_bag_labels, train.bag_labels)
+		if train.instance_labels.size > 1:
+			submission['statistics_boosting']['train_instance_best_threshold_for_balanced_accuracy'], submission['statistics_boosting']['train_instance_best_balanced_accuracy'] = getBestBalancedAccuracy(train_instance_labels, train.instance_labels)
+		if test.bag_labels.size > 1:
+			submission['statistics_boosting']['test_bag_best_threshold_for_balanced_accuracy'], submission['statistics_boosting']['test_bag_best_balanced_accuracy'] = getBestBalancedAccuracy(bag_predictions, test.bag_labels)
+			threshold_temp = submission['statistics_boosting']['train_bag_best_threshold_for_balanced_accuracy']
+			submission['statistics_boosting']['test_bag_best_balanced_accuracy_with_threshold_from_train'] = np.average( [ np.average( bag_predictions[test.bag_labels]>threshold_temp ) ,   np.average( bag_predictions[test.bag_labels==False]<threshold_temp ) ]  )
+
+		if test.instance_labels.size > 1:
+			submission['statistics_boosting']['test_instance_best_threshold_for_balanced_accuracy'], submission['statistics_boosting']['test_instance_best_balanced_accuracy'] = getBestBalancedAccuracy(instance_predictions, test.instance_labels)
+			threshold_temp = submission['statistics_boosting']['train_instance_best_threshold_for_balanced_accuracy']
+			submission['statistics_boosting']['test_instance_best_balanced_accuracy_with_threshold_from_train'] = np.average( [ np.average( instance_predictions[test.instance_labels]>threshold_temp ) ,   np.average( instance_predictions[test.instance_labels==False]<threshold_temp ) ]  )
+
 
 
     except Exception as e:
@@ -278,3 +296,18 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
     return submission
     #import pdb;pdb.set_trace()
 
+def getBestBalancedAccuracy(predictions, labels):
+	#predictions and labels are one-dimensional array, with the same index corresponding to the same instance/bag
+	min_val = min(predictions)
+	max_val = max(predictions)
+	num_threshold = 100
+	delta = (max_val -min_val)/float(num_threshold)
+	best_threshold = None
+	best_BBA = None
+	for threshold_index in range(, num_threshold+1):
+		threshold = min_val + threshold_index* delta
+		temp = np.average( [ np.average( predictions[labels]>threshold ) ,   np.average( predictions[labels==False]<threshold ) ]  )
+		if best_BBA is None or best_BBA < temp:
+			best_BBA = temp
+			best_threshold = threshold
+	return best_threshold, best_BBA
