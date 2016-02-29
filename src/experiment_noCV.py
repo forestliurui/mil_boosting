@@ -304,7 +304,7 @@ def getBestBalancedAccuracy(predictions, labels):
 	#predictions and labels are one-dimensional array, with the same index corresponding to the same instance/bag
 	min_val = min(predictions)
 	max_val = max(predictions)
-	num_threshold = 100
+	num_threshold = 500
 	delta = (max_val -min_val)/float(num_threshold)
 	best_threshold = None
 	best_BBA = None
