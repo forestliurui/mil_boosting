@@ -276,17 +276,21 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
 		
 		if train.bag_labels.size > 1:
 			submission['statistics_boosting']['train_bag_best_threshold_for_balanced_accuracy'], submission['statistics_boosting']['train_bag_best_balanced_accuracy'] = getBestBalancedAccuracy(train_bag_labels, train.bag_labels)
+			print ('Train (Best Threshold, Best balanced accuracy) -- bag %f , %f' % (submission['statistics_boosting']['train_bag_best_threshold_for_balanced_accuracy'], submission['statistics_boosting']['train_bag_best_balanced_accuracy']))
 		if train.instance_labels.size > 1:
 			submission['statistics_boosting']['train_instance_best_threshold_for_balanced_accuracy'], submission['statistics_boosting']['train_instance_best_balanced_accuracy'] = getBestBalancedAccuracy(train_instance_labels, train.instance_labels)
+			print ('Train (Best Threshold, Best balanced accuracy) --inst %f , %f' % (submission['statistics_boosting']['train_instance_best_threshold_for_balanced_accuracy'], submission['statistics_boosting']['train_instance_best_balanced_accuracy']))
 		if test.bag_labels.size > 1:
 			submission['statistics_boosting']['test_bag_best_threshold_for_balanced_accuracy'], submission['statistics_boosting']['test_bag_best_balanced_accuracy'] = getBestBalancedAccuracy(bag_predictions, test.bag_labels)
 			threshold_temp = submission['statistics_boosting']['train_bag_best_threshold_for_balanced_accuracy']
 			submission['statistics_boosting']['test_bag_best_balanced_accuracy_with_threshold_from_train'] = np.average( [ np.average( bag_predictions[test.bag_labels]>threshold_temp ) ,   np.average( bag_predictions[test.bag_labels==False]<threshold_temp ) ]  )
-
+			print ('Test (Best Threshold, Best balanced accuracy, Best balanced accuracy with thres from train) -- bag %f , %f, %f' % (submission['statistics_boosting']['test_bag_best_threshold_for_balanced_accuracy'], submission['statistics_boosting']['test_bag_best_balanced_accuracy'], submission['statistics_boosting']['test_bag_best_balanced_accuracy_with_threshold_from_train']))
+	
 		if test.instance_labels.size > 1:
 			submission['statistics_boosting']['test_instance_best_threshold_for_balanced_accuracy'], submission['statistics_boosting']['test_instance_best_balanced_accuracy'] = getBestBalancedAccuracy(instance_predictions, test.instance_labels)
 			threshold_temp = submission['statistics_boosting']['train_instance_best_threshold_for_balanced_accuracy']
 			submission['statistics_boosting']['test_instance_best_balanced_accuracy_with_threshold_from_train'] = np.average( [ np.average( instance_predictions[test.instance_labels]>threshold_temp ) ,   np.average( instance_predictions[test.instance_labels==False]<threshold_temp ) ]  )
+			print ('Test (Best Threshold, Best balanced accuracy, Best balanced accuracy with thres from train) --inst %f , %f, %f' % (submission['statistics_boosting']['test_instance_best_threshold_for_balanced_accuracy'], submission['statistics_boosting']['test_instance_best_balanced_accuracy'], submission['statistics_boosting']['test_instance_best_balanced_accuracy_with_threshold_from_train']))
 
 
 
