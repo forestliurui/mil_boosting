@@ -304,7 +304,7 @@ def getBestBalancedAccuracy(predictions, labels):
 	delta = (max_val -min_val)/float(num_threshold)
 	best_threshold = None
 	best_BBA = None
-	for threshold_index in range(, num_threshold+1):
+	for threshold_index in range( num_threshold+1):
 		threshold = min_val + threshold_index* delta
 		temp = np.average( [ np.average( predictions[labels]>threshold ) ,   np.average( predictions[labels==False]<threshold ) ]  )
 		if best_BBA is None or best_BBA < temp:
