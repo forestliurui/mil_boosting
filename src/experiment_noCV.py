@@ -20,6 +20,7 @@ from martiboost_nondistributed import MartiBoost
 from martiboost_max_nondistributed import MartiBoost_max
 from martiboost_median_nondistributed import MartiBoost_median
 from Adaboost_nondistributed import AdaBoost
+from RankBoost_m3_nondistributed import RankBoost_m3
 
 INSTANCE_PREDICTIONS = True
 INSTANCE_PREDICTIONS_SIL = True
@@ -31,7 +32,8 @@ CLASSIFIERS = {
     'martiboost': MartiBoost,
     'martiboost_max': MartiBoost_max,
     'martiboost_median': MartiBoost_median,
-    'adaboost': AdaBoost,	
+    'adaboost': AdaBoost,
+    'rankboost_m3': RankBoost_m3,	
     'svm': MIKernelSVM,
     'svr': MIKernelSVR,
     'embedded_svm' : EmbeddedSpaceSVM,
