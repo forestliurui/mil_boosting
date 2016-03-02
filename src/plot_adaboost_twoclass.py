@@ -37,6 +37,7 @@ from sklearn.svm import SVC
 from RankBoost_nondistributed import RankBoost
 from martiboost_nondistributed import MartiBoost
 from MIBoosting_Xu_nondistributed import MIBoosting_Xu
+from RankBoost_m3_nondistributed import RankBoost_m3
 
 from mi_svm import SVM
 import data
@@ -91,7 +92,7 @@ def get_bag_label(instance_predictions, bags):
 
 print "load dataset"
 #import pdb;pdb.set_trace()
-
+'''
 # Construct dataset v0
 X1, y1 = make_gaussian_quantiles(cov=2.,
                                  n_samples=200, n_features=2,
@@ -111,7 +112,7 @@ X2, y2 = make_gaussian_quantiles(mean=(3, 3), cov=1.5,
                                  n_classes=2, random_state=1)
 X = np.concatenate((X1, X2))
 y = np.concatenate((y1, - y2 + 1))
-
+'''
 f0_max = np.max( abs(X)[:,0] ) #scale the data to be within the unit box
 f1_max = np.max( abs(X)[:,1] )
 import pdb;pdb.set_trace()
@@ -127,7 +128,6 @@ y=np.array([1,1, -1, -1])
 X=np.array([[1,0],[-2,0],[0, -2], [0, 2]])
 y=np.array([1,1, -1, -1])
 #import pdb;pdb.set_trace()
-
 
 # construct dataset v4 -- banana~goldmedal
 pkl_file = open('banana_goldmedal.pkl', 'rb')
@@ -157,13 +157,13 @@ y= 2*train_class.instance_labels_SIL - 1 #convert the boolean values to +1/-1 va
 bdt = AdaBoostClassifier(MLPClassifier(hidden_layer_sizes = ()),
 			algorithm="SAMME",
                          n_estimators=30)
-'''
+
 
 #AdaBoosted decision tree
 bdt = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1),
                          algorithm="SAMME",
-                         n_estimators=30)
-'''
+                         n_estimators=300)
+
 #linear svm+adaboost
 params = {'C': 100000000, 'kernel': 'linear'}
 bdt = AdaBoostClassifier(SVC(**params),
@@ -202,11 +202,15 @@ bdt = MartiBoost(**params)
 params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 200}
 bdt1 = MIBoosting_Xu(**params)
 '''
+#rankboost_m3
+params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 2000}
+bdt = RankBoost_m3(**params)
+
 print "fitting the training set"
 bdt.fit(X, y)
 #bdt1.fit(train_class.bags, train_class.bag_labels)
 print "fitting completed"
-
+'''
 import pdb;pdb.set_trace()
 predictions_test = bdt.predict(test_class.instances)
 bag_predictions_test = get_bag_label(predictions_test, test_class.bags)
@@ -223,6 +227,7 @@ print np.average( (predictions_train == 1 )== train_class.instance_labels_SIL  )
 print "for bdt2"
 print np.average((bdt1.predict(test_class.bags)>0 )==test_class.bag_labels)
 import pdb;pdb.set_trace()
+'''
 
 plot_colors = "br"
 plot_step = 0.02
