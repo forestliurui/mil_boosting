@@ -30,7 +30,7 @@ folds: [10, 5]
 parameters:
   - classifier: rankboost
     weak_classifier: dtree_stump
-    max_iter_boosting: 100
+    max_iter_boosting: 500
     normalization: none
     search:
         type: random
