@@ -72,7 +72,8 @@ def draw_plot1(directory, outputfile_name):
 
 
 	#statistics_name = ['test_instance_AUC', 'train_instance_AUC', 'test_bag_AUC', 'train_bag_AUC', 'test_instance_balanced_accuracy', 'train_instance_balanced_accuracy', 'test_bag_balanced_accuracy', 'train_bag_balanced_accuracy']
-	statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
+	#statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
+	statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy', 'test_instance_best_balanced_accuracy', 'test_bag_best_balanced_accuracy']
 	results = {}
 	dataset_names = []
 	for statistic in statistics_name:
@@ -92,7 +93,8 @@ def draw_plot1(directory, outputfile_name):
 		for stat_index in range(len(statistics_name)):
 			stat_name = statistics_name[stat_index]
 			#plt.subplot(4, math.ceil( len(statistics_name)/3), stat_index+1)
-			plt.subplot(2, 2, stat_index+1)
+			#plt.subplot(2, 2, stat_index+1)
+			plt.subplot(3, 2, stat_index+1)
 			plt.yticks(fontsize = 25)
 			plt.xticks(fontsize = 25)
 			plt.xlabel('Boosting Iterations', fontsize = 30)
