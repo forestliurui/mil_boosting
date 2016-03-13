@@ -142,7 +142,7 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
     bag_predictions = classifier.predict(test.bags, boosting_round)
     timer.stop('test_bag_predict')
 
-    if INSTANCE_PREDICTIONS:
+    if True:
         print 'Computing test instance predictions...'
         timer.start('test_instance_predict')
         instance_predictions = classifier.predict(test.instances_as_bags, boosting_round)
@@ -153,7 +153,7 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
     train_bag_labels = classifier.predict(train.bags, boosting_round) # Saves results from training set
     timer.stop('train_bag_predict')
 
-    if INSTANCE_PREDICTIONS:
+    if True:
         print 'Computing train instance predictions...'
         timer.start('train_instance_predict')
         train_instance_labels = classifier.predict(train.instances_as_bags, boosting_round)
