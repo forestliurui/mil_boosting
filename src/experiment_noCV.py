@@ -22,7 +22,8 @@ from martiboost_median_nondistributed import MartiBoost_median
 from Adaboost_nondistributed import AdaBoost
 from RankBoost_m3_nondistributed import RankBoost_m3
 
-INSTANCE_PREDICTIONS = True
+BAG_PREDICTIONS = False
+INSTANCE_PREDICTIONS = False
 INSTANCE_PREDICTIONS_SIL = True
 BEST_BALANCED_ACCURACY = True
 
@@ -167,10 +168,11 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
     submission['statistics_boosting'].update(timer.get_all('_time'))
     
     #construct submission for predictions
-    for i, y in zip(test.bag_ids, bag_predictions.flat):
-        submission['accum']['bag_predictions']['test'][i] = float(y)
-    for i, y in zip(train.bag_ids, train_bag_labels.flat):
-        submission['accum']['bag_predictions']['train'][i] = float(y)
+    if BAG_PREDICTIONS:
+    	for i, y in zip(test.bag_ids, bag_predictions.flat):
+        	submission['accum']['bag_predictions']['test'][i] = float(y)
+    	for i, y in zip(train.bag_ids, train_bag_labels.flat):
+        	submission['accum']['bag_predictions']['train'][i] = float(y)
     if INSTANCE_PREDICTIONS:
         for i, y in zip(test.instance_ids, instance_predictions.flat):
             submission['accum']['instance_predictions']['test'][i] = float(y)
@@ -210,7 +212,7 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
 
 	#import pdb;pdb.set_trace()
 
-        if INSTANCE_PREDICTIONS and train.instance_labels.size > 1:
+        if  train.instance_labels.size > 1:
 	    train_instance_accuracy = np.average( train.instance_labels== ( train_instance_labels > 0  ) , weights= instance_weights )
 	    if instance_weights == None:
 		 train_instance_balanced_accuracy= np.average( [ np.average( train_instance_labels[train.instance_labels]>0,  weights= instance_weights ) ,   np.average( train_instance_labels[train.instance_labels==False]<0 ,  weights= instance_weights) ] )
@@ -236,7 +238,7 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
   	    submission['statistics_boosting']['test_bag_accuracy']=test_bag_accuracy
 	    submission['statistics_boosting']['test_bag_balanced_accuracy']=test_bag_balanced_accuracy
 
-        if INSTANCE_PREDICTIONS and test.instance_labels.size > 1:
+        if  test.instance_labels.size > 1:
    	    test_instance_accuracy = np.average( test.instance_labels== ( instance_predictions > 0  ) , weights= instance_weights_test )
 	    if instance_weights_test != None:
 	    	test_instance_balanced_accuracy= np.average( [ np.average( instance_predictions[test.instance_labels]>0 ,  weights= instance_weights_test[test.instance_labels]) ,   np.average( instance_predictions[test.instance_labels==False]<0 ,  weights= instance_weights_test[test.instance_labels==False]) ]  )
