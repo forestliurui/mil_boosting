@@ -139,24 +139,29 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
 
     print 'Computing test bag predictions...'
     timer.start('test_bag_predict')
-    bag_predictions = classifier.predict(test.bags, boosting_round)
+    if boosting_round == 1:
+    	bag_predictions = classifier.predict(X_bags = test.bags, iter = boosting_round)
+    else:
+	bag_predictions = classifier.predict(iter = boosting_round)
     timer.stop('test_bag_predict')
 
     if True:
         print 'Computing test instance predictions...'
         timer.start('test_instance_predict')
-        instance_predictions = classifier.predict(test.instances_as_bags, boosting_round)
+	
+	
+        instance_predictions = classifier.predict(iter = boosting_round, getInstPrediction = True)
         timer.stop('test_instance_predict')
 
     print 'Computing train bag predictions...'
     timer.start('train_bag_predict')
-    train_bag_labels = classifier.predict(train.bags, boosting_round) # Saves results from training set
+    train_bag_labels = classifier.predict_train(iter = boosting_round) # Saves results from training set
     timer.stop('train_bag_predict')
 
     if True:
         print 'Computing train instance predictions...'
         timer.start('train_instance_predict')
-        train_instance_labels = classifier.predict(train.instances_as_bags, boosting_round)
+        train_instance_labels = classifier.predict_train( iter = boosting_round, getInstPrediction = True)
         timer.stop('train_instance_predict')
 
     print 'Constructing submission...'
@@ -297,10 +302,11 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
 			print ('Test (Best Threshold, Best balanced accuracy, Best balanced accuracy with thres from train) --inst %f , %f, %f' % (submission['statistics_boosting']['test_instance_best_threshold_for_balanced_accuracy'], submission['statistics_boosting']['test_instance_best_balanced_accuracy'], submission['statistics_boosting']['test_instance_best_balanced_accuracy_with_threshold_from_train']))
 
 
-
+    
     except Exception as e:
         print "Couldn't compute scores."
         print e
+    #import pdb;pdb.set_trace()
     return submission
     #import pdb;pdb.set_trace()
 

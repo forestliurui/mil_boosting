@@ -110,6 +110,11 @@ class MartiBoost(object):
 
 		self.parameters = parameters
 
+		self.X_bags_test = None
+		self.X_bags = None
+		self.y_labels = None
+		self.X_instances = None
+
 	def fit(self, X_bags, y_labels):
 		'''
 		X_bags is a list of arrays, each bag is an array in the list
@@ -118,7 +123,7 @@ class MartiBoost(object):
 		'''
 		
 		
-
+		
 		if type(y_labels)!=list:
 			y_labels=y_labels.tolist()
 		
@@ -136,10 +141,14 @@ class MartiBoost(object):
 			
 
 			instance_labels_generated_from_bag_labels=[y_labels[bag_index]*np.ones((1, num_instance_each_bag[bag_index]))[0] for bag_index in range(num_bags)  ]
-			instance_labels_generated_from_bag_labels=np.hstack((instance_labels_generated_from_bag_labels))		
+			instance_labels_generated_from_bag_labels=np.hstack((instance_labels_generated_from_bag_labels))	
+			self.X_bags = X_bags
+			self.y_labels = y_labels 
+			self.X_instances = instances	
 		else:
 			instances = X_bags
 			instance_labels_generated_from_bag_labels = y_labels
+			self.X_instances = instances
 
 		instance_labels_generated_from_bag_labels = np.array( instance_labels_generated_from_bag_labels )
 		num_instances = instances.shape[0]
@@ -218,63 +227,101 @@ class MartiBoost(object):
 			
 			#current_level_list = next_level_list
 		#import pdb;pdb.set_trace()
+
+	def predict_train(self, iter = None, getInstPrediction = False):
+		if iter == None or iter > self.actul_boosting_iter:
+			iter = self.actul_boosting_iter
+
+		num_instances = self.X_instances.shape[0]
+		results = 0*np.ones((num_instances))
+		current_level_dict = self.weak_classifiers[iter]
+		for current_key in current_level_dict.keys():
+			current = current_level_dict[current_key]
+			if current.indices is None:
+				continue
 			
-	def _predict(self, X, iter = None):
+			if current_key < iter/float(2):
+				results[current.indices] = -1
+			else:
+				results[current.indices] = 1
+
+		#import pdb;pdb.set_trace()
+		if getInstPrediction: #get instance level predictions
+			return results   #the output is either 1 or -1 for each prediction	
+		else: #get bag level predictions
+			if self.X_bags is None:
+				raise Exception("Can't get bag level prediction for training data due to the lack of training bag data")
+			else:
+				predictions_bag = get_bag_label(results, self.X_bags)
+				return predictions_bag
+
+
+		
+
+	def _predict(self, X = None, iter = None):
 
 		if iter == None or iter > self.actul_boosting_iter:
 			iter = self.actul_boosting_iter
-		num_instances_test = X.shape[0]	
+		if X is not None:
+			num_instances_test = X.shape[0]	
 
-		self.weakers = copy.deepcopy( self.weak_classifiers )		
+			self.weakers = copy.deepcopy( self.weak_classifiers )		
 		
-		#import pdb;pdb.set_trace()
-		#clear the data (instances_test and indices_test) for last test run
-		'''
-		for index_Boosting in range(iter):
-			current_level_dict = self.weakers[index_Boosting]
-			for current_key in current_level_dict.keys():
-				current = current_level_dict[current_key]
-				current.instances_test = None
-				current.indices_test = None
-		'''
-		#clear the data for last test run
+			#import pdb;pdb.set_trace()
+			#clear the data (instances_test and indices_test) for last test run
+			'''
+			for index_Boosting in range(iter):
+				current_level_dict = self.weakers[index_Boosting]
+				for current_key in current_level_dict.keys():
+					current = current_level_dict[current_key]
+					current.instances_test = None
+					current.indices_test = None
+			'''
+			#clear the data for last test run
 
-		self.weakers[0][0].instances_test = X
-		self.weakers[0][0].indices_test = np.array(range(num_instances_test))
+			self.weakers[0][0].instances_test = X
+			self.weakers[0][0].indices_test = np.array(range(num_instances_test))
 
-		for index_Boosting in range(iter):
-
-			current_level_dict = self.weakers[index_Boosting]
+			for index_Boosting in range(self.actul_boosting_iter):
+	
+				current_level_dict = self.weakers[index_Boosting]
 			
-			for current_key in current_level_dict.keys():
-				current = current_level_dict[current_key]
-				if current.instances_test is None:
-					continue
-				if current.classifier is None:
-					current.init_classifier(RandomClassifier())
+				for current_key in current_level_dict.keys():
+					current = current_level_dict[current_key]
+					if current.instances_test is None:
+						continue
+					if current.classifier is None:
+						current.init_classifier(RandomClassifier())
 				
-				current.predictions_test = current.classifier.predict(current.instances_test)
-
+					current.predictions_test = current.classifier.predict(current.instances_test)
 				
-				if index_Boosting+1 not in self.weakers.keys():
-					self.weakers[ index_Boosting+1 ] = {}					
+				
+					if index_Boosting+1 not in self.weakers.keys():
+						self.weakers[ index_Boosting+1 ] = {}					
 
-				#instance_classifier = WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters) #left child--baised to negative predictions
+					#instance_classifier = WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters) #left child--baised to negative predictions
 
-				if current_key not in self.weakers[ index_Boosting+1 ].keys():
-					self.weakers[ index_Boosting+1 ][current_key] = TreeNode()	
-				self.weakers[ index_Boosting+1 ][current_key].update_instances_test(current.instances_test[current.predictions_test <0], current.indices_test[current.predictions_test <0])
+					if current_key not in self.weakers[ index_Boosting+1 ].keys():
+						self.weakers[ index_Boosting+1 ][current_key] = TreeNode()	
+					self.weakers[ index_Boosting+1 ][current_key].update_instances_test(current.instances_test[current.predictions_test <0], current.indices_test[current.predictions_test <0])
 				
 		
-				instance_classifier = WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
+					instance_classifier = WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
 
-				if current_key+1 not in self.weakers[ index_Boosting+1 ].keys():
-					self.weakers[ index_Boosting+1 ][current_key+1] = TreeNode()
-				self.weakers[ index_Boosting+1 ][current_key+1].update_instances_test(current.instances_test[current.predictions_test >= 0], current.indices_test[current.predictions_test >=0])
-		#import pdb;pdb.set_trace()
+					if current_key+1 not in self.weakers[ index_Boosting+1 ].keys():
+						self.weakers[ index_Boosting+1 ][current_key+1] = TreeNode()
+					self.weakers[ index_Boosting+1 ][current_key+1].update_instances_test(current.instances_test[current.predictions_test >= 0], current.indices_test[current.predictions_test >=0])
+			#import pdb;pdb.set_trace()
+		else:
+			if type(self.X_bags_test) != list:  # treat it as normal supervised learning setting
+
+				num_instances_test = self.X_bags_test.shape[0]
+			else:
+				X_instances_test = np.vstack(self.X_bags_test)
+				num_instances_test = X_instances_test.shape[0]
 
 		results = 0*np.ones((num_instances_test))
-		current_level_dict = self.weakers[iter]
+		current_level_dict = self.weakers[iter] #To see the results of one layer, we need to look at layer #1
 		for current_key in current_level_dict.keys():
 			current = current_level_dict[current_key]
 			if current.indices_test is None:
@@ -288,7 +335,7 @@ class MartiBoost(object):
 		#import pdb;pdb.set_trace()
 		return results   #the output is either 1 or -1 for each prediction
 
-	def predict(self, X_bags, iter = None):		
+	def predict(self, X_bags = None, iter = None, getInstPrediction = False):		
 
 		#X_bags is a list of arrays, each bag is an array in the list
 		#The row of array corresponds to instances in the bag, column corresponds to feature
@@ -302,31 +349,56 @@ class MartiBoost(object):
 		#import pdb;pdb.set_trace()
 
 		#print self.c
-		if type(X_bags) != list:  # treat it as normal supervised learning setting
-			#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
-			#import pdb;pdb.set_trace()
-			predictions_accum = self._predict(X_bags, iter)
-
-			return np.array(predictions_accum)
-		else:
-			
-			X_instances = np.vstack(X_bags)
-			predictions_accum = self._predict(X_instances, iter)
-			predictions_bag = get_bag_label(predictions_accum, X_bags)
-			return predictions_bag
-
-			''' #slow way 
-			num_bags=len(X_bags)
-			predictions_bag=[]
-			for index_bag in range(num_bags):
+		if X_bags is not None:
+			self.X_bags_test = X_bags
+			if type(X_bags) != list:  # treat it as normal supervised learning setting
+				#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
 				#import pdb;pdb.set_trace()
-				predictions_bag_temp= np.max( self._predict(X_bags[index_bag], iter) ) 
-				predictions_bag.append(predictions_bag_temp)
-			#import pdb; pdb.set_trace()
+				predictions_accum = self._predict(X = X_bags, iter = iter)
 
-			predictions_bag=np.array( predictions_bag )
-			return predictions_bag
-			'''
+				return np.array(predictions_accum)
+			else:
+			
+				X_instances = np.vstack(X_bags)
+				predictions_accum = self._predict(X = X_instances, iter = iter)
+
+				if getInstPrediction:  #return the instance level predictions for the input bags
+					return np.array(predictions_accum)
+				else:
+					predictions_bag = get_bag_label(predictions_accum, X_bags)
+					return predictions_bag
+
+				''' #slow way 
+				num_bags=len(X_bags)
+				predictions_bag=[]
+				for index_bag in range(num_bags):
+					#import pdb;pdb.set_trace()
+					predictions_bag_temp= np.max( self._predict(X_bags[index_bag], iter = iter) ) 
+					predictions_bag.append(predictions_bag_temp)
+				#import pdb; pdb.set_trace()
+
+				predictions_bag=np.array( predictions_bag )
+				return predictions_bag
+				'''
+		elif X_bags is None and self.X_bags_test is not None:
+			if type(self.X_bags_test) != list:  # treat it as normal supervised learning setting
+				#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
+				#import pdb;pdb.set_trace()
+				predictions_accum = self._predict(iter = iter)
+
+				return np.array(predictions_accum)
+			else:
+			
+				#X_instances = np.vstack(X_bags)
+				predictions_accum = self._predict(iter = iter)
+				if getInstPrediction:  #return the instance level predictions for the input bags
+					return np.array(predictions_accum)
+				else:
+					predictions_bag = get_bag_label(predictions_accum, self.X_bags_test)
+					return predictions_bag
+		else:
+			raise Exception('As the first time to call predict(), please specify the test dataset')
+
 def get_bag_label(instance_predictions, bags):
 	num_bag = len(bags)
 	p_index= 0
