@@ -33,7 +33,14 @@ class RankBoost_m3_pos(object):
 		self.weights_instance=[]
 		self.r = []
 		
-
+		self.weak_classifiers_pos = []
+		self.alphas_pos = []
+		self.predictions_pos_list_train = []
+		self.predictions_list_train = []
+		self.X_bags_test = None
+		self.X_bags = None
+		self.y_labels = None
+		self.X_instances = None
 
 	def fit(self, X_bags, y_labels):
 		'''
@@ -61,10 +68,14 @@ class RankBoost_m3_pos(object):
 			
 			
 			instance_labels_generated_from_bag_labels=[y_labels[bag_index]*np.ones((1, num_instance_each_bag[bag_index]))[0] for bag_index in range(num_bags)  ]
-			instance_labels_generated_from_bag_labels=np.hstack((instance_labels_generated_from_bag_labels))		
+			instance_labels_generated_from_bag_labels=np.hstack((instance_labels_generated_from_bag_labels))
+			self.X_bags = X_bags
+			self.y_labels = y_labels 
+			self.X_instances = instances		
 		else:
 			instances = X_bags
 			instance_labels_generated_from_bag_labels = y_labels
+			self.X_instances = instances
 
 		instance_labels_generated_from_bag_labels = np.array( instance_labels_generated_from_bag_labels )
 		num_instances = instances.shape[0]
@@ -99,6 +110,15 @@ class RankBoost_m3_pos(object):
 			self.r.append(  compute_r(np.array(instance_labels_generated_from_bag_labels), np.array(predictions), np.array(weights_inst) )  )
 			self.alphas.append(   0.5*np.log(  (float(1)+self.r[-1])/(1-self.r[-1])  )   )
 
+			#self.predictions_list_train.append(predictions.reshape((1, -1)))
+
+			if self.alphas[-1] > 0: #add only weak classifiers with positive weight
+
+				self.alphas_pos.append(self.alphas[-1])
+				self.weak_classifiers_pos.append(copy.deepcopy(instance_classifier))
+				self.predictions_pos_list_train.append(predictions.reshape((1, -1)))
+	
+
 			Z={}
 			Z["positive"]=0
 			Z["negative"]=0
@@ -119,50 +139,120 @@ class RankBoost_m3_pos(object):
 		self.actual_rounds_of_boosting = len(self.alphas)
 			
 
-	def predict(self, X_bags, iter = None):
+	def predict_train(self, iter = None, getInstPrediction = False):
+
+
+		self.c_pos = self.alphas_pos
+		threshold = 0.5
+		if iter == None or iter > len(self.c_pos):
+			iter = len(self.c_pos)
+
+		predictions_accum = np.matrix(self.c_pos[0:iter])*np.matrix( np.vstack((self.predictions_pos_list_train[0:iter])) )/np.sum(self.c_pos[0:iter])
+		results = np.array(predictions_accum)[0] - threshold
+
+		if getInstPrediction:
+			return results
+		else: #get bag level predictions
+			if self.X_bags is None:
+				raise Exception("Can't get bag level prediction for training data due to the lack of training bag data")
+			else:
+				predictions_bag = get_bag_label(results, self.X_bags)
+				return predictions_bag
+
+
+	def _predict(self, X = None, iter = None):
+		"""
+		X is assumed to be two dimensional array, each row corresponding to an instance
+		"""
+		
+		self.c_pos = self.alphas_pos
+		threshold = 0.5
+
+		if iter == None or iter > len(self.c_pos):
+			iter = len(self.c_pos)
+		if X is not None:
+			
+		
+				
+
+			predictions_list = [( instance_classifier.predict(X).reshape((1, -1))>0 )+ 0 for instance_classifier in self.weak_classifiers_pos ]
+			self.predictions_list_test = predictions_list
+			#import pdb;pdb.set_trace()
+			predictions_accum = np.matrix(self.c_pos[0:iter])*np.matrix( np.vstack((predictions_list[0:iter])) )/np.sum(self.c_pos[0:iter])
+
+			#import pdb;pdb.set_trace()
+			return np.array(predictions_accum)[0] - threshold   #we need to deduct a threshold because (instance_classifier.predict > 0) + 0 is either 0 or 1
+		else:
+			predictions_accum = np.matrix(self.c_pos[0:iter])*np.matrix( np.vstack((self.predictions_list_test[0:iter])) )/np.sum(self.c_pos[0:iter])
+
+			#import pdb;pdb.set_trace()
+			return np.array(predictions_accum)[0] - threshold   #we need to deduct a threshold because (instance_classifier.predict > 0) + 0 is either 0 or 1
+
+
+	def predict(self, X_bags = None, iter = None, getInstPrediction = False):
 		#X_bags is a list of arrays, each bag is an array in the list
 		#The row of array corresponds to instances in the bag, column corresponds to feature
 
 		#predictions_bag is the returned array of predictions which are real values 
-		threshold = 0.5
-		self.c=self.alphas
-		if iter == None or iter > len(self.c):
-			iter = len(self.c)
+		
+		self.c_pos = self.alphas_pos
+		if iter == None or iter > len(self.c_pos):
+			iter = len(self.c_pos)
 	
-		print "self.c: ",
-		print len(self.c)
-		if type(X_bags) != list:  # treat it as normal supervised learning setting
-			#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
-			predictions_list = [ instance_classifier.predict_proba(X_bags)[:,1].reshape((1, -1))  for instance_classifier in self.weak_classifiers ]
-			#import pdb;pdb.set_trace()
-			predictions_accum = np.matrix(self.c[0:iter])*np.matrix( np.vstack((predictions_list[0:iter])) )/np.sum(self.c[0:iter])
+		#print "self.c: ",
+		print len(self.c_pos)
+		if X_bags is not None:
+			self.X_bags_test = X_bags
 
-			#import pdb;pdb.set_trace()
-			#return (np.array(predictions_accum)[0] - threshold)>0 + 0   #binary output: we need to deduct a threshold because instance_classifier.predict_proba is within range [0, 1]
-			return np.array(predictions_accum)[0] - threshold   #output in range [-0.5, 0.5]: we need to deduct a threshold because instance_classifier.predict_proba is within range [0, 1]
-		else:
+			if type(X_bags) != list:  # treat it as normal supervised learning setting
+				#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
+				return self._predict(X = X_bags, iter = iter)
+				
+			else:
 
-			X_instances = np.vstack(X_bags)
-			predictions_accum = self.predict(X_instances, iter)
-			predictions_bag = get_bag_label(predictions_accum, X_bags)
-			return predictions_bag
+				X_instances = np.vstack(X_bags)
+				predictions_accum = self._predict(X = X_instances, iter =  iter)
+				if getInstPrediction:  #return the instance level predictions for the input bags
+					return predictions_accum
+				else:
+					predictions_bag = get_bag_label(predictions_accum, X_bags)
+					return predictions_bag
 
-			'''slow way
-			num_bags=len(X_bags)
-			predictions_bag=[]
-			#print len(self.c)
-			#print self.c
-			#print len(self.weak_classifiers)
-			for index_bag in range(num_bags):
+				'''slow way
+				num_bags=len(X_bags)
+				predictions_bag=[]
+				#print len(self.c)
+				#print self.c
+				#print len(self.weak_classifiers)
+				for index_bag in range(num_bags):
+					#import pdb;pdb.set_trace()
+					predictions_bag_temp=np.average( [ np.max( instance_classifier.predict(X_bags[index_bag]) )  for instance_classifier in self.weak_classifiers  ][0:iter]  ,  weights=self.c[0:iter] )/np.sum(self.c[0:iter]) - threshold 
+
+					predictions_bag.append(predictions_bag_temp)
+				#import pdb; pdb.set_trace()
+
+				predictions_bag=np.array( predictions_bag )
+				return predictions_bag
+				'''
+		elif X_bags is None and self.X_bags_test is not None:
+			if type(self.X_bags_test) != list:  # treat it as normal supervised learning setting
+				#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
 				#import pdb;pdb.set_trace()
-				predictions_bag_temp=np.average( [ np.max( instance_classifier.predict(X_bags[index_bag]) )  for instance_classifier in self.weak_classifiers  ][0:iter]  ,  weights=self.c[0:iter] )/np.sum(self.c[0:iter]) - threshold 
+				predictions_accum = self._predict(iter = iter)
 
-				predictions_bag.append(predictions_bag_temp)
-			#import pdb; pdb.set_trace()
-
-			predictions_bag=np.array( predictions_bag )
-			return predictions_bag
-			'''
+				return np.array(predictions_accum)
+			else:
+			
+				#X_instances = np.vstack(X_bags)
+				predictions_accum = self._predict(iter = iter)
+				if getInstPrediction:  #return the instance level predictions for the input bags
+					return np.array(predictions_accum)
+				else:
+					predictions_bag = get_bag_label(predictions_accum, self.X_bags_test)
+					return predictions_bag
+		else:
+			raise Exception('As the first time to call predict(), please specify the test dataset')
+			
 
 	def predict_inst(self, X_bags):
 		#X_bags is a list of arrays, each bag is an array in the list
@@ -179,6 +269,7 @@ class RankBoost_m3_pos(object):
 		import pdb; pdb.set_trace()
 
 		return predictions_inst
+
 def compute_r(labels, predictions, weights):
 	"""
 	predictions are in the range [0, 1]
