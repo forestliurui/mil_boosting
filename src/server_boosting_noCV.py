@@ -664,7 +664,7 @@ def start_experiment_noCV(configuration_file, results_root_dir):
 
     server = ExperimentServer(task_dict, param_dict, render)
     cherrypy.config.update({'server.socket_port': PORT,
-                            'server.socket_host': '0.0.0.0'})
+                            'server.socket_host': '0.0.0.0','response.timeout': 3000})
     cherrypy.quickstart(server)
 
 def start_experiment(configuration_file, results_root_dir):
