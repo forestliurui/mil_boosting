@@ -41,6 +41,7 @@ class RankBoost_pos(object):
 		self.alphas_pos = []
 		self.weights_instance=[]
 
+		self.predictions_pos_list_train = []
 		self.predictions_list_train = []
 		self.X_bags_test = None
 		self.X_bags = None
@@ -124,6 +125,7 @@ class RankBoost_pos(object):
 			if self.alphas[-1] > 0:  #add only weak classifiers with positive weight
 				self.alphas_pos.append(self.alphas[-1])
 				self.weak_classifiers_pos.append(copy.deepcopy(instance_classifier))
+				self.predictions_pos_list_train.append(predictions.reshape((1, -1)))
 
 			Z={}
 			Z["positive"]=1-self.epsilon["positive"][-1]+np.sqrt( self.epsilon["positive"][-1]*self.epsilon["negative"][-1] )
@@ -143,7 +145,7 @@ class RankBoost_pos(object):
 		if iter == None or iter > len(self.c_pos):
 			iter = len(self.c_pos)
 
-		predictions_accum = np.matrix(self.c_pos[0:iter])*np.matrix( np.vstack((self.predictions_list_train)) )/np.sum(self.c_pos[0:iter])
+		predictions_accum = np.matrix(self.c_pos[0:iter])*np.matrix( np.vstack((self.predictions_pos_list_train[0:iter])) )/np.sum(self.c_pos[0:iter])
 		results = np.array(predictions_accum)[0] - threshold
 
 		if getInstPrediction:
@@ -174,12 +176,12 @@ class RankBoost_pos(object):
 			predictions_list = [( instance_classifier.predict(X).reshape((1, -1))>0 )+ 0 for instance_classifier in self.weak_classifiers_pos ]
 			self.predictions_list_test = predictions_list
 			#import pdb;pdb.set_trace()
-			predictions_accum = np.matrix(self.c_pos[0:iter])*np.matrix( np.vstack((predictions_list)) )/np.sum(self.c_pos[0:iter])
+			predictions_accum = np.matrix(self.c_pos[0:iter])*np.matrix( np.vstack((predictions_list[0:iter])) )/np.sum(self.c_pos[0:iter])
 
 			#import pdb;pdb.set_trace()
 			return np.array(predictions_accum)[0] - threshold   #we need to deduct a threshold because (instance_classifier.predict > 0) + 0 is either 0 or 1
 		else:
-			predictions_accum = np.matrix(self.c_pos[0:iter])*np.matrix( np.vstack((self.predictions_list_test)) )/np.sum(self.c_pos[0:iter])
+			predictions_accum = np.matrix(self.c_pos[0:iter])*np.matrix( np.vstack((self.predictions_list_test[0:iter])) )/np.sum(self.c_pos[0:iter])
 
 			#import pdb;pdb.set_trace()
 			return np.array(predictions_accum)[0] - threshold   #we need to deduct a threshold because (instance_classifier.predict > 0) + 0 is either 0 or 1
@@ -197,7 +199,7 @@ class RankBoost_pos(object):
 	
 		#print "self.c: ",
 		print len(self.c_pos)
-		if X_bags in not None:
+		if X_bags is not None:
 			self.X_bags_test = X_bags
 
 			if type(X_bags) != list:  # treat it as normal supervised learning setting

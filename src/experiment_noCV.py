@@ -21,6 +21,8 @@ from martiboost_max_nondistributed import MartiBoost_max
 from martiboost_median_nondistributed import MartiBoost_median
 from Adaboost_nondistributed import AdaBoost
 from RankBoost_m3_nondistributed import RankBoost_m3
+from RankBoost_pos_nondistributed import RankBoost_pos
+from RankBoost_m3_pos_nondistributed import RankBoost_m3_pos
 
 BAG_PREDICTIONS = False
 INSTANCE_PREDICTIONS = False
@@ -28,7 +30,9 @@ INSTANCE_PREDICTIONS_SIL = True
 BEST_BALANCED_ACCURACY = True
 
 CLASSIFIERS = {
-    'rankboost': RankBoost,	
+    'rankboost': RankBoost,
+    'rankboost_pos': RankBoost_pos,
+    'rankboost_m3_pos': RankBoost_m3_pos,	
     'miboosting_xu': MIBoosting_Xu,
     'martiboost': MartiBoost,
     'martiboost_max': MartiBoost_max,
