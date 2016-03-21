@@ -119,13 +119,15 @@ class RankBoost_pos(object):
 
 			if self.epsilon["negative"][-1] == 0:
 				self.alphas.append(20)
-				break
-			
-			self.alphas.append(0.5*np.log(self.epsilon["positive"][-1]/self.epsilon["negative"][-1]))
+				#break
+			else:
+				self.alphas.append(0.5*np.log(self.epsilon["positive"][-1]/self.epsilon["negative"][-1]))
 			if self.alphas[-1] > 0:  #add only weak classifiers with positive weight
 				self.alphas_pos.append(self.alphas[-1])
 				self.weak_classifiers_pos.append(copy.deepcopy(instance_classifier))
 				self.predictions_pos_list_train.append(predictions.reshape((1, -1)))
+			if self.epsilon["negative"][-1] == 0:
+				break
 
 			Z={}
 			Z["positive"]=1-self.epsilon["positive"][-1]+np.sqrt( self.epsilon["positive"][-1]*self.epsilon["negative"][-1] )
@@ -136,7 +138,7 @@ class RankBoost_pos(object):
 				else:
 					weights_inst[inst_index] = weights_inst[inst_index]*np.exp(+self.alphas[-1]*predictions[inst_index])/Z["negative"]
 		self.actual_rounds_of_boosting = len(self.alphas)
-	
+		#import pdb;pdb.set_trace()
 	def predict_train(self, iter = None, getInstPrediction = False):
 
 

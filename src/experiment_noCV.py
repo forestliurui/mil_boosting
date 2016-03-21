@@ -26,8 +26,10 @@ from RankBoost_m3_pos_nondistributed import RankBoost_m3_pos
 
 BAG_PREDICTIONS = False
 INSTANCE_PREDICTIONS = False
-INSTANCE_PREDICTIONS_SIL = True
-BEST_BALANCED_ACCURACY = True
+INSTANCE_PREDICTIONS_SIL = False
+BEST_BALANCED_ACCURACY = False
+
+ERROR_BOUND = True
 
 CLASSIFIERS = {
     'rankboost': RankBoost,
@@ -304,6 +306,16 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
 			threshold_temp = submission['statistics_boosting']['train_instance_best_threshold_for_balanced_accuracy']
 			submission['statistics_boosting']['test_instance_best_balanced_accuracy_with_threshold_from_train'] = np.average( [ np.average( instance_predictions[test.instance_labels]>threshold_temp ) ,   np.average( instance_predictions[test.instance_labels==False]<threshold_temp ) ]  )
 			print ('Test (Best Threshold, Best balanced accuracy, Best balanced accuracy with thres from train) --inst %f , %f, %f' % (submission['statistics_boosting']['test_instance_best_threshold_for_balanced_accuracy'], submission['statistics_boosting']['test_instance_best_balanced_accuracy'], submission['statistics_boosting']['test_instance_best_balanced_accuracy_with_threshold_from_train']))
+
+	if ERROR_BOUND:
+		submission['statistics_boosting']['ranking_error'] = classifier.getRankingError( boosting_round )
+		submission['statistics_boosting']['ranking_error_bound'] = classifier.getRankingErrorBound( boosting_round )
+
+		print("Ranking Error: %s, Upper Bound: %s" % (submission['statistics_boosting']['ranking_error'], submission['statistics_boosting']['ranking_error_bound']))
+		#if boosting_round == classifier.actual_rounds_of_boosting:
+		if boosting_round == classifier.actual_rounds_of_boosting:
+			print classifier.getRankingErrorOneClassifier(iter = classifier.actual_rounds_of_boosting - 1)
+			import pdb;pdb.set_trace()
 
 
     

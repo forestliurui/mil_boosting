@@ -3,6 +3,8 @@ import glob
 import matplotlib.pyplot as plt
 import math
 import matplotlib
+from scipy.stats.mstats import rankdata
+import numpy as np
 
 def get_results(directory, statistic_name):
 	
@@ -68,9 +70,86 @@ def draw_plot(results, statistic_name,  outputfile_name):
 	     	plt.title(dataset_name)
 	plt.savefig(outputfile_name)
 
+def generateRank(directory, outputfile_name):
+	
+	boosting_round = 150
+
+	statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
+	statistics_name_best = ['test_instance_best_balanced_accuracy',  'test_bag_best_balanced_accuracy']
+	
+	statistics_name += statistics_name_best
+	
+	results = {}
+	dataset_names = []
+	method_names = []
+
+	ranks = {}
+	ranks_average = {}
+	for statistic in statistics_name:
+		results[statistic] = get_results(directory, statistic)
+		dataset_names += results[statistic].keys()
+		ranks[statistic] = {}
+		for dataset_name in results[statistic].keys():
+			method_names+=results[statistic][dataset_name].keys()
+			
+	dataset_names = set(dataset_names)
+	method_names = set(method_names)
+	for statistic in statistics_name:
+		if statistic not in ranks:
+			ranks[statistic] = {}
+		if statistic not in ranks_average:
+			ranks_average[statistic] = {}
+		for dataset_name in results[statistic].keys():
+			 
+			raw_data_per_stat_dataset = []
+			for method_name in method_names:
+				
+				if boosting_round < len(results[statistic][dataset_name][method_name]):
+					raw_data_per_stat_dataset.append(results[statistic][dataset_name][method_name][boosting_round])
+				else:
+					raw_data_per_stat_dataset.append(results[statistic][dataset_name][method_name][-1])
+
+			raw_rank = rankdata(map(lambda x: -float(x), raw_data_per_stat_dataset))
+			index = 0
+			for method_name in method_names:
+				if method_name not in ranks[statistic]:
+					ranks[statistic][method_name] = []
+				ranks[statistic][method_name].append(raw_rank[index])
+				
+				index += 1
+
+		for method_name in method_names:
+			if method_name not in ranks_average[statistic]:
+				ranks_average[statistic][method_name] ={}
+			ranks_average[statistic][method_name]["rank"] = np.average(ranks[statistic][method_name])
+			ranks_average[statistic][method_name]["num_dataset"] = len(ranks[statistic][method_name])
+
+		#import pdb;pdb.set_trace()
+		output_file_name_extended = statistic+"_"+outputfile_name
+		
+		for method_name in method_names:
+			line = method_name
+			line += ","
+			line += str(ranks_average[statistic][method_name]["num_dataset"])
+			line += ","
+			line += str(ranks_average[statistic][method_name]["rank"])
+			line += "\n"
+			#import pdb;pdb.set_trace()
+
+			with open(output_file_name_extended, 'a+') as f:
+				f.write(line)
+			
+
+			
+ 
+			
+
+	
+	
+
 def draw_plot1(directory, outputfile_name):
 
-	colors={'rankboost':'r', 'miboosting_xu':'b','adaboost':'k', 'martiboost':'c', 'martiboost_median':'y','rankboost_m3':'m'}
+	colors={'rankboost':'r', 'miboosting_xu':'b','adaboost':'k', 'martiboost':'c', 'rankboost_pos':'y','rankboost_m3':'m', 'rankboost_m3_pos':'g'}
 
 
 	#statistics_name = ['test_instance_AUC', 'train_instance_AUC', 'test_bag_AUC', 'train_bag_AUC', 'test_instance_balanced_accuracy', 'train_instance_balanced_accuracy', 'test_bag_balanced_accuracy', 'train_bag_balanced_accuracy']
@@ -139,5 +218,8 @@ if __name__ == '__main__':
 	outputfile_name = args[2]
 
 	draw_plot1(directory, outputfile_name)
+	
+	#generateRank(directory, outputfile_name)
+
 	#results = get_results(directory, statistic_name)
 	#draw_plot(results, statistic_name,  outputfile_name)
