@@ -117,7 +117,7 @@ class MIBoosting_Xu(object):
 
 	def predict_train(self, iter = None, getInstPrediction = False):
 		
-		self.c = self.alphas
+		
 
 		if iter == None or iter > len(self.c):
 			iter = len(self.c)
@@ -142,7 +142,7 @@ class MIBoosting_Xu(object):
 		X is assumed to be two dimensional array, each row corresponding to an instance
 		"""
 
-		self.c = self.alphas
+		
 
 		if iter == None or iter > self.actual_rounds_of_boosting:
 			iter = self.actual_rounds_of_boosting
@@ -167,7 +167,7 @@ class MIBoosting_Xu(object):
 
 		#predictions_bag is the returned array of predictions which are real values 
 		
-		self.c = self.alphas
+		
 		if iter == None or iter > len(self.c):
 			iter = len(self.c)
 	
