@@ -35,6 +35,15 @@ class MIBoosting_Xu(object):
 		self.error_bags = []
 		self.weights_bags = []
 		self.weights_instances = []
+
+		self.X_bags_test = None
+		self.X_bags = None
+		self.y_labels = None
+		self.X_instances = None
+
+		self.instance_labels_generated_from_bag_labels = None
+
+
 	def fit(self, X_bags, y_labels):
 		#X_bags is a list of arrays, each bag is an array in the list
 		#The row of array corresponds to instances in the bag, column corresponds to feature
@@ -58,7 +67,12 @@ class MIBoosting_Xu(object):
 		instance_labels_generated_from_bag_labels=[y_labels[bag_index]*np.ones((1, num_instance_each_bag[bag_index]))[0] for bag_index in range(num_bags)  ]
 		instance_labels_generated_from_bag_labels=np.hstack((instance_labels_generated_from_bag_labels))		
 		
-		
+		self.X_bags = X_bags
+		self.y_labels = y_labels 
+		self.X_instances = instances	
+		self.instance_labels_generated_from_bag_labels = instance_labels_generated_from_bag_labels		
+
+
 		self.c=[] #the list of weights for weak classifiers
 
 		#initial bag weights
@@ -101,7 +115,105 @@ class MIBoosting_Xu(object):
 		self.actual_rounds_of_boosting = len(self.c)
 		#import pdb; pdb.set_trace()	
 
-	def predict(self, X_bags, iter = None):
+	def predict_train(self, iter = None, getInstPrediction = False):
+		
+		self.c = self.alphas
+
+		if iter == None or iter > len(self.c):
+			iter = len(self.c)
+		
+		predictions_list = [2*(instance_classifier.predict(self.X_instances).reshape((1, -1))>0) - 1  for instance_classifier in self.weak_classifiers ]
+		predictions_accum = np.matrix(self.c[0:iter])*np.matrix( np.vstack((predictions_list[0:iter])) )/np.sum(self.c[0:iter])
+		results = np.array(predictions_accum)[0] 
+		
+		if getInstPrediction:
+			return results
+		else: #get bag level predictions
+			if self.X_bags is None:
+				raise Exception("Can't get bag level prediction for training data due to the lack of training bag data")
+			else:
+				predictions_bag = get_bag_label(results, self.X_bags)
+				return predictions_bag
+
+
+
+	def _predict(self, X = None, iter = None):
+		"""
+		X is assumed to be two dimensional array, each row corresponding to an instance
+		"""
+
+		self.c = self.alphas
+
+		if iter == None or iter > self.actual_rounds_of_boosting:
+			iter = self.actual_rounds_of_boosting
+
+		if X is not None:	
+			predictions_list = [2*(instance_classifier.predict(X).reshape((1, -1))>0) - 1  for instance_classifier in self.weak_classifiers ]
+			self.predictions_list_test = predictions_list
+			#import pdb;pdb.set_trace()
+			predictions_accum = np.matrix(self.c[0:iter])*np.matrix( np.vstack((predictions_list[0:iter])) )/np.sum(self.c[0:iter])
+
+			#import pdb;pdb.set_trace()
+			return np.array(predictions_accum)[0]   #entries within range [-1, 1] since 2*(instance_classifier.predict >0) - 1 is either -1 or 1
+		else:
+			predictions_accum = np.matrix(self.c[0:iter])*np.matrix( np.vstack((self.predictions_list_test[0:iter])) )/np.sum(self.c[0:iter])
+
+			#import pdb;pdb.set_trace()
+			return np.array(predictions_accum)[0]   #entries within range [-1, 1] since 2*(instance_classifier.predict >0) - 1 is either -1 or 1
+
+	def predict(self, X_bags = None, iter = None, getInstPrediction = False):
+		#X_bags is a list of arrays, each bag is an array in the list
+		#The row of array corresponds to instances in the bag, column corresponds to feature
+
+		#predictions_bag is the returned array of predictions which are real values 
+		
+		self.c = self.alphas
+		if iter == None or iter > len(self.c):
+			iter = len(self.c)
+	
+		#print "self.c: ",
+		print len(self.c)
+		if X_bags is not None:
+			self.X_bags_test = X_bags
+
+			if type(X_bags) != list:  # treat it as normal supervised learning setting
+				#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
+				return self._predict(X = X_bags, iter = iter)
+				
+			else:
+
+				X_instances = np.vstack(X_bags)
+				predictions_accum = self._predict(X = X_instances, iter =  iter)
+				if getInstPrediction:  #return the instance level predictions for the input bags
+					return predictions_accum
+				else:
+					predictions_bag = get_bag_label(predictions_accum, X_bags)
+					return predictions_bag
+
+		elif X_bags is None and self.X_bags_test is not None:
+			if type(self.X_bags_test) != list:  # treat it as normal supervised learning setting
+				#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
+				#import pdb;pdb.set_trace()
+				predictions_accum = self._predict(iter = iter)
+
+				return np.array(predictions_accum)
+			else:
+			
+				#X_instances = np.vstack(X_bags)
+				predictions_accum = self._predict(iter = iter)
+				if getInstPrediction:  #return the instance level predictions for the input bags
+					return np.array(predictions_accum)
+				else:
+					predictions_bag = get_bag_label(predictions_accum, self.X_bags_test)
+					return predictions_bag
+		else:
+			raise Exception('As the first time to call predict(), please specify the test dataset')
+
+
+
+
+
+	def predict_old(self, X_bags, iter = None):
 		#X_bags is a list of arrays, each bag is an array in the list
 		#The row of array corresponds to instances in the bag, column corresponds to feature
 
