@@ -95,9 +95,9 @@ class AdaBoost(object):
 	
 	def predict_train(self, iter = None, getInstPrediction = False):
 		
-		threshold = 0.5
-		if iter == None or iter > len(self.c):
-			iter = len(self.c)
+
+		if iter == None or iter > self.actual_rounds_of_boosting:
+			iter = self.actual_rounds_of_boosting
 
 		staged_generator_train = self.ensemble_classifier.staged_decision_function(self.X_instances)
 
@@ -133,12 +133,10 @@ class AdaBoost(object):
 
 		#predictions_bag is the returned array of predictions which are real values 
 		
-		self.c = self.alphas
-		if iter == None or iter > len(self.c):
-			iter = len(self.c)
+		if iter == None or iter > self.actual_rounds_of_boosting:
+			iter = self.actual_rounds_of_boosting
 	
-		#print "self.c: ",
-		print len(self.c)
+		print self.actual_rounds_of_boosting
 		if X_bags is not None:
 			self.X_bags_test = X_bags
 
