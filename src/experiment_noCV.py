@@ -26,10 +26,10 @@ from RankBoost_m3_pos_nondistributed import RankBoost_m3_pos
 
 BAG_PREDICTIONS = False
 INSTANCE_PREDICTIONS = False
-INSTANCE_PREDICTIONS_SIL = False
-BEST_BALANCED_ACCURACY = False
+INSTANCE_PREDICTIONS_SIL_STAT = True
+BEST_BALANCED_ACCURACY = True
 
-ERROR_BOUND = True
+ERROR_BOUND = False
 
 CLASSIFIERS = {
     'rankboost': RankBoost,
@@ -264,7 +264,7 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
 	    submission['statistics_boosting']['test_instance_balanced_accuracy']=test_instance_balanced_accuracy
         #import pdb;pdb.set_trace()
 
-	if INSTANCE_PREDICTIONS_SIL and train.instance_labels_SIL.size > 1:
+	if INSTANCE_PREDICTIONS_SIL_STAT and train.instance_labels_SIL.size > 1:
 	    train_instance_accuracy = np.average( train.instance_labels_SIL== ( train_instance_labels> 0  )  )
 	    #import pdb; pdb.set_trace()
 	    train_instance_balanced_accuracy= np.average( [ np.average( train_instance_labels[train.instance_labels_SIL]>0 ) ,   np.average( train_instance_labels[train.instance_labels_SIL==False]<0 ) ]  )
@@ -276,7 +276,7 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
 
         #import pdb;pdb.set_trace()
 
-        if INSTANCE_PREDICTIONS_SIL and test.instance_labels_SIL.size > 1:
+        if INSTANCE_PREDICTIONS_SIL_STAT and test.instance_labels_SIL.size > 1:
 	    #import pdb;pdb.set_trace()
    	    test_instance_accuracy = np.average( test.instance_labels_SIL== ( instance_predictions > 0  )  )
 	    test_instance_balanced_accuracy= np.average( [ np.average( instance_predictions[test.instance_labels_SIL]>0 ) ,   np.average( instance_predictions[test.instance_labels_SIL==False]<0 ) ]  )
