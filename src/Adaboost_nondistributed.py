@@ -102,7 +102,7 @@ class AdaBoost(object):
 		staged_generator_train = self.ensemble_classifier.staged_decision_function(self.X_instances)
 
 		staged_decision_function_output_train = [x for x in staged_generator_train]  #a list of one dimensional array, contained entries with positive values for postive class and negative values for negative class
-		results = staged_decision_function_output_trainresults [iter - 1] 
+		results = staged_decision_function_output_train[iter - 1] 
 
 		if getInstPrediction:
 			return results
