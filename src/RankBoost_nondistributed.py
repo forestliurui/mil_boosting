@@ -122,7 +122,7 @@ class RankBoost(object):
 
 			if self.epsilon["negative"][-1] == 0:
 				self.alphas.append(20000)
-				#break
+				break
 			else:
 				self.alphas.append(0.5*np.log(self.epsilon["positive"][-1]/self.epsilon["negative"][-1]))
 			Z={}

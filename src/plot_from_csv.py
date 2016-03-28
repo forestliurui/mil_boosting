@@ -11,8 +11,14 @@ def get_results(directory, statistic_name):
 	statistics_names=['train_bag_AUC', 'train_bag_accuracy', 'train_bag_balanced_accuracy', 'train_instance_AUC', 'train_instance_accuracy', 'train_instance_balanced_accuracy', 'test_bag_AUC', 'test_bag_accuracy', 'test_bag_balanced_accuracy', 'test_instance_AUC', 'test_instance_accuracy', 'test_instance_balanced_accuracy']
 	statistics_names_SIL = ['SIL_train_instance_AUC', 'SIL_train_instance_accuracy', 'SIL_train_instance_balanced_accuracy', 'SIL_test_instance_AUC', 'SIL_test_instance_accuracy', 'SIL_test_instance_balanced_accuracy']
 	statistics_names_best = ['train_bag_best_balanced_accuracy', 'train_bag_best_threshold_for_balanced_accuracy', 'train_instance_best_balanced_accuracy', 'train_instance_best_threshold_for_balanced_accuracy', 'test_bag_best_balanced_accuracy', 'test_bag_best_balanced_accuracy_with_threshold_from_train', 'test_instance_best_balanced_accuracy', 'test_instance_best_balanced_accuracy_with_threshold_from_train']
-
-	statistics_names = statistics_names + statistics_names_best	
+	earlyStop_names = ['ranking_error', 'ranking_error_bound']
+	
+	statistics_names = statistics_names + statistics_names_best
+	
+	#for modified rankboost
+		
+	#statistics_names = statistics_names + earlyStop_names
+	#for modified rankboost
 
 	for index in range(len(statistics_names)):
 		if statistics_names[index] == statistic_name:
@@ -79,6 +85,8 @@ def generateRank(directory, outputfile_name):
 	
 	statistics_name += statistics_name_best
 	
+
+
 	results = {}
 	dataset_names = []
 	method_names = []
@@ -94,6 +102,10 @@ def generateRank(directory, outputfile_name):
 			
 	dataset_names = set(dataset_names)
 	method_names = set(method_names)
+	
+	method_names_prechosen = set(["rankboost","adaboost","martiboost","miboosting_xu"])
+	method_names = method_names.intersection(method_names_prechosen)
+	
 	for statistic in statistics_name:
 		if statistic not in ranks:
 			ranks[statistic] = {}
@@ -149,7 +161,7 @@ def generateRank(directory, outputfile_name):
 
 def draw_plot1(directory, outputfile_name):
 
-	colors={'rankboost':'r', 'miboosting_xu':'b','adaboost':'k', 'martiboost':'c', 'rankboost_pos':'y','rankboost_m3':'m', 'rankboost_m3_pos':'g'}
+	colors={'rankboost':'r', 'miboosting_xu':'b','adaboost':'k', 'martiboost':'c', 'rankboost_pos':'y','rankboost_m3':'m', 'rankboost_m3_pos':'g', 'rankboost_earlyStop': 'r'}
 
 
 	#statistics_name = ['test_instance_AUC', 'train_instance_AUC', 'test_bag_AUC', 'train_bag_AUC', 'test_instance_balanced_accuracy', 'train_instance_balanced_accuracy', 'test_bag_balanced_accuracy', 'train_bag_balanced_accuracy']
@@ -157,8 +169,16 @@ def draw_plot1(directory, outputfile_name):
 	statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
 	statistics_name_best = ['test_instance_best_balanced_accuracy',  'test_bag_best_balanced_accuracy']
 	
+
+
 	statistics_name += statistics_name_best
 	
+	# for modified rankboost
+	earlyStop_name = ['test_instance_AUC', 'test_bag_AUC', 'train_instance_AUC', 'train_bag_AUC', 'ranking_error', 'ranking_error_bound']	
+	statistics_name = earlyStop_name
+	# for modified rankboost
+
+
 	results = {}
 	dataset_names = []
 	for statistic in statistics_name:
@@ -185,7 +205,10 @@ def draw_plot1(directory, outputfile_name):
 			plt.xlabel('Boosting Iterations', fontsize = 40)
 			plt.ylabel(stat_name, fontsize = 60)
 			color_index = -1
-			plt.axis([0, 500, 0.49, 1.1], fontsize = 50)
+			if stat_name != "ranking_error" and stat_name != "ranking_error_bound":
+				plt.axis([0, 500, 0.49, 1.1], fontsize = 50)
+			else:
+				plt.axis([0, 500, 0, 1.1], fontsize = 50)
 
 			method_names = results[stat_name][dataset_name].keys()
 		
@@ -217,9 +240,9 @@ if __name__ == '__main__':
 	statistic_name = args[1]
 	outputfile_name = args[2]
 
-	draw_plot1(directory, outputfile_name)
+	#draw_plot1(directory, outputfile_name)
 	
-	#generateRank(directory, outputfile_name)
+	generateRank(directory, outputfile_name)
 
 	#results = get_results(directory, statistic_name)
 	#draw_plot(results, statistic_name,  outputfile_name)

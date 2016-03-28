@@ -54,19 +54,10 @@ experiments:
 #    - dataset: DEJU
 #    - dataset: OSFL
 #    - dataset: HETH
-    - dataset: apple~cokecan
     - dataset: banana~goldmedal
     - dataset: dirtyworkgloves~dirtyrunningshoe
-    - dataset: wd40can~largespoon
     - dataset: checkeredscarf~dataminingbook
-    - dataset: juliespot~rapbook
     - dataset: smileyfacedoll~feltflowerrug
-    - dataset: BRCR
-    - dataset: WIWR
-    - dataset: PSFL
-    - dataset: RBNU
-    - dataset: DEJU
-    - dataset: OSFL
     - dataset: alt.atheism
     - dataset: comp.graphics
     - dataset: comp.os.ms-windows.misc
