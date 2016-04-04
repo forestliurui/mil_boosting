@@ -31,7 +31,7 @@ sys.path.insert(0, "~/.lib/scikit-learn")
 
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.neural_network import MLPClassifier
+#from sklearn.neural_network import MLPClassifier
 from sklearn.datasets import make_gaussian_quantiles
 from sklearn.svm import SVC
 from RankBoost_nondistributed import RankBoost
@@ -101,7 +101,7 @@ X1, y1 = make_gaussian_quantiles(cov=2.,
 X = X1
 y = y1
 #import pdb;pdb.set_trace()
-'''
+
 # Construct dataset v1
 
 X1, y1 = make_gaussian_quantiles(cov=2.,
@@ -112,17 +112,20 @@ X2, y2 = make_gaussian_quantiles(mean=(3, 3), cov=1.5,
                                  n_classes=2, random_state=1)
 X = np.concatenate((X1, X2))
 y = np.concatenate((y1, - y2 + 1))
-'''
+
 f0_max = np.max( abs(X)[:,0] ) #scale the data to be within the unit box
 f1_max = np.max( abs(X)[:,1] )
 import pdb;pdb.set_trace()
 X = np.vstack((X[:,0]/f0_max, X[:,1]/f1_max )).transpose()
-
+'''
 
 # Construct dataset v2
-X=np.array([[2,2],[-2,-2],[2, -2], [-2, 2]])
-y=np.array([1,1, -1, -1])
+X=np.array([[0,0],[0,1],[0,-1], [1, 0], [1, 1], [1, -1], [-1, 0], [2, 0], [0, 3], [1,3], [0, -3], [1,-3]])
+y=np.array([-1,-1, -1, 1, 1, 1, 1, -1, -1, 1, -1, 1 ])
 
+
+
+'''
 
 # Construct dataset v3
 X=np.array([[1,0],[-2,0],[0, -2], [0, 2]])
@@ -201,15 +204,23 @@ bdt = MartiBoost(**params)
 #MIBoosting + decision_stump
 params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 200}
 bdt1 = MIBoosting_Xu(**params)
-'''
+
 #rankboost_m3
 params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 2000}
 bdt = RankBoost_m3(**params)
+'''
+#rankboost + decision stump
+params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 20}
+bdt = RankBoost(**params)
 
 print "fitting the training set"
 bdt.fit(X, y)
 #bdt1.fit(train_class.bags, train_class.bag_labels)
 print "fitting completed"
+print "Ranking Eror Bound",
+print bdt.getRankingErrorBound()
+print "Ranking Error of Last Ranker",
+print bdt.getRankingErrorOneClassifier()
 '''
 import pdb;pdb.set_trace()
 predictions_test = bdt.predict(test_class.instances)
@@ -228,7 +239,7 @@ print "for bdt2"
 print np.average((bdt1.predict(test_class.bags)>0 )==test_class.bag_labels)
 import pdb;pdb.set_trace()
 '''
-
+import pdb;pdb.set_trace()
 plot_colors = "br"
 plot_step = 0.02
 class_names = "AB"
@@ -243,7 +254,7 @@ y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
 xx, yy = np.meshgrid(np.arange(x_min, x_max, plot_step),
                      np.arange(y_min, y_max, plot_step))
 
-Z = bdt.predict(np.c_[xx.ravel(), yy.ravel()])
+Z = (bdt.predict(np.c_[xx.ravel(), yy.ravel()]) >0 )+0
 Z = Z.reshape(xx.shape)
 cs = plt.contourf(xx, yy, Z, cmap=plt.cm.Paired)
 plt.axis("tight")

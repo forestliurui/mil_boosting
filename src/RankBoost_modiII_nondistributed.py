@@ -1,4 +1,7 @@
-#This is the nondistributed version of RankBoost for bipartite setting, described in Figure 9.2 at the book "Foundation of Machine Learning"
+"""
+This is the nondistributed version of RankBoost for bipartite setting, described in Figure 9.2 at the book "Foundation of Machine Learning"
+With modification to computation of alpha and z, suggested in the Modification II in my draft
+"""
 
 from math import sqrt, exp
 from mi_svm import SVM
@@ -16,7 +19,7 @@ WEAK_CLASSIFIERS = {
 	'dtree_stump_balanced': Dtree_Stump_Balanced
 }
 
-class RankBoost(object):
+class RankBoost_modiII(object):
 	def __init__(self, **parameters):
 
 		self.max_iter_boosting = parameters.pop("max_iter_boosting", 10)
@@ -29,6 +32,7 @@ class RankBoost(object):
 		self.epsilon = {}
 		self.epsilon["positive"] = []
 		self.epsilon["negative"] = []
+		self.epsilon["zero"] = []
 		self.alphas = []
 		self.weights_instance=[]
 
@@ -43,6 +47,12 @@ class RankBoost(object):
 		self.epsilon_pair = {}
 		self.epsilon_pair["positive"] = []
 		self.epsilon_pair["negative"] = []
+
+
+		self.epsilon_pair_fast = {}
+		self.epsilon_pair_fast["positive"] = []
+		self.epsilon_pair_fast["negative"] = []
+		self.epsilon_pair_fast["zero"] = []
 
 	def fit(self, X_bags, y_labels):
 		'''
@@ -113,6 +123,11 @@ class RankBoost(object):
 			predictions = (instance_classifier.predict(instances) >0 )+0
 			self.epsilon["positive"].append( np.average( predictions[instance_labels_generated_from_bag_labels == 1], weights = weights_inst[instance_labels_generated_from_bag_labels == 1] ) )
 			self.epsilon["negative"].append( np.average( predictions[instance_labels_generated_from_bag_labels != 1], weights = weights_inst[instance_labels_generated_from_bag_labels != 1] ) )
+			self.epsilon["zero"].append(1 - self.epsilon["positive"][-1]- self.epsilon["negative"][-1])
+			
+			self.epsilon_pair_fast["positive"].append(self.epsilon["positive"][-1]*(1- self.epsilon["negative"][-1]))			
+			self.epsilon_pair_fast["negative"].append(self.epsilon["negative"][-1]*(1- self.epsilon["positive"][-1]))
+			self.epsilon_pair_fast["zero"].append(self.epsilon["positive"][-1]*self.epsilon["negative"][-1]+(1- self.epsilon["negative"][-1])*(1- self.epsilon["positive"][-1]))
 
 			self.predictions_list_train.append(predictions.reshape((1, -1)))
 
@@ -120,14 +135,15 @@ class RankBoost(object):
 			self.epsilon_pair["positive"].append(epsilon_pair_pos_temp)
 			self.epsilon_pair["negative"].append(epsilon_pair_neg_temp)
 
-			if self.epsilon["negative"][-1] == 0:
+			if self.epsilon["negative"][-1] == 0 and self.epsilon["zero"][-1] == 0:
 				self.alphas.append(20000)
 				break
 			else:
-				self.alphas.append(0.5*np.log(self.epsilon["positive"][-1]/self.epsilon["negative"][-1]))
+				self.alphas.append(0.5*np.log(  (self.epsilon_pair_fast["positive"][-1]+0.5*self.epsilon_pair_fast["zero"][-1])/(self.epsilon_pair_fast["negative"][-1]+0.5*self.epsilon_pair_fast["zero"][-1])  ))
 			Z={}
-			Z["positive"]=1-self.epsilon["positive"][-1]+np.sqrt( self.epsilon["positive"][-1]*self.epsilon["negative"][-1] )
-			Z["negative"]=1-self.epsilon["negative"][-1]+np.sqrt( self.epsilon["positive"][-1]*self.epsilon["negative"][-1] )
+			Z["positive"]=1-self.epsilon["positive"][-1]+ self.epsilon["positive"][-1]*exp(-self.alphas[-1]) 
+			Z["negative"]=1-self.epsilon["negative"][-1]+self.epsilon["negative"][-1]*exp(self.alphas[-1]) 
+
 			for inst_index in range(num_instances):
 				if instance_labels_generated_from_bag_labels[inst_index]==1:
 					weights_inst[inst_index] = weights_inst[inst_index]*np.exp(-self.alphas[-1]*predictions[inst_index])/Z["positive"]

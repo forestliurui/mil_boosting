@@ -23,6 +23,7 @@ from Adaboost_nondistributed import AdaBoost
 from RankBoost_m3_nondistributed import RankBoost_m3
 from RankBoost_pos_nondistributed import RankBoost_pos
 from RankBoost_m3_pos_nondistributed import RankBoost_m3_pos
+from RankBoost_modiII_nondistributed import RankBoost_modiII
 
 BAG_PREDICTIONS = False
 INSTANCE_PREDICTIONS = False
@@ -34,7 +35,8 @@ ERROR_BOUND = False
 CLASSIFIERS = {
     'rankboost': RankBoost,
     'rankboost_pos': RankBoost_pos,
-    'rankboost_m3_pos': RankBoost_m3_pos,	
+    'rankboost_m3_pos': RankBoost_m3_pos,
+    'rankboost_modiII': RankBoost_modiII,	
     'miboosting_xu': MIBoosting_Xu,
     'martiboost': MartiBoost,
     'martiboost_max': MartiBoost_max,
