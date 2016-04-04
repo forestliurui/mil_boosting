@@ -131,9 +131,9 @@ class RankBoost_modiII(object):
 
 			self.predictions_list_train.append(predictions.reshape((1, -1)))
 
-			epsilon_pair_pos_temp, epsilon_pair_neg_temp = self.getEpsilonPair(predictions, instance_labels_generated_from_bag_labels, weights_inst)
-			self.epsilon_pair["positive"].append(epsilon_pair_pos_temp)
-			self.epsilon_pair["negative"].append(epsilon_pair_neg_temp)
+			#epsilon_pair_pos_temp, epsilon_pair_neg_temp = self.getEpsilonPair(predictions, instance_labels_generated_from_bag_labels, weights_inst)
+			#self.epsilon_pair["positive"].append(epsilon_pair_pos_temp)
+			#self.epsilon_pair["negative"].append(epsilon_pair_neg_temp)
 
 			if self.epsilon["negative"][-1] == 0 and self.epsilon["zero"][-1] == 0:
 				self.alphas.append(20000)

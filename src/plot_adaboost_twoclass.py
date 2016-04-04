@@ -38,6 +38,7 @@ from RankBoost_nondistributed import RankBoost
 from martiboost_nondistributed import MartiBoost
 from MIBoosting_Xu_nondistributed import MIBoosting_Xu
 from RankBoost_m3_nondistributed import RankBoost_m3
+from RankBoost_modiII_nondistributed import RankBoost_modiII
 
 from mi_svm import SVM
 import data
@@ -208,10 +209,15 @@ bdt1 = MIBoosting_Xu(**params)
 #rankboost_m3
 params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 2000}
 bdt = RankBoost_m3(**params)
-'''
+
 #rankboost + decision stump
 params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 20}
 bdt = RankBoost(**params)
+'''
+
+#rankboost_modiII + decision stump
+params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 20}
+bdt = RankBoost_modiII(**params)
 
 print "fitting the training set"
 bdt.fit(X, y)
