@@ -325,7 +325,7 @@ class RankBoost_modiII(object):
 			iter = len(self.c)
 	
 		#print "self.c: ",
-		print len(self.c)
+		#print len(self.c)
 		if X_bags is not None:
 			self.X_bags_test = X_bags
 
@@ -387,6 +387,6 @@ def get_bag_label(instance_predictions, bags):
 	for bag_index in range(num_bag):
 		n_index =p_index+ bags[bag_index].shape[0]
 		
-		bag_predictions.append( np.average(instance_predictions[p_index: n_index]) )
+		bag_predictions.append( np.max(instance_predictions[p_index: n_index]) )
 		p_index = n_index
 	return np.array(bag_predictions)

@@ -103,7 +103,7 @@ def generateRank(directory, outputfile_name):
 	dataset_names = set(dataset_names)
 	method_names = set(method_names)
 	
-	method_names_prechosen = set(["rankboost","adaboost","martiboost","miboosting_xu"])
+	method_names_prechosen = set(["rankboost","adaboost","martiboost","miboosting_xu", "rankboost_modiII"])
 	method_names = method_names.intersection(method_names_prechosen)
 	
 	for statistic in statistics_name:
@@ -161,12 +161,13 @@ def generateRank(directory, outputfile_name):
 
 def draw_plot1(directory, outputfile_name):
 
-	colors={'rankboost':'r', 'miboosting_xu':'b','adaboost':'k', 'martiboost':'c', 'rankboost_pos':'y','rankboost_m3':'m', 'rankboost_m3_pos':'g', 'rankboost_earlyStop': 'r'}
+	colors={'rankboost':'r', 'miboosting_xu':'b','adaboost':'k', 'martiboost':'c', 'rankboost_pos':'y','rankboost_m3':'m', 'rankboost_m3_pos':'g','rankboost_modiII':'g' ,'rankboost_earlyStop': 'r'}
 
 
 	#statistics_name = ['test_instance_AUC', 'train_instance_AUC', 'test_bag_AUC', 'train_bag_AUC', 'test_instance_balanced_accuracy', 'train_instance_balanced_accuracy', 'test_bag_balanced_accuracy', 'train_bag_balanced_accuracy']
 	#statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
-	statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
+	statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'train_instance_AUC', 'train_bag_AUC']
+	#statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
 	statistics_name_best = ['test_instance_best_balanced_accuracy',  'test_bag_best_balanced_accuracy']
 	
 
@@ -174,8 +175,8 @@ def draw_plot1(directory, outputfile_name):
 	statistics_name += statistics_name_best
 	
 	# for modified rankboost
-	earlyStop_name = ['test_instance_AUC', 'test_bag_AUC', 'train_instance_AUC', 'train_bag_AUC', 'ranking_error', 'ranking_error_bound']	
-	statistics_name = earlyStop_name
+	#earlyStop_name = ['test_instance_AUC', 'test_bag_AUC', 'train_instance_AUC', 'train_bag_AUC', 'ranking_error', 'ranking_error_bound']	
+	#statistics_name = earlyStop_name
 	# for modified rankboost
 
 
