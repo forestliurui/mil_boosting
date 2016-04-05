@@ -19,7 +19,9 @@ def compute_statistics(configuration_file, results_directory, outputfile_raw):
 	statistics_name_SIL = ['SIL_train_instance_AUC', 'SIL_train_instance_accuracy', 'SIL_train_instance_balanced_accuracy', 'SIL_test_instance_AUC', 'SIL_test_instance_accuracy', 'SIL_test_instance_balanced_accuracy']
 	statistics_name_best = ['train_bag_best_balanced_accuracy', 'train_bag_best_threshold_for_balanced_accuracy', 'train_instance_best_balanced_accuracy', 'train_instance_best_threshold_for_balanced_accuracy', 'test_bag_best_balanced_accuracy', 'test_bag_best_balanced_accuracy_with_threshold_from_train', 'test_instance_best_balanced_accuracy', 'test_instance_best_balanced_accuracy_with_threshold_from_train']
 	statistics_error = ['ranking_error', 'ranking_error_bound']
-	statistics_name = statistics_name + statistics_error
+	#statistics_name = statistics_name + statistics_error
+	statistics_name = statistics_name + statistics_name_best
+
     	with open(configuration_file, 'r') as f:
         	configuration = yaml.load(f)    
 
