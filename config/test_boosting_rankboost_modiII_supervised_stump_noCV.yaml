@@ -59,6 +59,7 @@ experiments:
     - dataset: Hepatitis
     - dataset: Horse_colic
     - dataset: volcanoes
+    - dataset: breast_cancer_wdbc
 
 
 
