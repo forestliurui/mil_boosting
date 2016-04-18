@@ -6,6 +6,18 @@ import numpy as np
 import random
 from RankBoost_modiII_nondistributed import RankBoost_modiII
 from Adaboost_nondistributed import AdaBoost
+from MIBoosting_Xu_nondistributed import MIBoosting_Xu
+
+try:
+	from sklearn.metrics import roc_auc_score as score
+except:
+	from sklearn.metrics import auc_score as score
+
+BOOSTERS = {
+	"adaboost": AdaBoost,
+	"rankboost_modiII": RankBoost_modiII,
+	"miboosting_xu": MIBoosting_Xu
+}
 
 def generate_dataset(overlapping_percent):
 	bag_size = 10
@@ -77,32 +89,65 @@ def generate_dataset(overlapping_percent):
 
 
 def test_case():
-    for percentage_index in range(10):
-	percentage = percentage_index/float(10)
-	train_bags, train_bags_instance_labels, train_bags_bag_labels = generate_dataset(percentage)
-	test_bags, test_bags_instance_labels, test_bags_bag_labels = generate_dataset(percentage)
+	booster_names = ["rankboost_modiII", "adaboost", "miboosting_xu"]
+	results = {}
+  	for booster_name in booster_names:
+		results[booster_name] = {}
+		train_inst_accuracy = []
+		test_inst_accuracy = []
+		train_bag_accuracy = []
+		test_bag_accuracy = []
 
-	#rankboost_modiII + decision stump
-	params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 50}
-	#bdt = RankBoost_modiII(**params)
-	bdt = AdaBoost(**params)
+		train_inst_AUC = []
+		test_inst_AUC = []
+		train_bag_AUC = []
+		test_bag_AUC = []
+    		for percentage_index in range(10):
+			percentage = percentage_index/float(10)
+			train_bags, train_bags_instance_labels, train_bags_bag_labels = generate_dataset(percentage)
+			test_bags, test_bags_instance_labels, test_bags_bag_labels = generate_dataset(percentage)
 
-	bdt.fit(train_bags,  train_bags_bag_labels)
+			#rankboost_modiII + decision stump
+			params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 50}
+			#bdt = RankBoost_modiII(**params)
+			#bdt = AdaBoost(**params)
+			bdt = BOOSTERS[booster_name](**params)
 
-	train_inst_accuracy = np.average((bdt.predict_train(getInstPrediction =  True)>0 )== train_bags_instance_labels)
-	test_inst_accuracy = np.average((bdt.predict(X_bags=test_bags,getInstPrediction =  True)>0 )== test_bags_instance_labels)
+			bdt.fit(train_bags,  train_bags_bag_labels)
 
-	train_bag_accuracy = np.average((bdt.predict_train(getInstPrediction =  False)>0 )== train_bags_bag_labels)
-	test_bag_accuracy = np.average((bdt.predict(X_bags=test_bags,getInstPrediction =  False)>0 )== test_bags_bag_labels)
-	print "overlapping rate: %f" % percentage
-	print "train_inst_accuracy: %f" % train_inst_accuracy
-	print "test_inst_accuracy: %f" %test_inst_accuracy
-	print "train_bag_accuracy: %f" %train_bag_accuracy
-	print "test_bag_accuracy: %f" %test_bag_accuracy
+			train_inst_accuracy.append( np.average((bdt.predict_train(getInstPrediction =  True)>0 )== train_bags_instance_labels))
+			test_inst_accuracy.append( np.average((bdt.predict(X_bags=test_bags,getInstPrediction =  True)>0 )== test_bags_instance_labels))
 
-	print ""
+			train_bag_accuracy.append( np.average((bdt.predict_train(getInstPrediction =  False)>0 )== train_bags_bag_labels))
+			test_bag_accuracy.append( np.average((bdt.predict(X_bags=test_bags,getInstPrediction =  False)>0 )== test_bags_bag_labels))
 
-    import pdb;pdb.set_trace()
+			train_inst_AUC.append( score(train_bags_instance_labels, bdt.predict_train(getInstPrediction =  True)  ))
+			test_inst_AUC.append( score( test_bags_instance_labels,  bdt.predict(X_bags=test_bags,getInstPrediction =  True)  ))
+
+			train_bag_AUC.append( score(train_bags_bag_labels, bdt.predict_train(getInstPrediction =  False)  ))
+			test_bag_AUC.append( score(test_bags_bag_labels, bdt.predict(X_bags=test_bags,getInstPrediction =  False) ))			
+		
+
+			"""
+			print "overlapping rate: %f" % percentage
+			print "train_inst_accuracy: %f" % train_inst_accuracy
+			print "test_inst_accuracy: %f" %test_inst_accuracy
+			print "train_bag_accuracy: %f" %train_bag_accuracy
+			print "test_bag_accuracy: %f" %test_bag_accuracy
+
+			print ""
+			"""
+		results[booster_name]["train_inst_accuracy"] = train_inst_accuracy
+		results[booster_name]["test_inst_accuracy"] = test_inst_accuracy
+		results[booster_name]["train_bag_accuracy"] = train_bag_accuracy
+		results[booster_name]["test_bag_accuracy"] = test_bag_accuracy
+
+		results[booster_name]["train_inst_AUC"] = train_inst_AUC
+		results[booster_name]["test_inst_AUC"] = test_inst_AUC
+		results[booster_name]["train_bag_AUC"] = train_bag_AUC
+		results[booster_name]["test_bag_AUC"] = test_bag_AUC
+
+    	import pdb;pdb.set_trace()
 
 
 if __name__ == "__main__":
