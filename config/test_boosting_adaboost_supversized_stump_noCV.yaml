@@ -1,0 +1,58 @@
+
+# A key uniquely describing the
+# experiments (determines results
+# folder used by server)
+experiment_name: mi_kernels
+
+# A key uniquely describing each experiment
+experiment_key:
+    - dataset
+experiment_key_format:
+    - '%s'
+
+# The key that uniquely describes
+# parameter settings (other parameters
+# are searched)
+parameter_key:
+  - classifier
+  - normalization
+parameter_key_format:
+  - '%s'
+  - '%s'
+
+# The default [inner, outer] folds to use
+# (can also be specified per experiment)
+folds: [10, 5]
+
+
+# A list of parameter settings
+# (can also be specified per experiment)
+parameters:
+  - classifier: adaboost
+    weak_classifier: dtree_stump
+    max_iter_boosting: 500
+    normalization: none
+    search:
+        type: random
+        n: 1
+
+
+
+experiments:
+#    - dataset: musk1
+#    - dataset: apple~cokecan
+#    - dataset: banana~goldmedal
+#    - dataset: dirtyworkgloves~dirtyrunningshoe
+#    - dataset: wd40can~largespoon
+#    - dataset: checkeredscarf~dataminingbook
+#    - dataset: juliespot~rapbook
+#    - dataset: smileyfacedoll~feltflowerrug
+#    - dataset: BRCR
+#    - dataset: WIWR
+#    - dataset: PSFL
+#    - dataset: RBNU
+#    - dataset: DEJU
+#    - dataset: OSFL
+#    - dataset: HETH
+    - dataset: Ionosphere
+    - dataset: Haberman
