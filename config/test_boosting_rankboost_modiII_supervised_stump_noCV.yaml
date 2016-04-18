@@ -55,5 +55,6 @@ experiments:
 #    - dataset: OSFL
 #    - dataset: HETH
     - dataset: Ionosphere
+    - dataset: Haberman
 
 
