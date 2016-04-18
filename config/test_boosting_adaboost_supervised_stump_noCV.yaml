@@ -56,3 +56,6 @@ experiments:
 #    - dataset: HETH
     - dataset: Ionosphere
     - dataset: Haberman
+    - dataset: Hepatitis
+    - dataset: Horse_colic
+    - dataset: volcanoes
