@@ -60,3 +60,8 @@ experiments:
     - dataset: Horse_colic
     - dataset: volcanoes
     - dataset: breast_cancer_wdbc
+    - dataset: wine
+    - dataset: car_evaluation
+    - dataset: Iris
+    - dataset: Poker_hand
+    - dataset: Credit_card_clients

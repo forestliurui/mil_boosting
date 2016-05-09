@@ -28,7 +28,7 @@ folds: [10, 5]
 # A list of parameter settings
 # (can also be specified per experiment)
 parameters:
-  - classifier: rankboost
+  - classifier: rankboost_modiOp
     weak_classifier: dtree_stump
     max_iter_boosting: 500
     normalization: none
@@ -65,3 +65,5 @@ experiments:
     - dataset: Iris
     - dataset: Poker_hand
     - dataset: Credit_card_clients
+
+
