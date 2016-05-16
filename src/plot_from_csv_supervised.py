@@ -84,7 +84,7 @@ def generateRank(directory, outputfile_name):
 	statistics_name_best = ['test_instance_best_balanced_accuracy',  'test_bag_best_balanced_accuracy']
 	
 	statistics_name += statistics_name_best
-	
+	statistics_name += ['train_instance_AUC']
 
 
 	results = {}
