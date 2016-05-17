@@ -256,7 +256,7 @@ class RankBoost_modiII_ranking(object):
 		if iter == None or iter > len(self.c):
 			iter = len(self.c)
 		if X is not None:	
-
+			self.X_test = X
 			predictions_list = [ instance_classifier.predict(X) for instance_classifier in self.weak_classifiers ]
 			self.predictions_list_test = predictions_list
 			results = {}
@@ -265,7 +265,7 @@ class RankBoost_modiII_ranking(object):
 			return results
 		else:
 			results = {}
-			for inst_ID in X.keys():
+			for inst_ID in self.X_test.keys():
 				results[inst_ID] = np.average( [self.predictions_list_test[index][inst_ID] for index in range(iter) ] , weights = self.c[0:iter]   )
 			return results
 

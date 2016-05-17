@@ -1,6 +1,5 @@
 """
 This is the nondistributed version of RankBoost for bipartite setting, described in Figure 9.2 at the book "Foundation of Machine Learning"
-With modification to computation of alpha and z, suggested in the Modification II in my draft
 
 This is for general ranking problem
 """
@@ -102,14 +101,14 @@ class RankBoost_modiII_ranking(object):
 			#self.epsilon_pair["positive"].append(epsilon_pair_pos_temp)
 			#self.epsilon_pair["negative"].append(epsilon_pair_neg_temp)
 
-			if self.epsilon["negative"][-1] == 0 and self.epsilon["zero"][-1] == 0:
+			if self.epsilon["negative"][-1] == 0:
 				self.alphas.append(20000)
 				break
 			else:
-				self.alphas.append(0.5*np.log(  (self.epsilon_pair_fast["positive"][-1]+0.5*self.epsilon_pair_fast["zero"][-1])/(self.epsilon_pair_fast["negative"][-1]+0.5*self.epsilon_pair_fast["zero"][-1])  ))
+				self.alphas.append(0.5*np.log(  (self.epsilon_pair_fast["positive"][-1])/(self.epsilon_pair_fast["negative"][-1])  ))
 			self.Z=[]
 			
-			Z_cur = self.epsilon["positive"][-1]*np.sqrt((self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1]))+self.epsilon["negative"][-1]*np.sqrt((self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1]))+self.epsilon["zero"][-1]
+			Z_cur = self.epsilon["zero"][-1]+ 2*sqrt(self.epsilon["positive"][-1]*self.epsilon["negative"][-1])
 			self.Z.append(Z_cur)
 
 			for pair in y:

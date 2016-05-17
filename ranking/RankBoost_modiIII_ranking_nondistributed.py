@@ -6,20 +6,20 @@ This is for general ranking problem
 """
 
 from math import sqrt, exp
-from mi_svm import SVM
+
 import string
-import data
+#import data
 import numpy as np
 import copy
 
 from weak_ranker import WeakRanker
-from Dtree_Stump_Balanced import Dtree_Stump_Balanced
+
 
 WEAK_CLASSIFIERS = {
-	'weak_ranker': WeakRanker,
+        'weak_ranker': WeakRanker,
 }
 
-class RankBoost_modiII_ranking(object):
+class RankBoost_modiIII_ranking(object):
 	def __init__(self, **parameters):
 
 		self.max_iter_boosting = parameters.pop("max_iter_boosting", 10)
@@ -64,7 +64,7 @@ class RankBoost_modiII_ranking(object):
 		self.X_train = X		
 
 		max_iter_boosting=self.max_iter_boosting
-		num_instances = instances.shape[0]
+		num_instances = len(X)
 		num_critical_pairs = len(y)
 
 		self.c=[] #the list of weights for weak classifiers
@@ -77,8 +77,6 @@ class RankBoost_modiII_ranking(object):
 		for pair in y:
 			weights_pair[pair] = float(1)/num_critical_pairs
 
-
-		
 		for index_Boosting in range(max_iter_boosting):
 
 			self.weights_pair.append(dict(weights_pair))
@@ -106,15 +104,15 @@ class RankBoost_modiII_ranking(object):
 				self.alphas.append(20000)
 				break
 			else:
-				self.alphas.append(0.5*np.log(  (self.epsilon_pair_fast["positive"][-1]+0.5*self.epsilon_pair_fast["zero"][-1])/(self.epsilon_pair_fast["negative"][-1]+0.5*self.epsilon_pair_fast["zero"][-1])  ))
+				self.alphas.append(0.5*np.log(  (self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])  ))
 			self.Z=[]
 			
-			Z_cur = self.epsilon["positive"][-1]*np.sqrt((self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1]))+self.epsilon["negative"][-1]*np.sqrt((self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1]))+self.epsilon["zero"][-1]
+			Z_cur = (self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])*sqrt((self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1]))+(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])*sqrt((self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1]))
 			self.Z.append(Z_cur)
 
 			for pair in y:
-			
-				weights_pair[pair] = weights_pair[pair]*np.exp(-self.alphas[-1]*(predictions[pair[0]]-predictions[pair[1]]))/self.Z[-1]
+				m = predictions[pair[0]]-predictions[pair[1]]
+				weights_pair[pair] = weights_pair[pair]*( ( np.exp(self.alphas[-1]*(1-m^2))+np.exp(-self.alphas[-1]*(1-m^2)) )/2 )*np.exp(-self.alphas[-1]*m)/self.Z[-1]
 
 		self.actual_rounds_of_boosting = len(self.alphas)
 
@@ -124,9 +122,9 @@ class RankBoost_modiII_ranking(object):
 		epsilon_neg = 0	
 
 		for pair in y:
-			if predicitons[pair[0]] > predicitons[pair[1]]:
+			if predictions[pair[0]] > predictions[pair[1]]:
 				epsilon_pos += weights_pair[pair]
-			elif predicitons[pair[0]] == predicitons[pair[1]]:
+			elif predictions[pair[0]] == predictions[pair[1]]:
 				epsilon0 += weights_pair[pair]
 			else:
 				epsilon_neg += weights_pair[pair]
@@ -242,7 +240,7 @@ class RankBoost_modiII_ranking(object):
 		if iter == None or iter > len(self.c):
 			iter = len(self.c)
 		results = {}
-		for inst_ID in X.keys():
+		for inst_ID in self.X_train.keys():
 			results[inst_ID] = np.average( [self.predictions_list_train[index][inst_ID] for index in range(iter) ] , weights = self.c[0:iter]   )
 
 		return results

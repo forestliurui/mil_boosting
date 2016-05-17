@@ -4,7 +4,7 @@ This is used to process the movie len dataset
 import csv
 import dill
 import pickle
-from RankBoost_modiII_ranking_nondistributed import RankBoost_modiII_ranking
+from RankBoost_ranking_nondistributed import RankBoost_ranking
 
 def process():
 	filename = "movieLen.csv"
@@ -82,7 +82,7 @@ def run_experiments():
 	results = {}
 	for index in range(len(movieLen.y_train.keys())):
 		print "test user: ", index
-		ranker = RankBoost_modiII_ranking(**parameter)
+		ranker = RankBoost_ranking(**parameter)
 		user = movieLen.y_train.keys()[index]
 		ranker.fit(movieLen.X, movieLen.y_train[user])
 		
