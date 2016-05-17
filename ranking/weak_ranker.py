@@ -35,9 +35,11 @@ class WeakRanker(object):
 		for index in range(num_feature):
 			for threshold in threshold_candidates:
 				Z = self.compute_Z(index, threshold, X, y, weight_pair)
+				#import pdb;pdb.set_trace()
 				if min_Z is None or min_Z > Z:
 					self.theta = threshold
 					self.feature_index = index
+					min_Z = Z
 
 	
 	
@@ -59,7 +61,8 @@ class WeakRanker(object):
 			else:
 				epsilon_neg += pair_weight[pair]
 
-		Z = math.sqrt((epsilon_pos+0.5*epsilon0)*(epsilon_neg+0.5*epsilon0))
+		Z = epsilon_neg+epsilon0 - epsilon_pos
+		#math.sqrt((epsilon_neg+0.5*epsilon0)/(epsilon_pos+0.5*epsilon0))
 		return Z
 		
 	def predict(self, X):

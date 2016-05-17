@@ -16,16 +16,14 @@ from weak_ranker import WeakRanker
 from Dtree_Stump_Balanced import Dtree_Stump_Balanced
 
 WEAK_CLASSIFIERS = {
-	'svm': SVM,
-	'dtree_stump': DecisionTreeClassifier,
-	'dtree_stump_balanced': Dtree_Stump_Balanced
+	'weak_ranker': WeakRanker,
 }
 
 class RankBoost_modiII_ranking(object):
 	def __init__(self, **parameters):
 
 		self.max_iter_boosting = parameters.pop("max_iter_boosting", 10)
-		self.weak_classifier_name = parameters.pop('weak_classifier', 'dtree_stump') 
+		self.weak_classifier_name = parameters.pop('weak_classifier', 'weak_ranker') 
 		if self.weak_classifier_name == 'dtree_stump':
 			parameters['max_depth'] = 1
 		parameters.pop('normalization', 0)
@@ -273,72 +271,6 @@ class RankBoost_modiII_ranking(object):
 				results[inst_ID] = np.average( [self.predictions_list_test[index][inst_ID] for index in range(iter) ] , weights = self.c[0:iter]   )
 			return results
 
-	
-def predict(self, X_bags = None, iter = None, getInstPrediction = False):
-		#X_bags is a list of arrays, each bag is an array in the list
-		#The row of array corresponds to instances in the bag, column corresponds to feature
-
-		#predictions_bag is the returned array of predictions which are real values 
-		
-		self.c = self.alphas
-		if iter == None or iter > len(self.c):
-			iter = len(self.c)
-	
-		#print "self.c: ",
-		#print len(self.c)
-		if X_bags is not None:
-			self.X_bags_test = X_bags
-
-			if type(X_bags) != list:  # treat it as normal supervised learning setting
-				#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
-				return self._predict(X = X_bags, iter = iter)
-				
-			else:
-
-				X_instances = np.vstack(X_bags)
-				predictions_accum = self._predict(X = X_instances, iter =  iter)
-				if getInstPrediction:  #return the instance level predictions for the input bags
-					return predictions_accum
-				else:
-					predictions_bag = get_bag_label(predictions_accum, X_bags)
-					return predictions_bag
-
-		elif X_bags is None and self.X_bags_test is not None:
-			if type(self.X_bags_test) != list:  # treat it as normal supervised learning setting
-				#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
-				#import pdb;pdb.set_trace()
-				predictions_accum = self._predict(iter = iter)
-
-				return np.array(predictions_accum)
-			else:
-			
-				#X_instances = np.vstack(X_bags)
-				predictions_accum = self._predict(iter = iter)
-				if getInstPrediction:  #return the instance level predictions for the input bags
-					return np.array(predictions_accum)
-				else:
-					predictions_bag = get_bag_label(predictions_accum, self.X_bags_test)
-					return predictions_bag
-		else:
-			raise Exception('As the first time to call predict(), please specify the test dataset')
-
-
-
-	def predict_inst(self, X_bags):
-		#X_bags is a list of arrays, each bag is an array in the list
-		#The row of array corresponds to instances in the bag, column corresponds to feature
-
-		#predictions_inst is the returned list of arrays which are instance-level real-valued predictions for all test bags. Note the array in the list here is row array (1-D)
-		
-		num_bags=len(X_bags)
-
-		predictions_inst=[]
-		for index_bag in range(num_bags):
-			predictions_inst_temp=np.average(  np.vstack(( [ instance_classifier.predict(X_bags[index_bag])  for instance_classifier in self.weak_classifiers  ] )) , axis=0, weights=self.c )
-			predictions_inst.append(predictions_inst_temp)
-		import pdb; pdb.set_trace()
-
-		return predictions_inst
 
 def get_bag_label(instance_predictions, bags):
 	num_bag = len(bags)
