@@ -102,9 +102,8 @@ def run_experiments():
 			error = ranker.getRankingError(predictions, movieLen.y_test[user])
 			results[user]["test_error"].append(error)
 
-	import pdb;pdb.set_trace()
-	output = open("ranking/results.pkl", "wb")
-	dill.dump(results, output)
+	#import pdb;pdb.set_trace()
+	dill.dump(results, open("ranking/results_modiIII.pkl", "wb"))
 	import pdb;pdb.set_trace()
 	
 

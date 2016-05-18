@@ -9,3 +9,4 @@ stats/
 data/
 *.pyc
 *.pdf
+*.pkl

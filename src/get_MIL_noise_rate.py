@@ -24,6 +24,8 @@ from plot_from_csv import get_results
 
 from data import get_dataset
 
+from overlap_stats import epsilon_hyperspheres
+
 
 def draw_plot(noise_rate, metrics_results, outputfile_name):
 	
@@ -46,6 +48,35 @@ def draw_plot(noise_rate, metrics_results, outputfile_name):
 	plt.xlabel("noise_rate")
 	plt.ylabel("test_AUC")
 	plt.savefig(outputfile_name)
+
+def compute_overlapping_rate(configuration_file):
+	
+	overlapping_rate= {}
+
+    	with open(configuration_file, 'r') as f:
+        	configuration = yaml.load(f)  
+	outer_folds, inner_folds=configuration['folds']
+
+    	num_dataset = len(configuration['experiments'])
+    	for index_dataset in range(num_dataset):
+		
+    	     	dataset_name=configuration['experiments'][index_dataset]['dataset']
+
+		train_dataset=string.replace( '%s.fold_%4d_of_%4d.train' % (dataset_name,0, outer_folds),' ','0'  )
+    	     	test_dataset=string.replace( '%s.fold_%4d_of_%4d.test' % (dataset_name,0, outer_folds),' ','0'   ) 
+
+
+		train = get_dataset(train_dataset)
+    		test = get_dataset(test_dataset)
+
+		bags = train.bags+test.bags
+		bag_labels = np.hstack((train.bag_labels,test.bag_labels))
+		inst_labels = np.hstack((train.instance_labels,test.instance_labels))
+		
+		overlapping_rate[dataset_name] = epsilon_hyperspheres(bags, bag_labels, inst_labels)
+	#import pdb;pdb.set_trace()
+	return overlapping_rate
+
 
 def compute_noise_rate(configuration_file):
 	
@@ -81,7 +112,14 @@ if __name__ == "__main__":
     	options, args = parser.parse_args()
 	options = dict(options.__dict__)
 	#import pdb;pdb.set_trace()
+	"""
 	noise_rate = compute_noise_rate(args[0])
 	statistic_name = "test_instance_AUC"
 	metrics_results = get_results(args[1], statistic_name)
 	draw_plot(noise_rate, metrics_results, args[2])
+	"""
+	overlapping_rate = compute_overlapping_rate(args[0])
+	statistic_name = "test_instance_AUC"
+	metrics_results = get_results(args[1], statistic_name)
+	draw_plot(overlapping_rate, metrics_results, args[2])
+	
