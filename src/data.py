@@ -91,6 +91,7 @@ class MIDataset(object):
 	self.instance_ids =   reduce( lambda x, y : x+y,   [  bag_inst_id_dict[bid]   for bid in self.bag_ids ]  )
 	self.instances = np.vstack(self.bags)
 	self.instances_as_bags = [xx.reshape((1, -1)) for xx in self.instances]
+	self.instance_labels_list =  [ np.hstack( bag_inst_label_dict[bid])  for bid in self.bag_ids ]
 
 
 	#get the SIL labels for instances, i.e. the label of instance in self.instance_label_SIL is simply the label of its bag

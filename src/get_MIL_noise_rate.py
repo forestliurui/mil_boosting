@@ -71,7 +71,7 @@ def compute_overlapping_rate(configuration_file):
 
 		bags = train.bags+test.bags
 		bag_labels = np.hstack((train.bag_labels,test.bag_labels))
-		inst_labels = np.hstack((train.instance_labels,test.instance_labels))
+		inst_labels = train.instance_labels_list + test.instance_labels_list
 		
 		overlapping_rate[dataset_name] = epsilon_hyperspheres(bags, bag_labels, inst_labels)
 	#import pdb;pdb.set_trace()
