@@ -2,7 +2,7 @@
 
 import numpy as np
 from data import get_dataset
-import dimensionality_reduction as dr
+#import dimensionality_reduction as dr
 from scipy.spatial.distance import cdist
 from sklearn.mixture import GMM
 from scipy.stats import entropy
