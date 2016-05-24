@@ -4,7 +4,7 @@ This is used to process the movie len dataset
 import csv
 import dill
 import pickle
-from RankBoost_ranking_nondistributed import RankBoost_ranking
+from RankBoost_modiIV_ranking_nondistributed import RankBoost_modiIV_ranking
 
 def process():
 	filename = "movieLen.csv"
@@ -81,8 +81,10 @@ def run_experiments():
 	
 	results = {}
 	for index in range(len(movieLen.y_train.keys())):
+		if index<5:
+			continue
 		print "test user: ", index
-		ranker = RankBoost_ranking(**parameter)
+		ranker = RankBoost_modiIV_ranking(**parameter)
 		user = movieLen.y_train.keys()[index]
 		ranker.fit(movieLen.X, movieLen.y_train[user])
 		
@@ -101,10 +103,10 @@ def run_experiments():
 				predictions = ranker.predict( iter = j)
 			error = ranker.getRankingError(predictions, movieLen.y_test[user])
 			results[user]["test_error"].append(error)
-		dill.dump(results, open("ranking/result/results_rankboost_user_"+user+".pkl", "wb"))
+		dill.dump(results, open("ranking/result/results_modiIV_user_"+user+".pkl", "wb"))
 
 	#import pdb;pdb.set_trace()
-	dill.dump(results, open("ranking/results_rankboost.pkl", "wb"))
+	dill.dump(results, open("ranking/results_modiIV.pkl", "wb"))
 	import pdb;pdb.set_trace()
 	
 

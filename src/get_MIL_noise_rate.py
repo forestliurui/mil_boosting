@@ -10,8 +10,11 @@ except ImportError:
     from yaml import Loader, Dumper
 import time
 import random
-import data
+
 import folds #must import folds, so that view data can be searched in 'folds'
+
+
+import data
 
 import numpy as np
 from math import log, exp

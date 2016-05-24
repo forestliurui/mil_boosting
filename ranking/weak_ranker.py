@@ -28,11 +28,12 @@ class WeakRanker(object):
 			
 		num_feature = len(X.values()[0])
 		
-		threshold_candidates = [-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5]
+		#threshold_candidates = [-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5]
 
 		min_Z = None
 
 		for index in range(num_feature):
+			threshold_candidates = self.getThresholdCand(X, index)
 			for threshold in threshold_candidates:
 				Z = self.compute_Z(index, threshold, X, y, weight_pair)
 				#import pdb;pdb.set_trace()
@@ -42,7 +43,14 @@ class WeakRanker(object):
 					min_Z = Z
 
 	
-	
+	def getThresholdCand(self, X, index):
+		featureSet = set([item[index] for item in X.values()  ])
+		featureSet = sorted(featureSet)
+		thresholdCan = []
+		for i in range(1, len(featureSet)):		
+			thresholdCan.append(np.average([featureSet[i-1], featureSet[i]]))
+		return thresholdCan		
+
 	def compute_Z(self, index, threshold, X, y, pair_weight):
 		"""
 		Here, Z is for modiII

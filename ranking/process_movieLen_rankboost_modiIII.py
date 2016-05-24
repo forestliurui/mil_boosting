@@ -81,6 +81,8 @@ def run_experiments():
 	
 	results = {}
 	for index in range(len(movieLen.y_train.keys())):
+		if index<15:
+			continue
 		print "test user: ", index
 		ranker = RankBoost_modiIII_ranking(**parameter)
 		user = movieLen.y_train.keys()[index]
@@ -101,6 +103,7 @@ def run_experiments():
 				predictions = ranker.predict( iter = j)
 			error = ranker.getRankingError(predictions, movieLen.y_test[user])
 			results[user]["test_error"].append(error)
+		dill.dump(results, open("ranking/result/results_modiIII_user_"+user+".pkl", "wb"))
 
 	#import pdb;pdb.set_trace()
 	dill.dump(results, open("ranking/results_modiIII.pkl", "wb"))

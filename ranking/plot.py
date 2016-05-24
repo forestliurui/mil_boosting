@@ -28,7 +28,7 @@ def draw_plot(results):
 		plt.savefig("ranking/"+output_name)
 
 def draw_plot_multiple(results):
-	colors = {"rankboost":"r", "rankboost_modiII":"b", "rankboost_modiIII": 'k'}
+	colors = {"rankboost":"r", "rankboost_modiIV":"b", "rankboost_modiIII": 'k'}
 
 	num_method = len(results)
 	method_names = results.keys()
@@ -38,9 +38,12 @@ def draw_plot_multiple(results):
 	
 	dataset_names= []
 	for method in method_names:
-		dataset_names += results[method].keys()
-	dataset_names = set(dataset_names)
-	
+		if len(dataset_names) == 0:
+			dataset_names = set(results[method].keys())
+		else:
+			dataset_names = dataset_names.intersection( results[method].keys() )
+	#dataset_names = set(dataset_names)
+	import pdb;pdb.set_trace()
 	stat_names = ["test_error", "train_error"]
 	#stat_index =0
 
@@ -69,13 +72,34 @@ def draw_plot_multiple(results):
 
 if __name__ == "__main__":
 	results= {}
-	results_modiII = dill.load(open("ranking/results_modiII.pkl","r"))
-	results["rankboost_modiII"] = results_modiII
-	
-	results_rankboost = dill.load(open("ranking/results_rankboost.pkl","r"))
-	results["rankboost"] = results_rankboost
+	#results_modiII = dill.load(open("ranking/results/results_modiII.pkl","r"))
+	#results["rankboost_modiII"] = results_modiII
 
-	results_modiIII = dill.load(open("ranking/results_modiIII.pkl","r"))
-	results["rankboost_modiIII"] = results_modiIII
+	pkl_file = open('ranking/movieLen.pkl', 'r')
+
+	movieLen = dill.load(pkl_file)
+	for index in range(len(movieLen.y_train.keys())):
+		count = 3
+
+		user = movieLen.y_train.keys()[index]
+		files_modiIII = "ranking/results/results_modiIII_user_"+user+".pkl"
+		files_modiIV = "ranking/results/results_modiIV_user_"+user+".pkl"
+		files_rankboost = "ranking/results/results_rankboost_user_"+user+".pkl"
+
+		
+		if os.path.isfile(files_modiIII) and os.path.isfile(files_modiIV) and os.path.isfile(files_rankboost):	
+			results_modiIII = dill.load(open(files_modiIII_pre,"r"))
+			results["rankboost_modiIII"] = results_modiIII
+
+			results_modiIV = dill.load(open(files_modiIV_pre,"r"))
+			results["rankboost_modiIV"] = results_modiIV
+	
+			results_rankboost = dill.load(open(files_rankboost_pre,"r"))
+			results["rankboost"] = results_rankboost
+
+		files_modiIII_pre = files_modiIII
+		files_modiIV_pre = files_modiIV
+		files_rankboost_pre = files_rankboost
+	
 
 	draw_plot_multiple(results)
