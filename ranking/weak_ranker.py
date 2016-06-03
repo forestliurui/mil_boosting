@@ -33,6 +33,7 @@ class WeakRanker(object):
 		min_Z = None
 
 		for index in range(num_feature):
+			print "check feature No. ", index
 			threshold_candidates = self.getThresholdCand(X, index)
 			for threshold in threshold_candidates:
 				Z = self.compute_Z(index, threshold, X, y, weight_pair)
@@ -47,9 +48,11 @@ class WeakRanker(object):
 		featureSet = set([item[index] for item in X.values()  ])
 		featureSet = sorted(featureSet)
 		thresholdCan = []
+		max_length = 100
 		for i in range(1, len(featureSet)):		
 			thresholdCan.append(np.average([featureSet[i-1], featureSet[i]]))
-		return thresholdCan		
+		
+		return np.random.choice(thresholdCan, size = max_length, replace = False) if len(thresholdCan) > max_length else thresholdCan	
 
 	def compute_Z(self, index, threshold, X, y, pair_weight):
 		"""

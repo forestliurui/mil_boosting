@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import numpy as np
 import dill
+import os
 
 def draw_plot(results):
 
@@ -27,13 +28,16 @@ def draw_plot(results):
 		plt.suptitle(dataset)
 		plt.savefig("ranking/"+output_name)
 
+def generateRank(results):
+	stat_names = ["test_error", "train_error"]
+
 def draw_plot_multiple(results):
 	colors = {"rankboost":"r", "rankboost_modiIV":"b", "rankboost_modiIII": 'k'}
 
 	num_method = len(results)
 	method_names = results.keys()
 
-	ori_output_name = "modiII_results.pdf"
+	ori_output_name = "combined_results.pdf"
 	num_dataset = len(results)
 	
 	dataset_names= []
@@ -78,16 +82,17 @@ if __name__ == "__main__":
 	pkl_file = open('ranking/movieLen.pkl', 'r')
 
 	movieLen = dill.load(pkl_file)
+	"""
 	for index in range(len(movieLen.y_train.keys())):
 		count = 3
-
+		#user is 827
 		user = movieLen.y_train.keys()[index]
-		files_modiIII = "ranking/results/results_modiIII_user_"+user+".pkl"
-		files_modiIV = "ranking/results/results_modiIV_user_"+user+".pkl"
-		files_rankboost = "ranking/results/results_rankboost_user_"+user+".pkl"
+		files_modiIII = "ranking/result/results_modiIII_user_"+user+".pkl"
+		files_modiIV = "ranking/result/results_modiIV_user_"+user+".pkl"
+		files_rankboost = "ranking/result/results_rankboost_user_"+user+".pkl"
 
 		
-		if os.path.isfile(files_modiIII) and os.path.isfile(files_modiIV) and os.path.isfile(files_rankboost):	
+		if not( os.path.isfile(files_modiIII) and os.path.isfile(files_modiIV) and os.path.isfile(files_rankboost)):	
 			results_modiIII = dill.load(open(files_modiIII_pre,"r"))
 			results["rankboost_modiIII"] = results_modiIII
 
@@ -96,10 +101,45 @@ if __name__ == "__main__":
 	
 			results_rankboost = dill.load(open(files_rankboost_pre,"r"))
 			results["rankboost"] = results_rankboost
+		else:
 
-		files_modiIII_pre = files_modiIII
-		files_modiIV_pre = files_modiIV
-		files_rankboost_pre = files_rankboost
+			files_modiIII_pre = files_modiIII
+			files_modiIV_pre = files_modiIV
+			files_rankboost_pre = files_rankboost
+	#
+	user = "827"
+	files_modiIII = "ranking/result/results_modiIII_user_"+user+".pkl"
+	files_modiIV = "ranking/result/results_modiIV_user_"+user+".pkl"
+	files_rankboost = "ranking/result/results_rankboost_user_"+user+".pkl"
+
+	results_modiIII = dill.load(open(files_modiIII,"r"))
+	results["rankboost_modiIII"] = results_modiIII
+
+	results_modiIV = dill.load(open(files_modiIV,"r"))
+	results["rankboost_modiIV"] = results_modiIV
 	
+	results_rankboost = dill.load(open(files_rankboost,"r"))
+	results["rankboost"] = results_rankboost
+	"""
+
+	results["rankboost_modiIII"] = {}
+	results["rankboost"] = {}
+	for index in range(len(movieLen.y_train.keys())):
+		
+
+		user = movieLen.y_train.keys()[index]
+
+		print "index: ", index, " user: ", user
+		files_modiIII = "ranking/result/results_modiIII_user_"+user+".pkl"
+		#files_modiIV = "ranking/result/results_modiIV_user_"+user+".pkl"
+		files_rankboost = "ranking/result/results_rankboost_user_"+user+".pkl"
+
+		if os.path.isfile(files_modiIII) and os.path.isfile(files_rankboost):
+			results_modiIII = dill.load(open(files_modiIII,"r"))
+			results["rankboost_modiIII"][user] = results_modiIII[user]
+	
+			results_rankboost = dill.load(open(files_rankboost,"r"))
+			results["rankboost"][user] = results_rankboost[user]
+
 
 	draw_plot_multiple(results)

@@ -61,6 +61,7 @@ def compute_overlapping_rate(configuration_file):
 	outer_folds, inner_folds=configuration['folds']
 
     	num_dataset = len(configuration['experiments'])
+	#import pdb;pdb.set_trace()
     	for index_dataset in range(num_dataset):
 		
     	     	dataset_name=configuration['experiments'][index_dataset]['dataset']
@@ -75,8 +76,11 @@ def compute_overlapping_rate(configuration_file):
 		bags = train.bags+test.bags
 		bag_labels = np.hstack((train.bag_labels,test.bag_labels))
 		inst_labels = train.instance_labels_list + test.instance_labels_list
-		
-		overlapping_rate[dataset_name] = epsilon_hyperspheres(bags, bag_labels, inst_labels)
+		try:
+			overlapping_rate[dataset_name] = epsilon_hyperspheres(bags, bag_labels, inst_labels, epsilon = 0.3)
+			print "dataset_index: ", index_dataset, " overlapping_rate: ", overlapping_rate[dataset_name]
+		except:
+			continue
 	#import pdb;pdb.set_trace()
 	return overlapping_rate
 

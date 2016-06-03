@@ -81,6 +81,8 @@ def run_experiments():
 	
 	results = {}
 	for index in range(len(movieLen.y_train.keys())):
+		if index<23:
+			continue
 		print "test user: ", index
 		ranker = RankBoost_ranking(**parameter)
 		user = movieLen.y_train.keys()[index]
