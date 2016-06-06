@@ -5,6 +5,9 @@ import csv
 import dill
 import pickle
 from RankBoost_ranking_nondistributed import RankBoost_ranking
+import sys
+sys.path.append("/home/rui/MIL_Boost/MIL_Boosting/MIL_Boost/MIL_Boost/src/")
+from results import ResultsManager
 
 def process():
 	filename = "movieLen.csv"
@@ -79,34 +82,38 @@ def run_experiments():
 	movieLen = dill.load(pkl_file)
 	parameter = {"max_iter_boosting":500}
 	
+	results_manager = ResultsManager("ranking/result/database/rankboost.db")
+
 	results = {}
 	for index in range(len(movieLen.y_train.keys())):
-		if index<23:
+		user = movieLen.y_train.keys()[index]
+		if results_manager.is_finished("train", user, '0', '1'):
 			continue
 		print "test user: ", index
-		ranker = RankBoost_ranking(**parameter)
-		user = movieLen.y_train.keys()[index]
+
+		ranker = RankBoost_ranking(**parameter)		
 		ranker.fit(movieLen.X, movieLen.y_train[user])
 		
-		results[user] = {}
-		results[user]["ranker"] = ranker
-		results[user]["train_error"] = []
-		results[user]["test_error"] = []
-		for j in range(1, 100):
+		results['statistics_boosting'] = {}
+		#results['statistics_boosting']["ranker"] = ranker
+		results['statistics_boosting']["train_error"] = None
+		results['statistics_boosting']["test_error"] = None
+		for j in range( 1, min(101, ranker.actual_rounds_of_boosting+1) ):
 			print "user: ", index, " iteration: ", j
 			predictions = ranker.predict_train(iter = j)
 			error = ranker.getRankingError(predictions, movieLen.y_train[user])
-			results[user]["train_error"].append(error)
+			results['statistics_boosting']["train_error"] = error
 			if j == 1:
 				predictions = ranker.predict(movieLen.X, iter = j)
 			else:
 				predictions = ranker.predict( iter = j)
 			error = ranker.getRankingError(predictions, movieLen.y_test[user])
-			results[user]["test_error"].append(error)
-		dill.dump(results, open("ranking/result/results_rankboost_user_"+user+".pkl", "wb"))
+			results['statistics_boosting']["test_error"] = error 
+			results_manager.store_results_boosting(results, j, "train", user, '0', '1')
+		#dill.dump(results, open("ranking/result/results_rankboost_user_"+user+".pkl", "wb"))
 
 	#import pdb;pdb.set_trace()
-	dill.dump(results, open("ranking/results_rankboost.pkl", "wb"))
+	#dill.dump(results, open("ranking/results_rankboost.pkl", "wb"))
 	import pdb;pdb.set_trace()
 	
 

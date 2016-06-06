@@ -33,7 +33,8 @@ class WeakRanker(object):
 		min_Z = None
 
 		for index in range(num_feature):
-			print "check feature No. ", index
+			if index%100 == 0: 
+				print "check feature No. ", index
 			threshold_candidates = self.getThresholdCand(X, index)
 			for threshold in threshold_candidates:
 				Z = self.compute_Z(index, threshold, X, y, weight_pair)
