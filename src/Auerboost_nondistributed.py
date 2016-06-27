@@ -176,8 +176,14 @@ class WeightBagSet(object):
 					radius_optimal = radius
 					sum_optimal = running_sum 
 			
-			while i_p < len(self.hash_temp_positive):		
-				running_sum += self.hash_temp_positive[(bag_index, inst_index)][i_p][1].weight
+			while i_p < len(self.hash_temp_positive[(bag_index, inst_index)]):
+				try:		
+					running_sum += self.hash_temp_positive[(bag_index, inst_index)][i_p][1].weight
+				except:
+					import pdb;pdb.set_trace()				
+
+				dist_p = self.hash_temp_positive[(bag_index, inst_index)][i_p][1].distances[(bag_index, inst_index)]
+
 				radius = dist_p
 				i_p += 1 
 
