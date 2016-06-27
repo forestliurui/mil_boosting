@@ -1,5 +1,5 @@
 """
-Implements the actual client function to run the experiment
+Implements the actual client function to run the experiment without inner loop Cross Validation
 """
 import os
 import numpy as np

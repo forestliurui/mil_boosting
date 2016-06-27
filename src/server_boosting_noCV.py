@@ -983,7 +983,7 @@ def load_config(configuration_file, results_root_dir):
             tasks[key] = task
             prog.increment()
 
-    #import pdb;pdb.set_trace()
+    import pdb;pdb.set_trace()
     return tasks, parameter_dict
 
 if __name__ == '__main__':
