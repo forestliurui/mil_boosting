@@ -46,6 +46,24 @@ class Ball(object):
 			if y_labels[i] == bag_prediction:
 				accuracy += weight_temp[i]
 		return accuracy
+	def predict_inst(self, instances):
+		"""
+		2D array -> 1D array
+
+		like np.array([1,2,3],[4,5,6]) -> np.array([1, -1])
+
+		Each row in instances(2D array) corresponds to an instance
+		"""
+		num_instance = instances.shape[0]
+		predictions = []
+
+		for i in range(num_instance):
+			dist = np.linalg.norm(self.center - instances[i,:])
+			if dist <= self.radius:
+				predictions.append(1)
+			else:
+				predictions.append(-1)
+		return np.array(predictions)
 
 	def predict(self, bag):
 		"""
@@ -112,26 +130,36 @@ class WeightBagSet(object):
 			i_p = 0
 			i_n = 0
 		
-			if bag_index == 4:
-				print "need to debug"
-				import pdb;pdb.set_trace()
+			#if bag_index == 5:
+			#	print "need to debug"
+			#	import pdb;pdb.set_trace()
 
 			while i_p < len(self.hash_temp_positive[(bag_index, inst_index)]) and i_n < len(self.hash_temp_negative[(bag_index, inst_index)]):
-				print "i_p: ", i_p, " ;i_n: ", i_n
+				#print "i_p: ", i_p, " ;i_n: ", i_n
 				dist_p = self.hash_temp_positive[(bag_index, inst_index)][i_p][1].distances[(bag_index, inst_index)]
 				dist_n = self.hash_temp_negative[(bag_index, inst_index)][i_n][1].distances[(bag_index, inst_index)]
 
 				if dist_p == dist_n:
+					radius = dist_p
 					dist_temp = dist_p
 					while i_p < len(self.hash_temp_positive[(bag_index, inst_index)]) and dist_temp == dist_p:
-						dist_p = self.hash_temp_positive[(bag_index, inst_index)][i_p][1].distances[(bag_index, inst_index)]
+						
 						running_sum += self.hash_temp_positive[(bag_index, inst_index)][i_p][1].weight
 						i_p += 1
+						if i_p < len(self.hash_temp_positive[(bag_index, inst_index)]):
+							dist_p = self.hash_temp_positive[(bag_index, inst_index)][i_p][1].distances[(bag_index, inst_index)]
+						else:
+							break
 						
-					while i_n < len(self.hash_temp_positive[(bag_index, inst_index)]) and dist_temp == dist_n:
-						dist_n = self.hash_temp_positive[(bag_index, inst_index)][i_n][1].distances[(bag_index, inst_index)]
+					while i_n < len(self.hash_temp_negative[(bag_index, inst_index)]) and dist_temp == dist_n:
+						
 						running_sum -= self.hash_temp_negative[(bag_index, inst_index)][i_n][1].weight
 						i_n += 1
+
+						if i_n < len(self.hash_temp_negative[(bag_index, inst_index)]):
+							dist_n = self.hash_temp_positive[(bag_index, inst_index)][i_n][1].distances[(bag_index, inst_index)]
+						else:
+							break
 						
 				elif  dist_p < dist_n:
 					
@@ -193,6 +221,8 @@ class Auerboost(object):
 		self.X_bags = X_bags
 		self.y_labels = y_labels
 
+		self.X_instances = np.vstack((X_bags))
+
 		num_bag = len(X_bags)		
 
 		hashmap = {} #hashmap is a dictionary which map the bag index to class WeightBag, which maintains the latest weight for each bag
@@ -212,9 +242,9 @@ class Auerboost(object):
 						hashmap[j].update_dist(i,ii, dist)
 	
 
-		print "get hashmap"
+		
 		weight_bag_set = WeightBagSet(hashmap, X_bags, y_labels)
-		print "have constructed weight_bag_set"
+		#print "have constructed weight_bag_set"
 
 		
 
@@ -240,7 +270,114 @@ class Auerboost(object):
 			
 			for i in range(num_bag):
 				hashmap[i].weight /= Z
-			import pdb;pdb.set_trace()
+			#import pdb;pdb.set_trace()
+		self.actual_rounds_of_boosting = len(self.alphas)
+
+	def predict_train(self, iter = None, getInstPrediction = False):
+		if iter == None or iter > self.actual_rounds_of_boosting:
+			iter = self.actual_rounds_of_boosting
+
+
+		predictions_list = [instance_classifier.predict_inst(self.X_instances).reshape((1, -1))  for instance_classifier in self.weak_classifiers ]
+		predictions_accum = np.matrix(self.alphas[0:iter])*np.matrix( np.vstack((predictions_list[0:iter])) )/np.sum(self.alphas[0:iter])
+		results = np.array(predictions_accum)[0] 
+		
+		if getInstPrediction:
+			return results
+		else: #get bag level predictions
+			if self.X_bags is None:
+				raise Exception("Can't get bag level prediction for training data due to the lack of training bag data")
+			else:
+				predictions_bag = get_bag_label(results, self.X_bags)
+				return predictions_bag
+
+	def _predict(self, X = None, iter = None):
+		"""
+		X is assumed to be two dimensional array, each row corresponding to an instance
+		"""
+
+		self.c = self.alphas
+
+		if iter == None or iter > self.actual_rounds_of_boosting:
+			iter = self.actual_rounds_of_boosting
+
+		if X is not None:	
+			predictions_list = [instance_classifier.predict_inst(X).reshape((1, -1))  for instance_classifier in self.weak_classifiers ]
+			self.predictions_list_test = predictions_list
+			#import pdb;pdb.set_trace()
+			predictions_accum = np.matrix(self.c[0:iter])*np.matrix( np.vstack((predictions_list[0:iter])) )/np.sum(self.c[0:iter])
+
+			#import pdb;pdb.set_trace()
+			return np.array(predictions_accum)[0]   #entries within range [-1, 1] since instance_classifier.predict  is either -1 or 1
+		else:
+			predictions_accum = np.matrix(self.c[0:iter])*np.matrix( np.vstack((self.predictions_list_test[0:iter])) )/np.sum(self.c[0:iter])
+
+			#import pdb;pdb.set_trace()
+			return np.array(predictions_accum)[0]   #entries within range [-1, 1] since 2*(instance_classifier.predict >0) - 1 is either -1 or 1
+
+	def predict(self, X_bags = None, iter = None, getInstPrediction = False):
+		#X_bags is a list of arrays, each bag is an array in the list
+		#The row of array corresponds to instances in the bag, column corresponds to feature
+
+		#predictions_bag is the returned array of predictions which are real values 
+		
+		self.c = self.alphas
+		if iter == None or iter > len(self.c):
+			iter = len(self.c)
+	
+		#print "self.c: ",
+		print len(self.c)
+		if X_bags is not None:
+			self.X_bags_test = X_bags
+
+			if type(X_bags) != list:  # treat it as normal supervised learning setting
+				#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
+				return self._predict(X = X_bags, iter = iter)
+				
+			else:
+
+				X_instances = np.vstack(X_bags)
+				predictions_accum = self._predict(X = X_instances, iter =  iter)
+				if getInstPrediction:  #return the instance level predictions for the input bags
+					return predictions_accum
+				else:
+					predictions_bag = get_bag_label(predictions_accum, X_bags)
+					return predictions_bag
+
+		elif X_bags is None and self.X_bags_test is not None:
+			if type(self.X_bags_test) != list:  # treat it as normal supervised learning setting
+				#X_bags = [X_bags[inst_index,:] for inst_index in range(X_bags.shape[0])]
+				#import pdb;pdb.set_trace()
+				predictions_accum = self._predict(iter = iter)
+
+				return np.array(predictions_accum)
+			else:
+			
+				#X_instances = np.vstack(X_bags)
+				predictions_accum = self._predict(iter = iter)
+				if getInstPrediction:  #return the instance level predictions for the input bags
+					return np.array(predictions_accum)
+				else:
+					predictions_bag = get_bag_label(predictions_accum, self.X_bags_test)
+					return predictions_bag
+		else:
+			raise Exception('As the first time to call predict(), please specify the test dataset')
+
+
+
+
+
+def get_bag_label(instance_predictions, bags):
+	num_bag = len(bags)
+	p_index= 0
+	bag_predictions = []
+	for bag_index in range(num_bag):
+		n_index =p_index+ bags[bag_index].shape[0]
+		
+		bag_predictions.append( np.average(instance_predictions[p_index: n_index]) )
+		p_index = n_index
+	return np.array(bag_predictions)
+
 
 class TestAuerboostFitMethod(unittest.TestCase):
 	def test_WeightBagSet(self):
@@ -249,6 +386,11 @@ class TestAuerboostFitMethod(unittest.TestCase):
 		booster = Auerboost()
 		
 		booster.fit(X_bags, y_labels)
+
+		print booster.predict_train()
+
+		X_bags_test = [np.array([[2,0]]), np.array([[-2, 0]]), np.array([[0,5]]),np.array([[0, 1.5]])]
+		print booster.predict(X_bags = X_bags_test)
 		import pdb;pdb.set_trace()
 
 if __name__ == "__main__":
