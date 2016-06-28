@@ -15,9 +15,15 @@ get a score of -w_i. Add scores for examples in all critical pairs, we get a fin
 
 import numpy as np
 import math
+import unittest
+
+class StumpRanker_derived(object):
+	def __init__(self, feature_index, children_nodes_prediction):
+		self.feature_index = feature_index
+		self.children_nodes_prediction = children_nodes_prediction
 
 class StumpRanker(object):
-	def __init__(object):
+	def __init__(self):
 		self.feature_index = None
 		self.children_nodes_prediction = {}
 	def fit(self, X, y, weight_pair = None):
@@ -35,6 +41,148 @@ class StumpRanker(object):
 		
 		num_feature = len(X.values()[0]) 
 
-		for index in range(num_feature):
+		weight_dict = {}
+		
+		for pair in weight_pair:
+			if pair[0] not in weight_dict:
+				weight_dict[pair[0]] = 0
+			weight_dict[pair[0]] += weight_pair[pair]
+
+			if pair[1] not in weight_dict:
+				weight_dict[pair[1]] = 0
+			weight_dict[pair[1]] -= weight_pair[pair]
 			
+		score_optimal = None
+		nodes_prediction_optimal = None
+		feature_index_optimal = None
+		for index in range(num_feature):
+			score, nodes_prediction = self.getScore(X, y, weight_dict,weight_pair, index)
+			
+			if score_optimal is None or score_optimal < score:
+				score_optimal = score
+				nodes_prediction_optimal = nodes_prediction
+				feature_index_optimal = index
+		self.feature_index = feature_index_optimal
+		self.children_nodes_prediction = nodes_prediction_optimal
+
+		
+
+	def predict(self, X):
+		"""
+		X is a hashtable
+		"""
+		predictions = {}
+		for inst_index in X.keys():
+			if X[inst_index][self.feature_index] in self.children_nodes_prediction:
+				predictions.update({inst_index: self.children_nodes_prediction [X[inst_index][self.feature_index] ] } )
+			else:
+				predictions.update({inst_index: 0} )
+
+		return predictions
+
+
+	def getScore(self, X, y, weight_dict, weight_pair, feature_index):
+		partition = {}
+		missing_value_set = []		
+
+		for i in X.keys():
+			if X[i][feature_index] == -1:  #feature of value -1 indicates it's a missing value
+				missing_value_set.append(i)
+			else:
+				if X[i][feature_index] not in partition:
+					partition[X[i][feature_index]] = []
+
+				partition[X[i][feature_index]].append(i)
+
+		size_partition = {}
+		radom_num_thresh_partition = {}
+		temp_size = 0
+		for val in partition.keys():
+			size_partition[val] = len(partition[val])
+			temp_size += size_partition[val] 
+			radom_num_thresh_partition[temp_size] = val
+		cand_thresh = sorted(radom_num_thresh_partition.keys(), reverse = True)
+		#distribute instances with missing values
+		for i in missing_value_set:
+			r_num = np.random.uniform(low = 0, high= temp_size) 
+			j = 0
+			while j < len(cand_thresh) and cand_thresh[j] >= r_num:
+				i_to_join =  radom_num_thresh_partition[cand_thresh[j]]
+				j+=1
+			partition[i_to_join].append(i)
+
+		nodes_prediction = {}
+		predictions = {}
+		for val in partition.keys():
+			score = sum([weight_dict[x]  for x in partition[val] ])
+			if score >= 0:
+				nodes_prediction[val] = 1
+			else:
+				nodes_prediction[val] = 0
+			for i in partition[val]:
+				predictions[i] = nodes_prediction[val]
+			
+		score = 0
+		for pair in y:
+			if predictions[pair[0]]> predictions[pair[1]]:
+				score += weight_pair[pair]
+
+		
+		
+		return score, nodes_prediction
+
+class TestPredictMethod(unittest.TestCase):
+	def test_predict_uniform_weight(self):
+		X = {0:np.array([2,0]),1:np.array([3,1]), 2:np.array([4,2])}
+		y = [(1, 0), (2, 1)]
+
+		ranker = StumpRanker()
+		ranker.fit(X, y)
+		print ranker.predict(X)
+
+		X_test = {4: np.array([2,4])}
+		print ranker.predict(X_test)
+
+		#import pdb;pdb.set_trace()
+
+class TestFitMethod(unittest.TestCase):
+	def test_fit_uniform_weight(self):
+		X = {0:np.array([2,0]),1:np.array([3,1]), 2:np.array([4,2])}
+		y = [(1, 0), (2, 1)]
+
+		ranker = StumpRanker()
+		ranker.fit(X, y)
+		#import pdb;pdb.set_trace()
+
+	def test_fit_uniform_weight_with_missing_value(self):
+		X = {0:np.array([2,0]),1:np.array([3,1]), 2:np.array([-1,2]), 3:np.array([-1, 3])}
+		y = [(1, 0), (2, 1), (3,2)]
+
+		ranker = StumpRanker()
+		ranker.fit(X, y)
+		import pdb;pdb.set_trace()
+
+	def test_fit_nonuniform_weight(self):
+		X = {0:np.array([2,0]),1:np.array([3,1]), 2:np.array([4,2])}
+		y = [(1, 0), (2, 1)]
+		weight_pair = {(1,0):0.3, (2,1): 0.7}
+
+		ranker = StumpRanker()
+		ranker.fit(X, y, weight_pair)
+		#import pdb;pdb.set_trace()
+
+	def test_fit_nonuniform_weight1(self):
+		X = {0:np.array([2,0]),1:np.array([2,1]), 2:np.array([4,2])}
+		y = [(0, 1), (2, 1)]
+		weight_pair = {(0,1):0.3, (2,1): 0.7}
+
+		ranker = StumpRanker()
+		ranker.fit(X, y, weight_pair)
+		print " "
+		print ranker.feature_index
+		print ranker.children_nodes_prediction
+		#import pdb;pdb.set_trace()
+
+if __name__ == "__main__":
+	unittest.main()
 
