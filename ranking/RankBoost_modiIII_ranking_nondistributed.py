@@ -13,10 +13,11 @@ import numpy as np
 import copy
 
 from weak_ranker import WeakRanker
-
+from stump_ranker import StumpRanker
 
 WEAK_CLASSIFIERS = {
         'weak_ranker': WeakRanker,
+	'stump_ranker': StumpRanker,
 }
 
 class RankBoost_modiIII_ranking(object):

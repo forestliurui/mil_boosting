@@ -91,143 +91,259 @@ def get_bag_label(instance_predictions, bags):
 		p_index = n_index
 	return np.array(bag_predictions)
 
-print "load dataset"
+
 #import pdb;pdb.set_trace()
-'''
-# Construct dataset v0
-X1, y1 = make_gaussian_quantiles(cov=2.,
+
+
+def getDataset(index):
+	hashmap_dataset = {
+		0: getDataset0,
+		1: getDataset1,
+		2: getDataset2,
+		7: getDataset7,
+	}
+	return hashmap_dataset[index]
+		
+
+def getDataset0():
+ 	"""
+	Construct dataset v0
+	
+	"""
+	X1, y1 = make_gaussian_quantiles(cov=2.,
                                  n_samples=200, n_features=2,
                                  n_classes=2, random_state=1)
 
-X = X1
-y = y1
-#import pdb;pdb.set_trace()
+	X = X1
+	y = y1
+	#import pdb;pdb.set_trace()
+	return X, y
 
-# Construct dataset v1
-
-X1, y1 = make_gaussian_quantiles(cov=2.,
+def getDataset1():
+	"""
+	Construct dataset v1
+	construct two gaussians
+	"""
+	X1, y1 = make_gaussian_quantiles(cov=2.,
                                  n_samples=200, n_features=2,
                                  n_classes=2, random_state=1)
-X2, y2 = make_gaussian_quantiles(mean=(3, 3), cov=1.5,
+	X2, y2 = make_gaussian_quantiles(mean=(3, 3), cov=1.5,
                                  n_samples=300, n_features=2,
                                  n_classes=2, random_state=1)
-X = np.concatenate((X1, X2))
-y = np.concatenate((y1, - y2 + 1))
+	X = np.concatenate((X1, X2))
+	y = np.concatenate((y1, - y2 + 1))
 
-f0_max = np.max( abs(X)[:,0] ) #scale the data to be within the unit box
-f1_max = np.max( abs(X)[:,1] )
-import pdb;pdb.set_trace()
-X = np.vstack((X[:,0]/f0_max, X[:,1]/f1_max )).transpose()
-'''
+	f0_max = np.max( abs(X)[:,0] ) #scale the data to be within the unit box
+	f1_max = np.max( abs(X)[:,1] )
+	#import pdb;pdb.set_trace()
+	X = np.vstack((X[:,0]/f0_max, X[:,1]/f1_max )).transpose()
+	return X, y
 
-# Construct dataset v2
-X=np.array([[0,0],[0,1],[0,-1], [1, 0], [1, 1], [1, -1], [-1, 0], [2, 0], [0, 3], [1,3], [0, -3], [1,-3]])
-y=np.array([-1,-1, -1, 1, 1, 1, 1, -1, -1, 1, -1, 1 ])
+def getDataset2():
 
-
-
-'''
-
-# Construct dataset v3
-X=np.array([[1,0],[-2,0],[0, -2], [0, 2]])
-y=np.array([1,1, -1, -1])
-#import pdb;pdb.set_trace()
-
-# construct dataset v4 -- banana~goldmedal
-pkl_file = open('banana_goldmedal.pkl', 'rb')
-train_class = dill.load(pkl_file)
-test_class = dill.load(pkl_file)
-X = train_class.instances
-y= 2*train_class.instance_labels_SIL - 1 #convert the boolean values to +1/-1 values for the labels
+	# Construct dataset v2
+	X=np.array([[0,0],[0,1],[0,-1], [1, 0], [1, 1], [1, -1], [-1, 0], [2, 0], [0, 3], [1,3], [0, -3], [1,-3]])
+	y=np.array([-1,-1, -1, 1, 1, 1, 1, -1, -1, 1, -1, 1 ])
+	return X, y
 
 
-# construct dataset v5 -- musk1
-pkl_file = open('musk1.pkl', 'rb')
-train_class = dill.load(pkl_file)
-test_class = dill.load(pkl_file)
-X = train_class.instances
-y= 2*train_class.instance_labels_SIL - 1 #convert the boolean values to +1/-1 values for the labels
+def getDataset3():
 
-# construct dataset v6 -- musk2
-pkl_file = open('musk2.pkl', 'rb')
-train_class = dill.load(pkl_file)
-test_class = dill.load(pkl_file)
-X = train_class.instances
-y= 2*train_class.instance_labels_SIL - 1 #convert the boolean values to +1/-1 values for the labels
-'''
+	# Construct dataset v3
+	X=np.array([[1,0],[-2,0],[0, -2], [0, 2]])
+	y=np.array([1,1, -1, -1])
+	#import pdb;pdb.set_trace()
+	return X, y
 
-'''
-#Adaboost + perceptron
-bdt = AdaBoostClassifier(MLPClassifier(hidden_layer_sizes = ()),
+def getDataset4():
+	# construct dataset v4 -- banana~goldmedal
+	pkl_file = open('banana_goldmedal.pkl', 'rb')
+	train_class = dill.load(pkl_file)
+	test_class = dill.load(pkl_file)
+	X = train_class.instances
+	y= 2*train_class.instance_labels_SIL - 1 #convert the boolean values to +1/-1 values for the labels
+	return X, y
+
+def getDataset5():
+	# construct dataset v5 -- musk1
+	pkl_file = open('musk1.pkl', 'rb')
+	train_class = dill.load(pkl_file)
+	test_class = dill.load(pkl_file)
+	X = train_class.instances
+	y= 2*train_class.instance_labels_SIL - 1 #convert the boolean values to +1/-1 values for the labels
+	return X, y
+
+def getDataset6():
+	# construct dataset v6 -- musk2
+	pkl_file = open('musk2.pkl', 'rb')
+	train_class = dill.load(pkl_file)
+	test_class = dill.load(pkl_file)
+	X = train_class.instances
+	y= 2*train_class.instance_labels_SIL - 1 #convert the boolean values to +1/-1 values for the labels
+	return X, y
+
+def getDataset7(noise_rate = None):
+	"""
+	Construct dataset v1
+	construct two gaussians
+	"""
+	if noise_rate is None:
+		noise_rate = 0.45
+
+	X1, y1 = make_gaussian_quantiles(cov=2.,
+                                 n_samples=200, n_features=2,
+                                 n_classes=1, random_state=1, shuffle = True)
+	X2, y2 = make_gaussian_quantiles(mean=(3, 3), cov=1.5,
+                                 n_samples=300, n_features=2,
+                                 n_classes=1, random_state=1)
+	y1_noised = []
+	for i in range(y1.shape[0]):
+		if np.random.uniform() < noise_rate:
+			y1_noised.append( - y1[i] + 1)
+		else:
+			y1_noised.append( y1[i] )
+
+	y1_noised = np.array(y1_noised)
+
+	X = np.concatenate((X1, X2))
+	y = np.concatenate((y1_noised, - y2 + 1))
+
+	y_denoised = np.concatenate((y1, - y2 + 1))
+
+
+	f0_max = np.max( abs(X)[:,0] ) #scale the data to be within the unit box
+	f1_max = np.max( abs(X)[:,1] )
+	#import pdb;pdb.set_trace()
+	X = np.vstack((X[:,0]/f0_max, X[:,1]/f1_max )).transpose()
+	return X, y, y_denoised
+
+def getMethod(index):
+	hashmap_method = {
+		1: getMethod1,
+		2: getMethod2,
+	}
+	return hashmap_method[index]
+
+def getMethod1():
+	#Adaboost + perceptron
+	bdt = AdaBoostClassifier(MLPClassifier(hidden_layer_sizes = ()),
 			algorithm="SAMME",
                          n_estimators=30)
+	return bdt
 
-
-#AdaBoosted decision tree
-bdt = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1),
+def getMethod2():
+	#AdaBoosted decision tree
+	bdt = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1),
                          algorithm="SAMME",
                          n_estimators=300)
+	return bdt
 
-#linear svm+adaboost
-params = {'C': 100000000, 'kernel': 'linear'}
-bdt = AdaBoostClassifier(SVC(**params),
+def getMethod3():
+	#linear svm+adaboost
+	params = {'C': 100000000, 'kernel': 'linear'}
+	bdt = AdaBoostClassifier(SVC(**params),
                          algorithm="SAMME",
                          n_estimators=2)
+	return bdt
 
-
-
-#rbf svm+adaboost
-params = {'C': 10000, 'kernel': 'rbf','gamma':1000}
-bdt = AdaBoostClassifier(SVC(**params),
+def getMethod4():
+	#rbf svm+adaboost
+	params = {'C': 10000, 'kernel': 'rbf','gamma':1000}
+	bdt = AdaBoostClassifier(SVC(**params),
                          algorithm="SAMME",
                          n_estimators=15)
+	return bdt
 
-#rankboost
-params = {'C': 10, 'kernel': 'linear', 'max_iter_boosting':10}
-bdt = RankBoost(**params)
+def getMethod5():
+	#rankboost
+	params = {'C': 10, 'kernel': 'linear', 'max_iter_boosting':10}
+	bdt = RankBoost(**params)
+	return bdt
 
-#linear svm
-params = {'C': 10, 'kernel': 'linear'}
-bdt = SVC(**params)
+def getMethod6():
+	#linear svm
+	params = {'C': 10, 'kernel': 'linear'}
+	bdt = SVC(**params)
+	return bdt
 
-#rbf svm
-params = {'C': 10, 'kernel': 'rbf', 'gamma': 1}
-bdt = SVC(**params)
+def getMethod7():
+	#rbf svm
+	params = {'C': 10, 'kernel': 'rbf', 'gamma': 1}
+	bdt = SVC(**params)
+	return bdt
 
-#martiboost + linear svm
-params = {'C': 10, 'kernel': 'linear'}
-bdt = MartiBoost(**params)
 
-#martiboost + balanced_decision_stump
-params = {'weak_classifier': 'dtree_stump_balanced', 'max_iter_boosting': 200}
-bdt = MartiBoost(**params)
+def getMethod8():
+	#martiboost + linear svm
+	params = {'C': 10, 'kernel': 'linear'}
+	bdt = MartiBoost(**params)
+	return bdt
 
-#MIBoosting + decision_stump
-params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 200}
-bdt1 = MIBoosting_Xu(**params)
+def getMethod9():
+	#martiboost + balanced_decision_stump
+	params = {'weak_classifier': 'dtree_stump_balanced', 'max_iter_boosting': 200}
+	bdt = MartiBoost(**params)
+	return bdt
 
-#rankboost_m3
-params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 2000}
-bdt = RankBoost_m3(**params)
+def getMethod10():
+	#MIBoosting + decision_stump
+	params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 200}
+	bdt1 = MIBoosting_Xu(**params)
+	return bdt
 
-#rankboost + decision stump
-params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 20}
-bdt = RankBoost(**params)
+
+def getMethod11():
+	#rankboost_m3
+	params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 2000}
+	bdt = RankBoost_m3(**params)
+	return bdt
+
+def getMethod12():
+	#rankboost + decision stump
+	params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 20}
+	bdt = RankBoost(**params)
+	return bdt
+
+
+def getMethod13():
+	#rankboost_modiII + decision stump
+	params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 20}
+	bdt = RankBoost_modiII(**params)
+	return bdt
+
+print "this is the beginning"
+
+noise_rates =[x/10.0 for x in range(0, 10)]
+accuracy = []
+accuracy_false_label = []
+for val in noise_rates:
+
+	X, y, y_true = getDataset(7)(val)
+	bdt = getMethod(2)()
+
+	#import pdb;pdb.set_trace()
+	#print "fitting the training set"
+	bdt.fit(X, y)
+
+
+	accuracy.append( np.average(bdt.predict(X) == y_true) )
+	accuracy_false_label.append(np.average(bdt.predict(X) == y)   )
+plt.figure()
+plt.plot(noise_rates, accuracy, 'r.-')
+plt.plot(noise_rates, accuracy_false_label, 'b.-')
+plt.legend(["w.r.t true label", "w.r.t noisy label"])
+plt.xlabel("noise_rate")
+plt.ylabel("accuracy")
+plt.savefig("noise_rate.pdf")
+import pdb;pdb.set_trace()
 '''
-
-#rankboost_modiII + decision stump
-params = {'weak_classifier': 'dtree_stump','max_depth': 1,'max_iter_boosting': 20}
-bdt = RankBoost_modiII(**params)
-
-print "fitting the training set"
-bdt.fit(X, y)
 #bdt1.fit(train_class.bags, train_class.bag_labels)
 print "fitting completed"
 print "Ranking Eror Bound",
 print bdt.getRankingErrorBound()
 print "Ranking Error of Last Ranker",
 print bdt.getRankingErrorOneClassifier()
-'''
+
 import pdb;pdb.set_trace()
 predictions_test = bdt.predict(test_class.instances)
 bag_predictions_test = get_bag_label(predictions_test, test_class.bags)
@@ -245,7 +361,7 @@ print "for bdt2"
 print np.average((bdt1.predict(test_class.bags)>0 )==test_class.bag_labels)
 import pdb;pdb.set_trace()
 '''
-import pdb;pdb.set_trace()
+#import pdb;pdb.set_trace()
 plot_colors = "br"
 plot_step = 0.02
 class_names = "AB"
@@ -303,4 +419,3 @@ plt.tight_layout()
 plt.subplots_adjust(wspace=0.35)
 '''
 plt.savefig('Adaboost_twoclass.pdf')
-import pdb;pdb.set_trace()

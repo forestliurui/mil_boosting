@@ -28,7 +28,7 @@ class Ball(object):
 		weight_temp = {}
 		
 		if weight_hashmap is None:
-			for i in weight_hashmap.keys():
+			for i in X_bags.keys():
 				weight_temp[i] = float(1)/num_bags
 		else:
 			for i in weight_hashmap.keys():
@@ -133,6 +133,7 @@ class WeightBagSet(object):
 			#if bag_index == 5:
 			#	print "need to debug"
 			#	import pdb;pdb.set_trace()
+			#import pdb;pdb.set_trace()
 
 			while i_p < len(self.hash_temp_positive[(bag_index, inst_index)]) and i_n < len(self.hash_temp_negative[(bag_index, inst_index)]):
 				#print "i_p: ", i_p, " ;i_n: ", i_n
@@ -192,6 +193,8 @@ class WeightBagSet(object):
 				radius_optimal = radius
 				sum_optimal = running_sum 
 			#import pdb;pdb.set_trace()
+
+		import pdb;pdb.set_trace()
 
 		center_vector = self.X_bags[center_optimal[0]][ center_optimal[1] ,:]
 		return Ball(center_vector, radius_optimal)
@@ -259,6 +262,7 @@ class Auerboost(object):
 			error = 1 - ball.getDistributionAccurary(X_bags, y_labels, hashmap)
 			
 			if error >= 0.5:
+				import pdb;pdb.set_trace()
 				break	
 
 			self.weak_classifiers.append(ball)
@@ -386,7 +390,7 @@ def get_bag_label(instance_predictions, bags):
 
 
 class TestAuerboostFitMethod(unittest.TestCase):
-	def test_WeightBagSet(self):
+	def NO_test_WeightBagSet(self):
 		X_bags =[np.array([[1,0]]),np.array([[-1,0]]),np.array([[0,1]]),np.array([[0,2]]),np.array([[0,-1]]), np.array([[0,0]]) ]
 		y_labels = [-1,-1,1,1,1, 1]
 		booster = Auerboost()
@@ -397,7 +401,20 @@ class TestAuerboostFitMethod(unittest.TestCase):
 
 		X_bags_test = [np.array([[2,0]]), np.array([[-2, 0]]), np.array([[0,5]]),np.array([[0, 1.5]])]
 		print booster.predict(X_bags = X_bags_test)
+		#import pdb;pdb.set_trace()
+	def No_test_getOptimalBall(self):
+		import dill
+		weight_bag_set = dill.load(open('debug_auer.pkl','r'))
+		ball = weight_bag_set.getOptimalBall()
+		print ball.getDistributionAccurary(weight_bag_set.X_bags, weight_bag_set.y_labels, weight_bag_set.hashmap)
+
 		import pdb;pdb.set_trace()
+	def test_getHashmap(self):
+		X_bags = [ np.array([[0,1],[0,2]]), np.array([[-2,0], [-1, 0]]), np.array([[0,1],[0,2]]), np.array([[1,0],[2,0]])]
+		y_labels [-1,-1, 1, 1]
+		
+		 
+
 
 if __name__ == "__main__":
 	unittest.main()

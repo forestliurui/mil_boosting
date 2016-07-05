@@ -161,7 +161,7 @@ def generateRank(directory, outputfile_name):
 
 def draw_plot1(directory, outputfile_name):
 
-	colors={'rankboost':'r', 'miboosting_xu':'b','adaboost':'k', 'martiboost':'c', 'rankboost_pos':'y','rankboost_m3':'m', 'rankboost_m3_pos':'g','rankboost_modiII':'g' ,'rankboost_earlyStop': 'r'}
+	colors={'rankboost':'r', 'miboosting_xu':'b','adaboost':'k', 'martiboost':'c', 'rankboost_pos':'y','rankboost_m3':'m', 'rankboost_m3_pos':'g','rankboost_modiII':'g' ,'rankboost_earlyStop': 'r', 'auerboost': 'y'}
 
 
 	#statistics_name = ['test_instance_AUC', 'train_instance_AUC', 'test_bag_AUC', 'train_bag_AUC', 'test_instance_balanced_accuracy', 'train_instance_balanced_accuracy', 'test_bag_balanced_accuracy', 'train_bag_balanced_accuracy']
@@ -241,9 +241,9 @@ if __name__ == '__main__':
 	statistic_name = args[1]
 	outputfile_name = args[2]
 
-	#draw_plot1(directory, outputfile_name)
+	draw_plot1(directory, outputfile_name)
 	
-	generateRank(directory, outputfile_name)
+	#generateRank(directory, outputfile_name)
 
 	#results = get_results(directory, statistic_name)
 	#draw_plot(results, statistic_name,  outputfile_name)
