@@ -26,6 +26,8 @@ from RankBoost_m3_pos_nondistributed import RankBoost_m3_pos
 from RankBoost_modiII_nondistributed import RankBoost_modiII
 from RankBoost_modiOp_nondistributed import RankBoost_modiOp
 from Auerboost_nondistributed import Auerboost
+from Auerboost_nondistributed import Auerboost
+from rBoost_nondistributed import RBoost
 
 BAG_PREDICTIONS = False
 INSTANCE_PREDICTIONS = False
@@ -35,6 +37,7 @@ BEST_BALANCED_ACCURACY = True
 ERROR_BOUND = False
 
 CLASSIFIERS = {
+    'rboost': RBoost,
     'auerboost': Auerboost,
     'rankboost': RankBoost,
     'rankboost_pos': RankBoost_pos,
