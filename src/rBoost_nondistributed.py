@@ -34,6 +34,7 @@ class RBoost(object):
 		self.weak_classifiers = []
 		self.alphas = []
 		self.predictions_list_train = []
+		self.instance_weights = []
 
 	def fit(self, X_bags, y_labels):
 		'''
@@ -86,9 +87,12 @@ class RBoost(object):
 		self.gamma[(0,0)] = [0.7]
 		self.gamma[(0,1)] = [0.3]
 		
-		self.gamma[(1,0)] = [0] #true positive instance will always remain as true observed instance
-		self.gamma[(1,1)] = [1]
+		#self.gamma[(1,0)] = [0] #true positive instance will always remain as true observed instance
+		#self.gamma[(1,1)] = [1]
 		
+		self.gamma[(1,0)] = [0.2] #true positive instance will always remain as true observed instance
+		self.gamma[(1,1)] = [0.8]
+
 		self.w = {}
 		self.P  ={}
 		self.g = {}
@@ -99,7 +103,9 @@ class RBoost(object):
 					self.w[index_inst][(i,j)] = self.gamma[(i,j)][-1]
 
 		for index_Boosting in range(self.max_iter_boosting):
+			print "boosting iteration: ", index_Boosting
 			weights_instance = self.getInstWeight(instance_labels_generated_from_bag_labels, self.w)
+			self.instance_weights.append(weights_instance)
 
 			#import pdb;pdb.set_trace()
 			instance_classifier=WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
@@ -110,16 +116,17 @@ class RBoost(object):
 			weighted_error = np.average( instance_classifier.predict(instances) !=  self.predictions_list_train[-1], weights = weights_instance)
 			res = minimize(self.subproblem_to_update_alpha(instance_labels_generated_from_bag_labels, self.w,  weighted_error ), 0)	
 			alpha  = res['x'][0]
+
 			self.alphas.append(alpha)
 			self.weak_classifiers.append(instance_classifier)
 
 			#update self.w
 			for index_inst in range(num_instances):
 
-				self.w[index_inst][(0,0)] = self.gamma[(0,0)][-1]*exp(-self.predict(instances[index_inst,:].reshape((1,-1))))[0]*exp(2*alpha*( self.predictions_list_train[-1][index_inst]!=1 ))
-				self.w[index_inst][(0,1)] = self.gamma[(0,1)][-1]*exp(self.predict(instances[index_inst,:].reshape((1,-1))))[0]*exp(2*alpha*( self.predictions_list_train[-1][index_inst]==1 ))
-				self.w[index_inst][(1,0)] = self.gamma[(1,0)][-1]*exp(-self.predict(instances[index_inst,:].reshape((1,-1))))[0]*exp(2*alpha*( self.predictions_list_train[-1][index_inst]!=1 ))
-				self.w[index_inst][(1,1)] = self.gamma[(1,1)][-1]*exp(self.predict(instances[index_inst,:].reshape((1,-1))))[0]*exp(2*alpha*( self.predictions_list_train[-1][index_inst]==1 ))
+				self.w[index_inst][(0,0)] = self.gamma[(0,0)][-1]*exp(-self.predict(instances[index_inst,:].reshape((1,-1))))[0]
+				self.w[index_inst][(0,1)] = self.gamma[(0,1)][-1]*exp(self.predict(instances[index_inst,:].reshape((1,-1))))[0]
+				self.w[index_inst][(1,0)] = self.gamma[(1,0)][-1]*exp(-self.predict(instances[index_inst,:].reshape((1,-1))))[0]
+				self.w[index_inst][(1,1)] = self.gamma[(1,1)][-1]*exp(self.predict(instances[index_inst,:].reshape((1,-1))))[0]
 				#normalization on self.w
 				sum_w0 = sum([   self.w[index_inst][(0,0)], self.w[index_inst][(0,1)] ])
 				sum_w1 = sum([  self.w[index_inst][(1,0)], self.w[index_inst][(1,1)]  ])
@@ -129,6 +136,10 @@ class RBoost(object):
 				
 				self.w[index_inst][(1,0)] =  self.w[index_inst][(1,0)]/sum_w1
 				self.w[index_inst][(1,1)] =  self.w[index_inst][(1,1)]/sum_w1
+
+
+
+
 
 			#update P Note: there are several ways to compute P. For simplicity, I use logistic calibratioin here
 			for index_inst in range(num_instances):
@@ -143,7 +154,8 @@ class RBoost(object):
 			self.gamma[(0,1)].append( self.g[(0,1)]/(self.g[(0,0)]+self.g[(0,1)]) )		
 			self.gamma[(1,0)].append( self.g[(1,0)]/(self.g[(1,0)]+self.g[(1,1)]) )
 			self.gamma[(1,1)].append( self.g[(1,1)]/(self.g[(1,0)]+self.g[(1,1)]) )
-
+		#import pdb;pdb.set_trace()
+		self.actual_rounds_of_boosting = len(self.alphas)
 					
 	def predict_train(self, iter = None, getInstPrediction = False):
 
