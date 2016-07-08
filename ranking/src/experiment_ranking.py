@@ -5,6 +5,7 @@ import os
 import numpy as np
 import time
 import string
+import dill
 from RankBoost_ranking_nondistributed import RankBoost_ranking
 
 BAG_PREDICTIONS = False
@@ -67,6 +68,43 @@ def getDataset(user_id, fold_index):
 	return RankingDataSet(X_train, p_train), RankingDataSet(X_test, p_test)
 
 def client_target(task, callback):
+    """
+    used to test client/server
+    """
+    (user_id, fold_index) = task['key']
+
+
+
+    print 'Starting task ..'
+    print 'User id:     %d' % user_id
+    print 'fold index:  %d' % fold_index
+
+    time.sleep(5)
+
+    submission = {
+        'accum':{
+                'instance_predictions' : {
+                        'train' : {},
+                        'test'  : {},
+                },
+                'bag_predictions' : {
+                        'train' : {},
+                        'test'  : {},
+                },
+        },
+        'statistics_boosting' : {}
+    }
+    submission['statistics_boosting']['accuracy']= user_id+fold_index
+    submission_boosting = {}
+    submission_boosting[0] = submission
+    submission_boosting[1] = submission	
+    print 'Finished task.'
+    return submission_boosting
+
+
+
+
+def client_target_true(task, callback):
     (user_id, fold_index) = task['key']
 
     
@@ -99,7 +137,7 @@ def client_target(task, callback):
     submission_boosting = {}
     for boosting_round in range(1,  classifier.actual_rounds_of_boosting+1 ):  #boosting_round starts from 1
 	submission_boosting[boosting_round] = construct_submissions(classifier, train, test, boosting_round, timer)
-    print 'Finished task %s.' % str(experiment_id)
+    print 'Finished task.'
     return submission_boosting
 
 def construct_submissions(classifier, train, test, boosting_round, timer):

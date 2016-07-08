@@ -14,11 +14,13 @@ from collections import defaultdict
 from random import shuffle
 import numpy as np
 
-from folds import FoldConfiguration
-from progress import ProgressMonitor
+import sys
+sys.path.append("/home/rui/MIL_Boost/MIL_Boosting/MIL_Boost/MIL_Boost/src/")
+
+#from progress import ProgressMonitor
 from results import get_result_manager
 
-PORT = 2114
+PORT = 2118
 DEFAULT_TASK_EXPIRE = 120 # Seconds
 TEMPLATE = """
 <html>
@@ -200,8 +202,9 @@ class ExperimentServer(object):
                 raise HTTPError(404)
             task = self.tasks[key]
             if not task.finished:
-                task.store_results(submission)
-                task.finish()
+                #task.store_results(submission)
+                task.store_boosting_accum_results_directly_from_client(submission)
+		task.finish()
         return "OK"
 
 def time_remaining_estimate(tasks, alpha=0.1):
@@ -311,8 +314,10 @@ class Task(object):
 	self.train = str(user_id)+'.'+str(fold_index)+'.train'  #its format is like '2.3.train', meaning training part of the 3rd fold of user with id being 2
 	self.test = str(user_id)+'.'+str(fold_index)+'.test' #its format is like '2.3.test', meaning test part of the 3rd fold of user with id being 2
         self.priority_adjustment = 0
-
-        self.grounded = False
+	self.parameter_id_str = '0'
+        self.parameter_set = '1'
+        
+	self.grounded = False
 
         self.last_checkin = None
         self.finished = False
@@ -325,11 +330,11 @@ class Task(object):
         self.results_directory = results_directory
  
  
-
-        results_subdir = os.path.join(self.results_directory,
-                                      self.experiment_name)
+	results_subdir = self.results_directory
+        #results_subdir = os.path.join(self.results_directory,
+        #                              self.experiment_name)
         self.results_path = os.path.join(results_subdir,
-                                         self.experiment_id_str + '.db')
+                                         'movieLen.db')
 
         self.results_manager = get_result_manager(self.results_path)
         if self.results_manager.is_finished(self.train, self.test):
@@ -371,6 +376,12 @@ class Task(object):
         return self.results_manager.get_statistic(statistic_name, self.train,
                     self.test, self.parameter_id_str, self.parameter_set)
 
+    def store_boosting_accum_results_directly_from_client(self, submission_boosting):
+	for boosting_round in submission_boosting.keys():
+		self.results_manager.store_results_boosting(submission_boosting[boosting_round], boosting_round, self.train, self.test, self.parameter_id_str, self.parameter_set)
+
+
+
     def store_results(self, submission):
         """Write results to disk."""
         if not self.grounded:
@@ -407,43 +418,8 @@ class Task(object):
         self.failed = False
         self.finish_time = time.time()
 
-class ExperimentConfiguration(object):
-
-    def __init__(self, experiment_name, experiment_id,
-                 fold_config, param_config, resampling_constructor):
-        self.experiment_name = experiment_name
-        self.experiment_id = experiment_id
-        self.fold_config = fold_config
-        self.param_config = param_config
-        self.resampling_constructor = resampling_constructor
-        self.settings = None
-
-    def get_settings(self):
-        if self.settings is None:
-            self.settings = []
-            for train, test in self.fold_config.get_all_train_and_test():
-                resampling_config = self.resampling_constructor(train)
-                for resampled in resampling_config.get_all_resampled():
-                    for pconfig in self.param_config.get_settings():
-                        setting = {'train': resampled,
-                                   'test': test}
-                        setting.update(pconfig)
-                        self.settings.append(setting)
-
-        return self.settings
-
-    def get_key(self, **setting):
-        key = (self.experiment_name, self.experiment_id,
-               setting['train'], setting['test'],
-               setting['parameter_id'], setting['parameter_set'])
-        return key
-
-    def get_task(self, **setting):
-        key = self.get_key(**setting)
-        return Task(*key)
-
-def start_experiment(configuration_file, results_root_dir):
-    task_dict = load_config(configuration_file, results_root_dir)
+def start_experiment(results_root_dir):
+    task_dict = load_config( results_root_dir)
 
     server = ExperimentServer(task_dict, render)
     cherrypy.config.update({'server.socket_port': PORT,
@@ -451,7 +427,7 @@ def start_experiment(configuration_file, results_root_dir):
     cherrypy.quickstart(server)
 
 def load_config(results_directory):
-	user_id_set = range(100) #to be changed to real set
+	user_id_set = range(10) #to be changed to real set
 	fold_index_set = range(1, 6) #to be changed to real set
 
 	tasks = {}
@@ -464,91 +440,15 @@ def load_config(results_directory):
 			tasks[task_key]= task
 	return tasks
 
-def load_config_old(configuration_file, results_root_dir):
-    tasks = {}
-    parameter_dict = {}
-
-    print 'Loading configuration...'
-    with open(configuration_file, 'r') as f:
-        configuration = yaml.load(f)
-
-    experiment_key = configuration['experiment_key']
-    experiment_name = configuration['experiment_name']
-
-    if experiment_name == 'mi_kernels':
-        from resampling import NullResamplingConfiguration
-        def constructor_from_experiment(experiment):
-            return lambda dset: NullResamplingConfiguration(dset)
-    else:
-        raise ValueError('Unknown experiment name "%s"' % experiment_name)
-
-    for experiment in configuration['experiments']:
-        try:
-            experiment_id = tuple(experiment[k] for k in experiment_key)
-        except KeyError:
-            raise KeyError('Experiment missing identifier "%s"'
-                            % experiment_key)
-
-        def _missing(pretty_name):
-            raise KeyError('%s not specified for experiment "%s"'
-                            % (pretty_name, str(experiment_id)))
-
-        def _resolve(field_name, pretty_name):
-            field = experiment.get(field_name,
-                        configuration.get(field_name, None))
-            if field is None: _missing(pretty_name)
-            return field
-
-        print 'Setting up experiment "%s"...' % str(experiment_id)
-
-        try:
-            dataset = experiment['dataset']
-        except KeyError: _missing('Dataset')
-
-        experiment_format = _resolve('experiment_key_format',
-                                     'Experiment key format')
-
-        parameter_key = _resolve('parameter_key', 'Parameter key')
-        parameter_format = _resolve('parameter_key_format',
-                                    'Parameter key format')
-        parameters = _resolve('parameters', 'Parameters')
-        param_config = ParameterConfiguration(results_root_dir,
-                        experiment_name, experiment_id,
-                        experiment_format, parameter_key,
-                        parameter_format, parameters)
-        parameter_dict[experiment_id] = param_config
-
-        folds = _resolve('folds', 'Folds')
-        fold_config = FoldConfiguration(dataset, *folds)
-
-        resampling_constructor = constructor_from_experiment(experiment)
-
-        priority = experiment.get('priority', 0)
-
-        experiment_config = ExperimentConfiguration(
-                                experiment_name, experiment_id,
-                                fold_config, param_config,
-                                resampling_constructor)
-        settings = experiment_config.get_settings()
-        prog = ProgressMonitor(total=len(settings), print_interval=10,
-                               msg='\tGetting tasks')
-        for setting in settings:
-            key = experiment_config.get_key(**setting)
-            task = experiment_config.get_task(**setting)
-            task.priority_adjustment = priority
-            task.ground(results_root_dir,
-                experiment_format, parameter_format)
-            tasks[key] = task
-            prog.increment()
-
-    return tasks, parameter_dict
-
 if __name__ == '__main__':
     from optparse import OptionParser, OptionGroup
     parser = OptionParser(usage="Usage: %prog configfile resultsdir")
     options, args = parser.parse_args()
     options = dict(options.__dict__)
-    if len(args) != 2:
+	
+    num_args = 1
+
+    if len(args) != num_args:
         parser.print_help()
         exit()
     start_experiment(*args, **options)

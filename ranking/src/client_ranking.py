@@ -10,7 +10,7 @@ from urllib import urlencode
 from itertools import count
 import gc
 
-from server_boosting_noCV import PORT
+from server_ranking import PORT
 
 UPDATE_INTERVAL = 30
 
