@@ -93,6 +93,16 @@ class Timer(object):
             times[event + suffix] = self.get(event)
         return times
 
+def getDataset(user_id, fold_index):
+	
+	movieLen = dill.load(open('ranking/movieLen/movieLen_user'+str(user_id)+'.pkl'))
+	X_train = movieLen.X_train[fold_index]
+	p_train = movieLen.p_train[fold_index]
+
+	X_test = movieLen.X_test[fold_index]
+	p_test = movieLen.p_test[fold_index]
+
+	return X_train, p_train, X_test, p_test
 
 def client_target(task, callback):
     (user_id, fold_index) = task['key']
