@@ -235,9 +235,9 @@ def render(tasks):
     experiment_ids = set()
     parameter_ids = set()
     for key in tasks.keys():
-        experiment_names.add(key[0])
-        experiment_ids.add(key[1])
-        parameter_ids.add(key[4])
+        experiment_names.add(str(key[0])+'.'+str(key[1]))
+        experiment_ids.add(str(key[0])+'.'+str(key[1]))
+        parameter_ids.add('1')
 
     experiment_names = sorted(experiment_names)
     experiment_title = ('Status: %s' % ', '.join(experiment_names))
@@ -246,7 +246,7 @@ def render(tasks):
 
     reindexed = defaultdict(list)
     for k, v in tasks.items():
-        reindexed[k[1], k[4]].append(v)
+        reindexed[str(k[0])+'.'+str(k[1]), '1'].append(v)
 
     tasks = reindexed
 
