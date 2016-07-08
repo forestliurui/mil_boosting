@@ -7,6 +7,7 @@ has passed tests, should be correct
 import unittest
 import csv
 import dill
+import numpy as np
 
 def process(filename):
 	"""
@@ -23,11 +24,14 @@ def process(filename):
 
 	num_folds = 5
 
+	missing_rate = 0.5
+
 	for index_user in range(num_user): #take turn to choose user for critical pairs
 		print "user index: ", index_user
 		if index_user >50: #try not to get too many subdatasets
 			break
-		X, y = getXy(user_map, movie_map, index_user)
+		X_pre, y = getXy(user_map, movie_map, index_user)
+		X =  removeFeaturesWithManyMissingValue(X_pre, missing_rate)
 
 		X_train, y_train, X_test, y_test = getPartition(X, y, num_folds)
 
@@ -63,13 +67,16 @@ def process_getStat(filename):
 	num_user = len(user_map)
 	num_movie = len(movie_map)
 
+	missing_rate = 0.5
+
 	num_folds = 5
 	stat = {'sizeOfMovies':[], 'sizeOfUsers': []}
 	for index_user in range(num_user): #take turn to choose user for critical pairs
 		print "user index: ", index_user
 		#if index_user >50: #try not to get too many subdatasets
 		#	break
-		X, y = getXy(user_map, movie_map, index_user)
+		X_pre, y = getXy(user_map, movie_map, index_user)
+		X =  removeFeaturesWithManyMissingValue(X_pre, missing_rate)
 
 		X_train, y_train, X_test, y_test = getPartition(X, y, num_folds)
 
@@ -178,6 +185,23 @@ def getMap(filename):
 			movie_map[row[1]][row[0]] = int(row[2])
 	return user_map, movie_map
 
+def removeFeaturesWithManyMissingValue(X, missing_rate):
+	"""
+	X as a dictionary like {movie_index1: list, movie_index2: list} , the list contains the rating of a specific movie from all other users except for the one in y. -1 is used to indicate missing value
+
+	We will remove those users (i.e. features) whose ratings are missing for more than some threshold movies, specifically, it's missing rate is greater than the parameter missing_rate
+	"""
+	results = {}
+	for index_user in range(len(X.values()[0])):
+		X_temp = [ X[movie_i][index_user] for  movie_i in X.keys() ]
+		if np.average(np.array(X_temp) == -1) <= missing_rate:
+			for m in X.keys():
+				if m not in results:
+					results[m] = []
+				results[m].append(X[m][index_user])
+	return results
+	
+
 def getXy(user_map, movie_map, index_user):
 	"""
 	user_map is dictionary to store the movie rating for each user, like {user1:{movie1: 2, movie2:3, movie3: 1}, user2: {movie1: 1, movie2:2, movie3: 1}  }
@@ -243,7 +267,7 @@ class TestProcess(unittest.TestCase):
 		X_train, y_train, X_test, y_test = getPartition(X, y, 2)
 		import pdb;pdb.set_trace()
 
-	def test_getCriticalPair(self):
+	def DA_test_getCriticalPair(self):
 		file_name = "ranking/movieLen/test_process_movieLen.csv"
 		user_map, movie_map = getMap(file_name)	
 		print user_map.keys()[1]
@@ -253,6 +277,13 @@ class TestProcess(unittest.TestCase):
 
 		p = getCriticalPair(y_train[0])
 		import pdb;pdb.set_trace()
+
+	def test_removeFeaturesWithManyMissingValue(self):
+		X={0:[-1,3,-1, 3], 1: [4,2,-1, -1], 2: [-1,3,-1,2]}
+		missing_rate = 0
+		X_removed = removeFeaturesWithManyMissingValue(X, missing_rate)
+		print X_removed
+
 
 if __name__ == "__main__":
 	#unittest.main()
