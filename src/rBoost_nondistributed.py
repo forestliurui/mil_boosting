@@ -127,19 +127,6 @@ class RBoost(object):
 				self.w[index_inst][(0,1)] = self.gamma[(0,1)][-1]*exp(self.predict(instances[index_inst,:].reshape((1,-1))))[0]
 				self.w[index_inst][(1,0)] = self.gamma[(1,0)][-1]*exp(-self.predict(instances[index_inst,:].reshape((1,-1))))[0]
 				self.w[index_inst][(1,1)] = self.gamma[(1,1)][-1]*exp(self.predict(instances[index_inst,:].reshape((1,-1))))[0]
-				#normalization on self.w
-				sum_w0 = sum([   self.w[index_inst][(0,0)], self.w[index_inst][(0,1)] ])
-				sum_w1 = sum([  self.w[index_inst][(1,0)], self.w[index_inst][(1,1)]  ])
-
-				self.w[index_inst][(0,0)] =  self.w[index_inst][(0,0)]/sum_w0
-				self.w[index_inst][(0,1)] =  self.w[index_inst][(0,1)]/sum_w0
-				
-				self.w[index_inst][(1,0)] =  self.w[index_inst][(1,0)]/sum_w1
-				self.w[index_inst][(1,1)] =  self.w[index_inst][(1,1)]/sum_w1
-
-
-
-
 
 			#update P Note: there are several ways to compute P. For simplicity, I use logistic calibratioin here
 			for index_inst in range(num_instances):
@@ -305,7 +292,7 @@ def get_bag_label(instance_predictions, bags):
 	return np.array(bag_predictions)
 
 class TestRBoostFitMethod(unittest.TestCase):
-	def no_test_fit1(self):
+	def test_fit1(self):
 		X_bags = [np.array([[-1, 0]]), np.array([[1,0]]), np.array([[0, 1]]), np.array([[0, -1]])]
 		y_labels = [-1, -1, 1, 1]
 		param = {"max_iter_boosting": 50}
@@ -313,8 +300,8 @@ class TestRBoostFitMethod(unittest.TestCase):
 
 		rbooster.fit(X_bags, y_labels)
 		print rbooster.predict(X_bags)
-		#import pdb;pdb.set_trace()
-	def test_fit1(self):
+		import pdb;pdb.set_trace()
+	def no_test_fit1(self):
 		X_bags = [np.array([[-1, 1],[1, 1]]), np.array([[-2,1],[-2, -1]]), np.array([[2, 1], [2, -1]]), np.array([[-1, -1], [1, -1]])]
 		y_labels = [-1, 1, 1, 1]
 		param = {"max_iter_boosting": 100}

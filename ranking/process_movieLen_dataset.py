@@ -9,6 +9,10 @@ import csv
 import dill
 
 def process(filename):
+	"""
+	This function is trying to partition the raw dataset, and store them into .pkl files
+	"""
+
 	#filename = "movieLen.csv"
 	
 
@@ -38,6 +42,57 @@ def process(filename):
 		
 		#import pdb;pdb.set_trace()
 		dill.dump(movieLen, open('ranking/movieLen/movieLen_user'+str(index_user)+'.pkl', 'wb'))
+
+
+def process_getStat(filename):
+	"""
+	This function is trying to get stats like sizeOfMovies and sizeOfUsers for each partition, and store them into a csv file.
+	"""
+
+	#filename = "movieLen.csv"
+	
+	output_filename = "ranking/stat_movieLen.csv"
+
+	line = "indexOfDataset, sizeOfMovies, sizeOfUsers\n"
+
+	with open(output_filename, 'a+') as f:
+		f.write(line) 
+
+	user_map, movie_map = getMap(filename)
+	
+	num_user = len(user_map)
+	num_movie = len(movie_map)
+
+	num_folds = 5
+	stat = {'sizeOfMovies':[], 'sizeOfUsers': []}
+	for index_user in range(num_user): #take turn to choose user for critical pairs
+		print "user index: ", index_user
+		#if index_user >50: #try not to get too many subdatasets
+		#	break
+		X, y = getXy(user_map, movie_map, index_user)
+
+		X_train, y_train, X_test, y_test = getPartition(X, y, num_folds)
+
+		p_train= []
+		p_test = []
+		for temp in y_train:
+			p_train.append( getCriticalPair(temp) )
+		for temp in y_test:
+			p_test.append( getCriticalPair(temp) )
+		stat['sizeOfMovies'].append(len(X))
+		stat['sizeOfUsers'].append( len( X.values()[0] ) )
+		#movieLen = movieLenData(X_train, p_train, X_test, p_test)
+		
+		#import pdb;pdb.set_trace()
+		#dill.dump(movieLen, open('ranking/movieLen/movieLen_user'+str(index_user)+'.pkl', 'wb'))
+
+		line = str(index_user)+","
+		line += str(stat['sizeOfMovies'][-1])
+		line += ","
+		line += str(stat['sizeOfUsers'][-1])
+		line += "\n"
+		with open(output_filename, 'a+') as f:
+			f.write(line)
 
 class movieLenData(object):
 	def __init__(self, X_train, p_train, X_test, p_test):
@@ -201,6 +256,7 @@ class TestProcess(unittest.TestCase):
 
 if __name__ == "__main__":
 	#unittest.main()
-	process("ranking/movieLen/movieLen.csv")
+	#process("ranking/movieLen/movieLen.csv")
+	process_getStat("ranking/movieLen/movieLen.csv")
 
 
