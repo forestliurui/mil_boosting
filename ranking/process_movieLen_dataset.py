@@ -24,7 +24,7 @@ def process(filename):
 
 	num_folds = 5
 
-	missing_rate = 0.5
+	missing_rate = 0.25
 
 	for index_user in range(num_user): #take turn to choose user for critical pairs
 		print "user index: ", index_user
@@ -75,8 +75,15 @@ def process_getStat(filename):
 		print "user index: ", index_user
 		#if index_user >50: #try not to get too many subdatasets
 		#	break
+		
+		#if index_user != 268:
+		#	continue
+
 		X_pre, y = getXy(user_map, movie_map, index_user)
 		X =  removeFeaturesWithManyMissingValue(X_pre, missing_rate)
+
+		if len(X) == 0:
+			continue
 
 		X_train, y_train, X_test, y_test = getPartition(X, y, num_folds)
 
@@ -194,7 +201,7 @@ def removeFeaturesWithManyMissingValue(X, missing_rate):
 	results = {}
 	for index_user in range(len(X.values()[0])):
 		X_temp = [ X[movie_i][index_user] for  movie_i in X.keys() ]
-		if np.average(np.array(X_temp) == -1) <= missing_rate:
+		if np.average(np.array(X_temp) == -1) <= missing_rate: #real missing rate is less than the predefined threshold, then keep this feature
 			for m in X.keys():
 				if m not in results:
 					results[m] = []

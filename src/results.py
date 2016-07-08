@@ -261,23 +261,24 @@ class ResultsManager(object):
         )
         return cursor.fetchone()
 
-    def is_finished(self, train, test, parameter_set, parameter_set_index):
+    def is_finished(self, train, test, parameter_set = None, parameter_set_index = None, boosting_round = None):
         connection = self.get_connection()
         cursor = connection.cursor()
         train_id = self.get_dataset_id(train)
         test_id = self.get_dataset_id(test)
-        parameter_set_id = self.get_parameter_set_id(parameter_set)
-        stat_id = self.get_statistic_id('FINISHED')
-        '''
-	cursor.execute(
-            'SELECT * FROM statistics WHERE '
-            'train_set_id=? AND test_set_id=? AND '
-            'parameter_set_id=? AND parameter_set_index=? '
-            'AND statistic_name_id=?',
-            (train_id, test_id, parameter_set_id,
-             parameter_set_index, stat_id)
-        )
-	'''
+	stat_id = self.get_statistic_id('FINISHED')
+
+	execute_string = 'SELECT * FROM statistics_boosting WHERE train_set_id=%d AND test_set_id=%d AND statistic_name_id=%d' %  (train_id, test_id, stat_id)
+
+	if parameter_set is not None:
+		parameter_set_id = self.get_parameter_set_id(parameter_set)
+		execute_string += 'AND parameter_set_index=%d ' % parameter_set_id
+	if boosting_round is not None:
+		execute_string += 'AND boosting_rounds=%d ' % boosting_round
+        	
+        cursor.execute(execute_string)
+
+	"""
 	cursor.execute(
             'SELECT * FROM statistics_boosting WHERE '
             'train_set_id=? AND test_set_id=? AND '
@@ -286,6 +287,8 @@ class ResultsManager(object):
             (train_id, test_id, parameter_set_id,
               stat_id)
         )
+	"""
+
         return (cursor.fetchone() is not None)
 
     def get_bag_predictions(self, train, test,
