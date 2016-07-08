@@ -177,5 +177,5 @@ if __name__ == '__main__':
         parser.print_help()
         exit()
 
-    from experiment_noCV import client_target
+    from experiment_ranking import client_target
     client_loop(client_target, args[0], blacklist=options.blacklist)
