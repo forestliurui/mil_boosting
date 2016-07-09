@@ -272,9 +272,9 @@ class ResultsManager(object):
 
 	if parameter_set is not None:
 		parameter_set_id = self.get_parameter_set_id(parameter_set)
-		execute_string += 'AND parameter_set_index=%d ' % parameter_set_id
+		execute_string += ' AND parameter_set_index=%d' % parameter_set_id
 	if boosting_round is not None:
-		execute_string += 'AND boosting_rounds=%d ' % boosting_round
+		execute_string += ' AND boosting_rounds=%d ' % boosting_round
         	
         cursor.execute(execute_string)
 
