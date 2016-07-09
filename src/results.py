@@ -267,12 +267,13 @@ class ResultsManager(object):
         train_id = self.get_dataset_id(train)
         test_id = self.get_dataset_id(test)
 	stat_id = self.get_statistic_id('FINISHED')
+	
 
 	execute_string = 'SELECT * FROM statistics_boosting WHERE train_set_id=%d AND test_set_id=%d AND statistic_name_id=%d' %  (train_id, test_id, stat_id)
 
 	if parameter_set is not None:
 		parameter_set_id = self.get_parameter_set_id(parameter_set)
-		execute_string += ' AND parameter_set_index=%d' % parameter_set_id
+		execute_string += ' AND parameter_set_id=%d' % parameter_set_id
 	if boosting_round is not None:
 		execute_string += ' AND boosting_rounds=%d ' % boosting_round
         	
