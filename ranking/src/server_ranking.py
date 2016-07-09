@@ -15,7 +15,10 @@ from random import shuffle
 import numpy as np
 
 import sys
-sys.path.append("/home/rui/MIL_Boost/MIL_Boosting/MIL_Boost/MIL_Boost/src/")
+if os.path.exists("/home/rui/MIL_Boost/MIL_Boosting/MIL_Boost/MIL_Boost/src/"):
+	sys.path.append("/home/rui/MIL_Boost/MIL_Boosting/MIL_Boost/MIL_Boost/src/")
+else:
+	sys.path.append("/home/rui/MIL_Boosting/src/")
 
 #from progress import ProgressMonitor
 from results import get_result_manager
