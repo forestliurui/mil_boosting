@@ -10,7 +10,7 @@ fi
 #echo ${ip_address_local}
 
 	
-for ((i=1;i<=20;i=i+1))
+for ((i=1;i<=50;i=i+1))
 do
 	echo "Bash starts python script: ${i} for ${server_name}"
 	python ranking/src/client_ranking_1time.py ${server_name}
