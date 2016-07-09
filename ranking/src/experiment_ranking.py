@@ -58,7 +58,8 @@ class RankingDataSet(object):
 
 def getDataset(user_id, fold_index):
 	
-	movieLen = dill.load(open('ranking/movieLen/movieLen_user'+str(user_id)+'.pkl'))
+	data_dir = 'ranking/data/movieLen'
+	movieLen = dill.load(open( os.path.join(data_dir,  'movieLen_user'+str(user_id)+'.pkl')  ))
 	X_train = movieLen.X_train[fold_index]
 	p_train = movieLen.p_train[fold_index]
 

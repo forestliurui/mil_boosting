@@ -7,6 +7,7 @@ box_counting/
 folds/
 stats/
 data/
+ranking/data/
 *.pyc
 *.pdf
 *.pkl
