@@ -24,14 +24,23 @@ def process(filename):
 
 	num_folds = 5
 
-	missing_rate = 0.25
+	missing_rate = 0.5
+	min_of_num_movie = 100
+
+	output_index = 0
 
 	for index_user in range(num_user): #take turn to choose user for critical pairs
 		print "user index: ", index_user
-		if index_user >50: #try not to get too many subdatasets
-			break
+		#if index_user >50: #try not to get too many subdatasets
+		#	break
 		X_pre, y = getXy(user_map, movie_map, index_user)
+
+		if len(X_pre) <= min_of_num_movie:
+			continue	
+
 		X =  removeFeaturesWithManyMissingValue(X_pre, missing_rate)
+		
+	
 
 		X_train, y_train, X_test, y_test = getPartition(X, y, num_folds)
 
@@ -45,7 +54,8 @@ def process(filename):
 		movieLen = movieLenData(X_train, p_train, X_test, p_test)
 		
 		#import pdb;pdb.set_trace()
-		dill.dump(movieLen, open('ranking/movieLen/movieLen_user'+str(index_user)+'.pkl', 'wb'))
+		dill.dump(movieLen, open('ranking/movieLen/movieLen_user'+str(output_index)+'.pkl', 'wb'))
+		output_index += 1
 
 
 def process_getStat(filename):
@@ -67,7 +77,7 @@ def process_getStat(filename):
 	num_user = len(user_map)
 	num_movie = len(movie_map)
 
-	missing_rate = 0.5
+	missing_rate = 0.25
 
 	num_folds = 5
 	stat = {'sizeOfMovies':[], 'sizeOfUsers': []}
@@ -294,7 +304,7 @@ class TestProcess(unittest.TestCase):
 
 if __name__ == "__main__":
 	#unittest.main()
-	#process("ranking/movieLen/movieLen.csv")
-	process_getStat("ranking/movieLen/movieLen.csv")
+	process("ranking/movieLen/movieLen.csv")
+	#process_getStat("ranking/movieLen/movieLen.csv")
 
 

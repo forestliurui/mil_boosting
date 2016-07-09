@@ -20,7 +20,7 @@ sys.path.append("/home/rui/MIL_Boost/MIL_Boosting/MIL_Boost/MIL_Boost/src/")
 #from progress import ProgressMonitor
 from results import get_result_manager
 
-PORT = 2118
+PORT = 2115
 DEFAULT_TASK_EXPIRE = 120 # Seconds
 TEMPLATE = """
 <html>
@@ -427,8 +427,8 @@ def start_experiment(results_root_dir):
     cherrypy.quickstart(server)
 
 def load_config(results_directory):
-	user_id_set = range(10) #to be changed to real set
-	fold_index_set = range(1, 6) #to be changed to real set
+	user_id_set = range(303) #to be changed to real set
+	fold_index_set = range(5) #to be changed to real set
 
 	tasks = {}
 	for user_id in user_id_set:

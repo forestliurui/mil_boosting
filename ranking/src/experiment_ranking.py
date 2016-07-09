@@ -67,7 +67,7 @@ def getDataset(user_id, fold_index):
 
 	return RankingDataSet(X_train, p_train), RankingDataSet(X_test, p_test)
 
-def client_target(task, callback):
+def client_target_test(task, callback):
     """
     used to test client/server
     """
@@ -104,7 +104,7 @@ def client_target(task, callback):
 
 
 
-def client_target_true(task, callback):
+def client_target(task, callback):
     (user_id, fold_index) = task['key']
 
     
@@ -118,11 +118,12 @@ def client_target_true(task, callback):
 
     
     timer = Timer()
+   
+    parameters = {"max_iter_boosting":500, 'weak_classifier': 'stump_ranker'}
+    classifier_name = 'rankboost'
 
-
-    classifier_name = parameters.pop('classifier')
     if classifier_name in CLASSIFIERS:
-        classifier = CLASSIFIERS[classifier_name](**parameters)
+        ranker = CLASSIFIERS[classifier_name](**parameters)
     else:
         print 'Technique "%s" not supported' % classifier_name
         callback.quit = True
@@ -131,16 +132,16 @@ def client_target_true(task, callback):
     print 'Training...'
     timer.start('training')
     
-    classifier.fit(train.instances, train.critical_pairs)
+    ranker.fit(train.instances, train.critical_pairs)
     timer.stop('training')
 
     submission_boosting = {}
-    for boosting_round in range(1,  classifier.actual_rounds_of_boosting+1 ):  #boosting_round starts from 1
-	submission_boosting[boosting_round] = construct_submissions(classifier, train, test, boosting_round, timer)
+    for boosting_round in range(1,  ranker.actual_rounds_of_boosting+1 ):  #boosting_round starts from 1
+	submission_boosting[boosting_round] = construct_submissions(ranker, train, test, boosting_round, timer)
     print 'Finished task.'
     return submission_boosting
 
-def construct_submissions(classifier, train, test, boosting_round, timer):
+def construct_submissions(ranker, train, test, boosting_round, timer):
     print ""
     print "computing the submission for boosting round: # %d" % boosting_round
     submission = {
@@ -167,6 +168,9 @@ def construct_submissions(classifier, train, test, boosting_round, timer):
 	predictions = ranker.predict( iter = j)
     error = ranker.getRankingError(predictions, test.critical_pairs)
     submission['statistics_boosting']["test_error"] = error 
+
+    print 'training_error: %f' % submission['statistics_boosting']["train_error"] 
+    print 'testing_error:  %f' % submission['statistics_boosting']["test_error"]
 
 
     return submission
