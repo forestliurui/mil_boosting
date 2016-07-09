@@ -7,6 +7,7 @@ import time
 import string
 import dill
 from RankBoost_ranking_nondistributed import RankBoost_ranking
+from RankBoost_modiII_ranking_nondistributed import RankBoost_modiII_ranking
 
 BAG_PREDICTIONS = False
 INSTANCE_PREDICTIONS = False
@@ -17,6 +18,7 @@ ERROR_BOUND = False
 
 CLASSIFIERS = {
     'rankboost': RankBoost_ranking,
+    'rankboost_modiII': RankBoost_modiII_ranking,
 }
 
 IDX_DIR = os.path.join('box_counting', 'converted_datasets')
@@ -121,7 +123,7 @@ def client_target(task, callback):
     timer = Timer()
    
     parameters = {"max_iter_boosting":500, 'weak_classifier': 'stump_ranker'}
-    classifier_name = 'rankboost'
+    classifier_name = task['param'].pop('ranker')
 
     if classifier_name in CLASSIFIERS:
         ranker = CLASSIFIERS[classifier_name](**parameters)

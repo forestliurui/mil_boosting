@@ -17,10 +17,8 @@ import numpy as np
 import sys
 if os.path.exists("/home/rui/MIL_Boost/MIL_Boosting/MIL_Boost/MIL_Boost/src/"):
 	sys.path.append("/home/rui/MIL_Boost/MIL_Boosting/MIL_Boost/MIL_Boost/src/")
-elif os.path.exists("/home/rui/MIL_Boosting/src/" ):
-	sys.path.append("/home/rui/MIL_Boosting/src/")
 else:
-	sys.path.append("/home/rui/MIL_boosting/src/")
+	sys.path.append("/home/rui/MIL_Boosting/src/")
 
 #from progress import ProgressMonitor
 from results import get_result_manager
@@ -136,8 +134,9 @@ class ExperimentServer(object):
                 raise HTTPError(404)
             key, task = candidates.pop(0)
             task.ping()
-
-        arguments = {'key': key}
+        param ={}
+	param['ranker'] = task.ranker_name
+        arguments = {'key': key, 'param': param}
         return yaml.dump(arguments, Dumper=Dumper)
 
     @plaintext
@@ -331,15 +330,15 @@ class Task(object):
 
         self.finish_time = None
 
-    def ground(self, results_directory):
+    def ground(self, results_directory, ranker_name):
         self.results_directory = results_directory
  
- 
+ 	self.ranker_name = ranker_name
 	results_subdir = self.results_directory
         #results_subdir = os.path.join(self.results_directory,
         #                              self.experiment_name)
         self.results_path = os.path.join(results_subdir,
-                                         'movieLen.db')
+                                         'movieLen_'+ ranker_name +'.db')
 
         self.results_manager = get_result_manager(self.results_path)
         if self.results_manager.is_finished(self.train, self.test):
@@ -424,14 +423,18 @@ class Task(object):
         self.finish_time = time.time()
 
 def start_experiment(results_root_dir):
-    task_dict = load_config( results_root_dir)
+
+    ranker_name = 'rankboost_modiII'
+    task_dict = load_config( results_root_dir, ranker_name)
+
+    
 
     server = ExperimentServer(task_dict, render)
     cherrypy.config.update({'server.socket_port': PORT,
                             'server.socket_host': '0.0.0.0'})
     cherrypy.quickstart(server)
 
-def load_config(results_directory):
+def load_config(results_directory, ranker_name):
 	user_id_set = range(303) #to be changed to real set
 	fold_index_set = range(5) #to be changed to real set
 
@@ -441,7 +444,7 @@ def load_config(results_directory):
 			task_key = (user_id, fold_index)
 			task = Task(user_id, fold_index)
 			
-			task.ground(results_directory)
+			task.ground(results_directory, ranker_name)
 			tasks[task_key]= task
 	return tasks
 
