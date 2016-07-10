@@ -426,7 +426,7 @@ class Task(object):
 
 def start_experiment(results_root_dir):
 
-    ranker_name = 'rankboost_modiII'
+    ranker_name = 'rankboost_modiIII'
     task_dict = load_config( results_root_dir, ranker_name)
 
     

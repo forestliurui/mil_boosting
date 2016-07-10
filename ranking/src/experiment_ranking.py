@@ -8,17 +8,13 @@ import string
 import dill
 from RankBoost_ranking_nondistributed import RankBoost_ranking
 from RankBoost_modiII_ranking_nondistributed import RankBoost_modiII_ranking
+from RankBoost_modiIII_ranking_nondistributed import RankBoost_modiIII_ranking
 
-BAG_PREDICTIONS = False
-INSTANCE_PREDICTIONS = False
-INSTANCE_PREDICTIONS_SIL_STAT = True
-BEST_BALANCED_ACCURACY = True
-
-ERROR_BOUND = False
 
 CLASSIFIERS = {
     'rankboost': RankBoost_ranking,
     'rankboost_modiII': RankBoost_modiII_ranking,
+    'rankboost_modiIII': RankBoost_modiIII_ranking,
 }
 
 IDX_DIR = os.path.join('box_counting', 'converted_datasets')
