@@ -133,6 +133,9 @@ class WeightBagSet(object):
 			#if bag_index == 5:
 			#	print "need to debug"
 			#	import pdb;pdb.set_trace()
+			#if bag_index == 56 and inst_index == 26:
+			#	print "need to debug"
+			#	import pdb;pdb.set_trace()
 			#import pdb;pdb.set_trace()
 
 			while i_p < len(self.hash_temp_positive[(bag_index, inst_index)]) and i_n < len(self.hash_temp_negative[(bag_index, inst_index)]):
@@ -140,6 +143,9 @@ class WeightBagSet(object):
 				dist_p = self.hash_temp_positive[(bag_index, inst_index)][i_p][1].distances[(bag_index, inst_index)]
 				dist_n = self.hash_temp_negative[(bag_index, inst_index)][i_n][1].distances[(bag_index, inst_index)]
 
+				#if bag_index == 56 and inst_index == 26 and (  abs( dist_p -2.897)<0.001 or abs( dist_n -2.897)<0.001 ):
+				#	print "need to debub, 123"
+				#	import pdb;pdb.set_trace()
 				if dist_p == dist_n:
 					radius = dist_p
 					dist_temp = dist_p
@@ -158,7 +164,7 @@ class WeightBagSet(object):
 						i_n += 1
 
 						if i_n < len(self.hash_temp_negative[(bag_index, inst_index)]):
-							dist_n = self.hash_temp_positive[(bag_index, inst_index)][i_n][1].distances[(bag_index, inst_index)]
+							dist_n = self.hash_temp_negative[(bag_index, inst_index)][i_n][1].distances[(bag_index, inst_index)]
 						else:
 							break
 						
@@ -171,7 +177,14 @@ class WeightBagSet(object):
 					running_sum -= self.hash_temp_positive[(bag_index, inst_index)][i_p][1].weight					
 					radius = dist_n
 					i_n += 1
-					
+				pos_sum_temp = sum([self.hash_temp_positive[(bag_index, inst_index)][x][1].weight for x in range(len(self.hash_temp_positive[(bag_index, inst_index)])) if self.hash_temp_positive[(bag_index, inst_index)][x][1].distances[(bag_index, inst_index)] <= radius ])
+				neg_sum_temp = sum([self.hash_temp_negative[(bag_index, inst_index)][x][1].weight for x in range(len(self.hash_temp_negative[(bag_index, inst_index)])) if self.hash_temp_negative[(bag_index, inst_index)][x][1].distances[(bag_index, inst_index)] > radius ])
+
+
+				if abs(running_sum - sum([pos_sum_temp, neg_sum_temp])) > 0.001:
+					#print "detect the error location"
+					running_sum = sum([pos_sum_temp, neg_sum_temp])
+					#import pdb;pdb.set_trace()
 				if running_sum > sum_optimal:
 					center_optimal = center
 					radius_optimal = radius
@@ -194,10 +207,10 @@ class WeightBagSet(object):
 				sum_optimal = running_sum 
 			#import pdb;pdb.set_trace()
 
-		import pdb;pdb.set_trace()
+		#import pdb;pdb.set_trace()
 
 		center_vector = self.X_bags[center_optimal[0]][ center_optimal[1] ,:]
-		return Ball(center_vector, radius_optimal)
+		return Ball(center_vector, radius_optimal), sum_optimal, center_optimal
 				
 class Auerboost(object):
 	def __init__(self, **parameters):
@@ -221,7 +234,83 @@ class Auerboost(object):
 
 		self.instance_labels_generated_from_bag_labels = None
 
-	def fit(self, X_bags, y_labels):
+	def fit(self, X_bags, y_labels, weight_bag_set = None):
+		'''
+		only for debug
+		
+		X_bags is a list of arrays, each bag is an array in the list
+		The row of array corresponds to instances in the bag, column corresponds to feature
+		y_labels is the list which contains the labels of bags. Here, binary labels are assumed, i.e. +1/-1
+		'''
+		self.X_bags = X_bags
+		self.y_labels = y_labels
+
+		self.X_instances = np.vstack((X_bags))
+
+		num_bag = len(X_bags)		
+		
+		if weight_bag_set is None:
+			hashmap = {} #hashmap is a dictionary which map the bag index to class WeightBag, which maintains the latest weight for each bag
+			for i in range(len(X_bags)):
+			
+				if y_labels[i] != 1:
+					continue
+				for ii in range(X_bags[i].shape[0]):
+				
+					for j in range(len(X_bags)):
+						for jj in range(X_bags[j].shape[0]):
+							if j not in hashmap:
+								hashmap[j] = WeightBag(j)
+								hashmap[j].weight = float(1)/num_bag
+
+							dist =np.linalg.norm( X_bags[i][ii,:] - X_bags[j][jj,:] )
+							hashmap[j].update_dist(i,ii, dist)
+	
+
+		
+			weight_bag_set = WeightBagSet(hashmap, X_bags, y_labels)
+		else:
+			hashmap = weight_bag_set.hashmap
+		#print "have constructed weight_bag_set"
+
+		#import pdb;pdb.set_trace()
+
+		for t in range(self.max_iter_boosting):
+			#if t == 2:
+			#	import pdb;pdb.set_trace()
+			ball, sum_optimal, _ = weight_bag_set.getOptimalBall()
+			error = 1 - ball.getDistributionAccurary(X_bags, y_labels, hashmap)
+			
+			if abs( sum_optimal - (1-error) ) > 0.001:
+				print "discprency occurs"
+				import pdb;pdb.set_trace()
+
+			if error >= 0.5:
+				import pdb;pdb.set_trace()
+				break	
+
+			self.weak_classifiers.append(ball)
+			self.errors.append( error )
+			alpha = 0.5*np.log((1-error)/(error))
+			self.alphas.append(alpha)
+			
+			
+
+			#update weights		
+			Z = 0 #normalization factor
+			for i in range(num_bag):
+				hashmap[i].weight = np.exp(-alpha*ball.predict(X_bags[i])*y_labels[i])*hashmap[i].weight				
+				Z += hashmap[i].weight
+			
+			for i in range(num_bag):
+				hashmap[i].weight /= Z
+			#import pdb;pdb.set_trace()
+		self.actual_rounds_of_boosting = len(self.alphas)
+
+
+
+
+	def fit_true(self, X_bags, y_labels):
 		'''
 		X_bags is a list of arrays, each bag is an array in the list
 		The row of array corresponds to instances in the bag, column corresponds to feature
@@ -233,7 +322,7 @@ class Auerboost(object):
 		self.X_instances = np.vstack((X_bags))
 
 		num_bag = len(X_bags)		
-
+		
 		hashmap = {} #hashmap is a dictionary which map the bag index to class WeightBag, which maintains the latest weight for each bag
 		for i in range(len(X_bags)):
 			
@@ -255,12 +344,18 @@ class Auerboost(object):
 		weight_bag_set = WeightBagSet(hashmap, X_bags, y_labels)
 		#print "have constructed weight_bag_set"
 
-		
+		#import pdb;pdb.set_trace()
 
 		for t in range(self.max_iter_boosting):
-			ball = weight_bag_set.getOptimalBall()
+			#if t == 2:
+			#	import pdb;pdb.set_trace()
+			ball, sum_optimal = weight_bag_set.getOptimalBall()
 			error = 1 - ball.getDistributionAccurary(X_bags, y_labels, hashmap)
 			
+			if abs( sum_optimal - (1-error) ) > 0.001:
+				print "discprency occurs"
+				import pdb;pdb.set_trace()
+
 			if error >= 0.5:
 				import pdb;pdb.set_trace()
 				break	
@@ -280,7 +375,7 @@ class Auerboost(object):
 			
 			for i in range(num_bag):
 				hashmap[i].weight /= Z
-			#import pdb;pdb.set_trace()
+			import pdb;pdb.set_trace()
 		self.actual_rounds_of_boosting = len(self.alphas)
 
 	def predict_train(self, iter = None, getInstPrediction = False):
@@ -402,18 +497,35 @@ class TestAuerboostFitMethod(unittest.TestCase):
 		X_bags_test = [np.array([[2,0]]), np.array([[-2, 0]]), np.array([[0,5]]),np.array([[0, 1.5]])]
 		print booster.predict(X_bags = X_bags_test)
 		#import pdb;pdb.set_trace()
-	def No_test_getOptimalBall(self):
+	def test_getOptimalBall(self):
 		import dill
-		weight_bag_set = dill.load(open('debug_auer.pkl','r'))
-		ball = weight_bag_set.getOptimalBall()
+		weight_bag_set = dill.load(open('ranking/misc/debug_auer.pkl','r'))
+		ball, optimal_sum, center_optimal = weight_bag_set.getOptimalBall()
 		print ball.getDistributionAccurary(weight_bag_set.X_bags, weight_bag_set.y_labels, weight_bag_set.hashmap)
+		import pdb;pdb.set_trace()
+		param = {"max_iter_boosting": 50}
+		booster = Auerboost(**param)
+		booster.fit(weight_bag_set.X_bags, weight_bag_set.y_labels, weight_bag_set)
 
 		import pdb;pdb.set_trace()
-	def test_getHashmap(self):
-		X_bags = [ np.array([[0,1],[0,2]]), np.array([[-2,0], [-1, 0]]), np.array([[0,1],[0,2]]), np.array([[1,0],[2,0]])]
-		y_labels [-1,-1, 1, 1]
+	def No_test_getHashmap(self):
+		X_bags = [ np.array([[0,1],[0,2]]), np.array([[-2,0], [-1, 0]]), np.array([[0,-1],[0,-2]]), np.array([[1,0],[2,0], [1,2]])]
+		y_labels = [-1,-1, 1, 1]
 		
-		 
+		param = {"max_iter_boosting": 50}
+		booster = Auerboost(**param)
+		booster.fit(X_bags, y_labels)
+		
+		import pdb;pdb.set_trace()
+	def No_test_getHashmap1(self):
+		X_bags = [ np.array([[0,1],[0,2]]), np.array([[-2,0], [-1, 0]]), np.array([[0,-1],[0,-2]]), np.array([[1,0],[2,0], [1,2]])]
+		y_labels = [-1,1, -1, 1]
+		
+		param = {"max_iter_boosting": 50}
+		booster = Auerboost(**param)
+		booster.fit(X_bags, y_labels)
+		
+		import pdb;pdb.set_trace() 
 
 
 if __name__ == "__main__":
