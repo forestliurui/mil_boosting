@@ -181,7 +181,7 @@ class WeightBagSet(object):
 				neg_sum_temp = sum([self.hash_temp_negative[(bag_index, inst_index)][x][1].weight for x in range(len(self.hash_temp_negative[(bag_index, inst_index)])) if self.hash_temp_negative[(bag_index, inst_index)][x][1].distances[(bag_index, inst_index)] > radius ])
 
 
-				if abs(running_sum - sum([pos_sum_temp, neg_sum_temp])) > 0.001:
+				if abs(running_sum - sum([pos_sum_temp, neg_sum_temp])) > 0.001:  #discrepancy occurs between two different ways to get running_sum, using the guranteed correct way sum([pos_sum_temp, neg_sum_temp])
 					#print "detect the error location"
 					running_sum = sum([pos_sum_temp, neg_sum_temp])
 					#import pdb;pdb.set_trace()
@@ -234,7 +234,7 @@ class Auerboost(object):
 
 		self.instance_labels_generated_from_bag_labels = None
 
-	def fit(self, X_bags, y_labels, weight_bag_set = None):
+	def fit_debug(self, X_bags, y_labels, weight_bag_set = None):
 		'''
 		only for debug
 		
@@ -310,7 +310,7 @@ class Auerboost(object):
 
 
 
-	def fit_true(self, X_bags, y_labels):
+	def fit(self, X_bags, y_labels):
 		'''
 		X_bags is a list of arrays, each bag is an array in the list
 		The row of array corresponds to instances in the bag, column corresponds to feature
@@ -353,11 +353,13 @@ class Auerboost(object):
 			error = 1 - ball.getDistributionAccurary(X_bags, y_labels, hashmap)
 			
 			if abs( sum_optimal - (1-error) ) > 0.001:
-				print "discprency occurs"
-				import pdb;pdb.set_trace()
+				error( "discrepancy occurs in terms of distributional accuracy for the latest weak learner")
+					
+				#import pdb;pdb.set_trace()
 
 			if error >= 0.5:
-				import pdb;pdb.set_trace()
+				#import pdb;pdb.set_trace()
+				print "got weak learner with less than half distributional accuracy, potential ERROR occurs"
 				break	
 
 			self.weak_classifiers.append(ball)
@@ -375,7 +377,7 @@ class Auerboost(object):
 			
 			for i in range(num_bag):
 				hashmap[i].weight /= Z
-			import pdb;pdb.set_trace()
+			#import pdb;pdb.set_trace()
 		self.actual_rounds_of_boosting = len(self.alphas)
 
 	def predict_train(self, iter = None, getInstPrediction = False):
