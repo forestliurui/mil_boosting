@@ -229,6 +229,7 @@ class Auerboost(object):
 		self.y_labels = None
 		self.X_instances = None
 
+		self.predictions_list_train = []
 		self.errors = []
 		self.alphas = []
 
@@ -349,9 +350,11 @@ class Auerboost(object):
 		for t in range(self.max_iter_boosting):
 			#if t == 2:
 			#	import pdb;pdb.set_trace()
-			ball, sum_optimal = weight_bag_set.getOptimalBall()
+			ball, sum_optimal, _ = weight_bag_set.getOptimalBall()
 			error = 1 - ball.getDistributionAccurary(X_bags, y_labels, hashmap)
-			
+
+			self.predictions_list_train.append(ball.predict_inst(self.X_instances).reshape((1, -1)) )
+
 			if abs( sum_optimal - (1-error) ) > 0.001:
 				error( "discrepancy occurs in terms of distributional accuracy for the latest weak learner")
 					
@@ -385,8 +388,8 @@ class Auerboost(object):
 			iter = self.actual_rounds_of_boosting
 
 
-		predictions_list = [instance_classifier.predict_inst(self.X_instances).reshape((1, -1))  for instance_classifier in self.weak_classifiers ]
-		predictions_accum = np.matrix(self.alphas[0:iter])*np.matrix( np.vstack((predictions_list[0:iter])) )/np.sum(self.alphas[0:iter])
+		#predictions_list_train = [instance_classifier.predict_inst(self.X_instances).reshape((1, -1))  for instance_classifier in self.weak_classifiers ]
+		predictions_accum = np.matrix(self.alphas[0:iter])*np.matrix( np.vstack((self.predictions_list_train[0:iter])) )/np.sum(self.alphas[0:iter])
 		results = np.array(predictions_accum)[0] 
 		
 		if getInstPrediction:
