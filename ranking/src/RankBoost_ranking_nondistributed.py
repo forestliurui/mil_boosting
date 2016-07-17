@@ -11,6 +11,7 @@ import string
 #import data
 import numpy as np
 import copy
+import unittest
 
 from weak_ranker import WeakRanker
 from stump_ranker import StumpRanker
@@ -98,8 +99,8 @@ class RankBoost_ranking(object):
 			self.predictions_list_train.append(predictions)
 
 			#epsilon_pair_pos_temp, epsilon_pair_neg_temp = self.getEpsilonPair(predictions, instance_labels_generated_from_bag_labels, weights_inst)
-			#self.epsilon_pair["positive"].append(epsilon_pair_pos_temp)
-			#self.epsilon_pair["negative"].append(epsilon_pair_neg_temp)
+			self.epsilon_pair["positive"].append(epsilon_pos)
+			self.epsilon_pair["negative"].append(epsilon_neg)
 
 			if self.epsilon["negative"][-1] == 0:
 				self.alphas.append(20000)
@@ -143,27 +144,9 @@ class RankBoost_ranking(object):
 		
 		#import pdb;pdb.set_trace()
 		#predictions_accum_matrix = np.matrix(self.c[0:iter])*np.matrix( np.vstack((self.predictions_list_train[0:iter])) )/np.sum(self.c[0:iter])
-		predictions_accum = self.predictions_list_train[iter][0] - threshold
+		predictions = self.predictions_list_train[iter]
 
-		predictions_accum_with_true_positive_label = predictions_accum[self.instance_labels_generated_from_bag_labels == 1]
-		predictions_accum_with_true_negative_label = predictions_accum[self.instance_labels_generated_from_bag_labels != 1]
-
-		num_positive = predictions_accum_with_true_positive_label.shape[0]
-		num_negative = predictions_accum_with_true_negative_label.shape[0]
-
-		
-		
-		matrix_predictions_pos = np.matrix(np.ones((num_negative, 1)))* np.matrix(predictions_accum_with_true_positive_label)
-		matrix_predictions_neg =  np.matrix(predictions_accum_with_true_negative_label.reshape((-1, 1)))*np.matrix(np.ones((num_positive)))
-
-		ranking_error = np.sum(matrix_predictions_pos <= matrix_predictions_neg)
-		"""
-		for i in range(num_positive):
-			for j in range(num_negative):
-				if predictions_accum_with_true_positive_label[i] <= predictions_accum_with_true_negative_label[j]:
-					ranking_error += 1
-		"""
-		ranking_error = ranking_error/float(num_positive*num_negative)
+		ranking_error = self.getRankingError(predictions, self.y_train)
 		return ranking_error
 
 	def getRankingError(self, predictions, y):
@@ -281,3 +264,24 @@ def get_bag_label(instance_predictions, bags):
 		bag_predictions.append( np.max(instance_predictions[p_index: n_index]) )
 		p_index = n_index
 	return np.array(bag_predictions)
+
+
+class TestRankboostRanking(unittest.TestCase):
+	def test_rankboost(self):
+		X = {0: np.array([1, 2]), 1: np.array([1, 1]), 2: np.array([1, 0]), 3: np.array([1, -1]), 4: np.array([1, -2]), 5:np.array([2, 2]), 6: np.array([2, 1]), 7: np.array([2,0]), 8: np.array([2, -1]), 9: np.array([2, -2]), 10: np.array([3, 0]), 11: np.array([0, 0])}
+		y = []
+		neg_set = [0, 1,2, 3,4,10]
+		pos_set = [5, 6, 7, 8, 9,11]
+		for i in pos_set:
+			for j in neg_set:
+				y.append((i,j))
+		#param = {'weak_classifier': 'stump_ranker'}
+		param = {'weak_classifier': 'weak_ranker'}
+		booster = RankBoost_ranking(**param)	
+		booster.fit(X, y)
+		import pdb;pdb.set_trace()
+if __name__ == '__main__':
+	unittest.main()	
+
+
+

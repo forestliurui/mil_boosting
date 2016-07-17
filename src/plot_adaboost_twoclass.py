@@ -208,7 +208,53 @@ def getDataset7(noise_rate = None):
 	#import pdb;pdb.set_trace()
 	X = np.vstack((X[:,0]/f0_max, X[:,1]/f1_max )).transpose()
 	return X, y, y_denoised
-def getDataset8():
+
+def getDataset8(noise_rate = None):
+	"""
+	construct synthetic dataset which looks like multiple instance learning dataset
+	We use two almost-nonoverlapping gaussians to represent positive and negative classes
+	the instances from negative class will be flipped to positive label with probability noise_rate (Note that noise-rate will never exceed 50% in real MI datasets)
+	Add neccesssary number of instances from  positive class to ensure equal number of pos-labeled instances and neg-labeled instances
+	"""
+	if noise_rate is None:
+		noise_rate = 0.3
+
+	num_inst_per_side_prior_flipping = 4000
+	X1, y1 = make_gaussian_quantiles(cov=2.,
+                                 n_samples=num_inst_per_side_prior_flipping, n_features=2,
+                                 n_classes=1, random_state=1, shuffle = True)
+	
+	y1_noised = []
+	num_flipped = 0 # number of instances in y1 whose labeled is flipped
+	for i in range(y1.shape[0]):
+		if np.random.uniform() < noise_rate:
+			num_flipped += 1
+			y1_noised.append( - y1[i] + 1)
+		else:
+			y1_noised.append( y1[i] )
+
+	y1_noised = np.array(y1_noised)
+
+	
+	X2, y2 = make_gaussian_quantiles(mean=(5, 5), cov=1.5,
+                                 n_samples=num_inst_per_side_prior_flipping - num_flipped , n_features=2,
+                                 n_classes=1, random_state=1)
+
+	X = np.concatenate((X1, X2))
+	y = np.concatenate((y1_noised, - y2 + 1))
+
+	y_denoised = np.concatenate((y1, - y2 + 1))
+
+
+	f0_max = np.max( abs(X)[:,0] ) #scale the data to be within the unit box
+	f1_max = np.max( abs(X)[:,1] )
+	#import pdb;pdb.set_trace()
+	X = np.vstack((X[:,0]/f0_max, X[:,1]/f1_max )).transpose()
+	return X, y, y_denoised
+
+
+
+def getDataset9():
  	"""
 	Construct dataset v0
 	
@@ -406,17 +452,20 @@ def run_experiment_with_one_sided_noise():
 	This function is used to test the reaction of algorithms to different noise density
 	"""
 	print "this is the beginning"
-	noise_rates =[x/10.0 for x in range(0, 10)]
+	noise_rates =[x/10.0 for x in range(0, 5)]
 	accuracy = []
 	accuracy_false_label = []
 	for val in noise_rates:
 
-		X, y, y_true = getDataset(7)(val)
-		bdt = getMethod(14)()
+		X, y, y_true = getDataset(8)(val)
+		bdt = getMethod(2)()
 
 		#import pdb;pdb.set_trace()
 		#print "fitting the training set"
 		bdt.fit(X, y)
+
+		if abs(val - 0.4)<0.0001:
+			plotDecisionBoundary(bdt, X, y)
 
 		accuracy.append( np.average(bdt.predict(X) == y_true) )
 		accuracy_false_label.append(np.average(bdt.predict(X) == y)   )
@@ -455,7 +504,7 @@ def getResults(bdt):
 	import pdb;pdb.set_trace()
 
 
-def plotDecisionBoundary(bdt):
+def plotDecisionBoundary(bdt, X, y):
 	"""
 	plot the decision boundary of the classifier bdt
 	"""
@@ -492,7 +541,7 @@ def plotDecisionBoundary(bdt):
 	plt.xlabel('x')
 	plt.ylabel('y')
 	plt.title('Decision Boundary')
-	plt.savefig('Adaboost_twoclass.pdf')
+	plt.savefig('decision_boundary_twoclass.pdf')
 
 def plotTwoClassScores(bdt):
 	# Plot the two-class decision scores
@@ -519,5 +568,5 @@ def plotTwoClassScores(bdt):
 	plt.subplots_adjust(wspace=0.35)
 
 if __name__ == "__main__":
-	#run_experiment_with_one_sided_noise()
-	run_experiment()
+	run_experiment_with_one_sided_noise()
+	#run_experiment()

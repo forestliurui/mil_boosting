@@ -122,6 +122,7 @@ def main(rank_file, outputfile=None):
     if outputfile is None:
         pl.show()
     else:
+	#import pdb;pdb.set_trace()
         pdf = PdfPages(outputfile)
         pdf.savefig(fig, bbox_inches='tight')
         pdf.close()

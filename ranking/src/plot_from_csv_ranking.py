@@ -33,7 +33,7 @@ def get_results(directory, statistic_name):
 		with open(csv_file_name) as csvfile:
 			csvreader = csv.reader(csvfile)
 			method_name = csv_file_name.split('.')[0]
-			method_name = method_name.split('/')[1]
+			method_name = method_name.split('/')[-1]
 			for row in csvreader:
 				try:
 					boosting_round = int(row[0])
@@ -48,6 +48,7 @@ def get_results(directory, statistic_name):
 
 				except:
 					dataset_name = row[0]
+	#import pdb;pdb.set_trace()
 	return results
 
 def draw_plot(results, statistic_name,  outputfile_name):
@@ -143,7 +144,7 @@ def generateRank(directory, outputfile_name):
 			ranks_average[statistic][method_name]["num_dataset"] = len(ranks[statistic][method_name])
 
 		#import pdb;pdb.set_trace()
-		output_file_name_extended = statistic+"_"+outputfile_name
+		output_file_name_extended = 'ranking/'+statistic+"_"+outputfile_name
 		
 		for method_name in method_names:
 			line = method_name
@@ -167,16 +168,8 @@ def generateRank(directory, outputfile_name):
 
 def draw_plot1(directory, outputfile_name):
 
-	colors={'rankboost':'r', 'rankboost_modiOp':'b','adaboost':'k', 'martiboost':'c', 'rankboost_modiIII':'y','rankboost_m3':'m', 'rankboost_modiII':'g' }
-
-
-	#statistics_name = ['test_instance_AUC', 'train_instance_AUC', 'test_bag_AUC', 'train_bag_AUC', 'test_instance_balanced_accuracy', 'train_instance_balanced_accuracy', 'test_bag_balanced_accuracy', 'train_bag_balanced_accuracy']
-	#statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
-	#statistics_name = ['test_instance_AUC',  'train_instance_AUC']
-	#statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
-	#statistics_name_best = ['test_instance_best_balanced_accuracy']
-	
-
+	#colors={'rankboost':'r', 'rankboost_modiOp':'b','adaboost':'k', 'martiboost':'c', 'rankboost_modiIII':'y','rankboost_m3':'m', 'rankboost_modiII':'g' }
+	colors={'rankboost':'b', 'rankboost_modiIII':'r','rankboost_modiII':'k' }
 
 	statistics_name = ['test_error', 'train_error']
 	
@@ -196,9 +189,10 @@ def draw_plot1(directory, outputfile_name):
 	index_dataset = -1
 	#matplotlib.rc('legend', fontsize=0.5, linewidth=2)
 	#plt.tick_params(labelsize=50)
-	for dataset_name in dataset_names:
-		
-		output_name = dataset_name + outputfile_name
+	#for dataset_name in dataset_names:
+	for dataset_name in ['user_181']:
+
+		output_name = 'ranking/'+dataset_name + outputfile_name
 		plt.figure(figsize=(14*len(statistics_name), 10*len(statistics_name)))
 		index_dataset += 1
 		subplot_handle = {}
@@ -206,7 +200,7 @@ def draw_plot1(directory, outputfile_name):
 			stat_name = statistics_name[stat_index]
 			#plt.subplot(4, math.ceil( len(statistics_name)/3), stat_index+1)
 			#plt.subplot(2, 2, stat_index+1)
-			plt.subplot(3, 1, stat_index+1)
+			plt.subplot(2, 1, stat_index+1)
 			plt.yticks(fontsize = 50)
 			plt.xticks(fontsize = 50)
 			plt.xlabel('Boosting Iterations', fontsize = 40)
@@ -220,9 +214,9 @@ def draw_plot1(directory, outputfile_name):
 				plt.ylabel(stat_name, fontsize = 60)
 			color_index = -1
 			if stat_name != "ranking_error" and stat_name != "ranking_error_bound" and stat_name != "train_error" and stat_name != "test_error":
-				plt.axis([0, 100, 0.49, 1.1], fontsize = 50)
+				plt.axis([0, 200, 0.49, 1.1], fontsize = 50)
 			else:
-				plt.axis([0, 100, 0, 1.1], fontsize = 50)
+				plt.axis([0, 200, 0, 1.1], fontsize = 50)
 
 			method_names = results[stat_name][dataset_name].keys()
 		
@@ -232,15 +226,25 @@ def draw_plot1(directory, outputfile_name):
 
 			#plt.legend(method_names, fontsize = 35)
 	     		#plt.title(dataset_name, fontsize = 30)
-		plt.suptitle(dataset_name, fontsize = 50)
+		#plt.suptitle(dataset_name, fontsize = 50)
 		#plt.legend(method_names, fontsize = 35)
-		plt.figlegend([subplot_handle[x] for x in method_names], method_names, loc = 'upper right',  fontsize = 50)
+		plt.figlegend([subplot_handle[x] for x in method_names], convertMethodNames(method_names), loc = 'upper right',  fontsize = 50)
 		plt.savefig(output_name, orientation = 'landscape')
 
 		#break
 
-
-
+def convertMethodNames(names):
+	result = []
+	for name in names:
+		if name == 'rankboost_modiII':
+			result.append('Rankboost+')
+		elif name == 'rankboost_modiIII':
+			result.append('Crankboost')
+		elif name == 'rankboost':
+			result.append('Rankboost')
+		else:
+			result.append(name)
+	return result
 if __name__ == '__main__':
 	from optparse import OptionParser, OptionGroup
     	parser = OptionParser(usage="Usage: %resultsdir  statistic outputfile")
@@ -254,9 +258,9 @@ if __name__ == '__main__':
 	statistic_name = args[1]
 	outputfile_name = args[2]
 
-	#draw_plot1(directory, outputfile_name)
+	draw_plot1(directory, outputfile_name)
 	
-	generateRank(directory, outputfile_name)
+	#generateRank(directory, outputfile_name)
 
 	#results = get_results(directory, statistic_name)
 	#draw_plot(results, statistic_name,  outputfile_name)
