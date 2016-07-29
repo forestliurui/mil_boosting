@@ -437,8 +437,12 @@ def start_experiment(results_root_dir):
     cherrypy.quickstart(server)
 
 def load_config(results_directory, ranker_name):
-	user_id_set = range(303) #to be changed to real set
-	fold_index_set = range(5) #to be changed to real set
+	#user_id_set = range(303) #to be changed to real set
+	#fold_index_set = range(5) #to be changed to real set
+
+	user_id_set  = [0]
+	fold_index_set= [0]
+
 
 	tasks = {}
 	for user_id in user_id_set:

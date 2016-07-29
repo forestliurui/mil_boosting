@@ -189,8 +189,8 @@ def draw_plot1(directory, outputfile_name):
 	index_dataset = -1
 	#matplotlib.rc('legend', fontsize=0.5, linewidth=2)
 	#plt.tick_params(labelsize=50)
-	#for dataset_name in dataset_names:
-	for dataset_name in ['user_181']:
+	for dataset_name in dataset_names:
+	#for dataset_name in ['user_181']:
 
 		output_name = 'ranking/'+dataset_name + outputfile_name
 		plt.figure(figsize=(14*len(statistics_name), 10*len(statistics_name)))

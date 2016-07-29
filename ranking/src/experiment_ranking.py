@@ -109,6 +109,7 @@ def client_target(task, callback):
     
 
     print 'Starting task ..'
+    print 'Rank name: ',  task['param']['ranker']
     print 'User id:     %d' % user_id
     print 'fold index:  %d' % fold_index
     

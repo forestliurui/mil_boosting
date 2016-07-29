@@ -241,9 +241,9 @@ if __name__ == '__main__':
 	statistic_name = args[1]
 	outputfile_name = args[2]
 
-	#draw_plot1(directory, outputfile_name)
+	draw_plot1(directory, outputfile_name)
 	
-	generateRank(directory, outputfile_name)
+	#generateRank(directory, outputfile_name)
 
 	#results = get_results(directory, statistic_name)
 	#draw_plot(results, statistic_name,  outputfile_name)
