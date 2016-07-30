@@ -23,9 +23,99 @@ class StumpRanker_derived(object):
 		self.feature_index = feature_index
 		self.children_nodes_prediction = children_nodes_prediction
 
-class StumpRanker_ContinuousFeature(object):
+
+
+class StumpRanker(object):
 	def __init__(self):
-		pass
+		self.feature_index = None
+		self.children_nodes_prediction = {}
+		self.threshold = None
+	@staticmethod
+	def create(type):
+		if type == "discrete":
+			return StumpRanker_discrete()
+		else:
+			return StumpRanker_ContinuousFeature()			
+
+	def fit(self, X, y, weight_pair = None):
+		"""
+		X is a hashtable with key being instance ID, value being the one-dimensional array containing its features
+		y is the list of tuples -- each tuple is one critial pair, pair[0] should be ranked higher than pair[1]
+
+		Assume the feature values are discrete.
+		"""
+		
+		if weight_pair is None:
+			weight_pair = {}
+			for pair in y:
+				weight_pair[pair] = float(1)/len(y)
+		
+		num_feature = len(X.values()[0]) 
+
+		weight_dict = self.get_weight_dict(weight_pair)
+			
+		score_optimal = None
+		nodes_prediction_optimal = None
+		feature_index_optimal = None
+		threshold_optimal = None
+		for index in range(num_feature):
+			score, nodes_prediction, threshold_temp = self.getScore(X, y, weight_dict,weight_pair, index)
+			
+			if score_optimal is None or score_optimal < score:
+				score_optimal = score
+				nodes_prediction_optimal = nodes_prediction
+				feature_index_optimal = index
+				threshold_optimal = threshold_temp
+
+		self.feature_index = feature_index_optimal
+		self.children_nodes_prediction = nodes_prediction_optimal
+		self.threshold = threshold_optimal
+		
+
+	def predict(self, X):
+		"""
+		X is a hashtable
+		"""
+		raise  NotImplementedError("Please Implement this method in derived class")
+
+	def get_weight_dict(self, weight_pair):
+		weight_dict = {}
+		
+		for pair in weight_pair:
+			if pair[0] not in weight_dict:
+				weight_dict[pair[0]] = 0
+			weight_dict[pair[0]] += weight_pair[pair]
+
+			if pair[1] not in weight_dict:
+				weight_dict[pair[1]] = 0
+			weight_dict[pair[1]] -= weight_pair[pair]
+		return weight_dict
+
+
+	def getScore(self, X, y, weight_dict, weight_pair, feature_index):
+		raise NotImplementedError("Please Implement this method")
+
+
+
+
+
+class StumpRanker_ContinuousFeature(StumpRanker):
+	def __init__(self):
+		super(StumpRanker_ContinuousFeature, self).__init__()
+
+	def predict(self, X):
+		"""
+		X is a hashtable
+		"""
+		predictions = {}
+		for inst_index in X.keys():
+			if X[inst_index][self.feature_index] >= self.threshold:
+				predictions.update({inst_index: self.children_nodes_prediction["+"] } )
+			else:
+				predictions.update({inst_index: self.children_nodes_prediction["-"] }  )
+
+		return predictions
+
 	def getScore(self, X, y, weight_dict,weight_pair, index):
 		"""
 		X is a hashtable with key being instance ID, value being the one-dimensional array containing its features
@@ -95,18 +185,7 @@ class StumpRanker_ContinuousFeature(object):
 				score += weight_pair[pair]
 		return score, nodes_predictions
 
-	def get_weight_dict(self, weight_pair):
-		weight_dict = {}
-		
-		for pair in weight_pair:
-			if pair[0] not in weight_dict:
-				weight_dict[pair[0]] = 0
-			weight_dict[pair[0]] += weight_pair[pair]
-
-			if pair[1] not in weight_dict:
-				weight_dict[pair[1]] = 0
-			weight_dict[pair[1]] -= weight_pair[pair]
-		return weight_dict
+	
 
 
 class TestGetScoreHelper(unittest.TestCase):
@@ -127,7 +206,7 @@ class TestGetScoreHelper(unittest.TestCase):
 		self.assertEqual(thred, 0.8)
 		self.assertEqual(nodes_predictions, {"+": 1, "-": 0})
 		self.assertEqual(score, 0.8 )
-		import pdb;pdb.set_trace()
+		#import pdb;pdb.set_trace()
 		
 	def test_getScoreHelper(self):
 		X = {0:np.array([0.4]), 1:np.array([0.6]), 2:np.array([1.0]), 3:np.array([1.2])  }
@@ -147,50 +226,33 @@ class TestGetScoreHelper(unittest.TestCase):
 		self.assertEqual(score, 0.8 )
 		#import pdb;pdb.set_trace()
 
-class StumpRanker(object):
+	def test_class1(self):
+
+		X = {0:np.array([0.4]), 1:np.array([0.6]), 2:np.array([1.0]), 3:np.array([1.2])  }
+		y = [(3,1),(2,0),(1,2)]
+		weight_pair = { (3,1):0.4, (2,0):0.4, (1,2): 0.2 }
+
+		ranker = StumpRanker.create("continuous")
+		ranker.fit(X, y, weight_pair)
+	
+		self.assertEqual( ranker.predict(X), {0:0, 1:0 , 2: 1, 3: 1} )
+		#import pdb;pdb.set_trace()	
+
+	def test_class(self):
+
+		X = {0:np.array([1.2, 0.4]), 1:np.array([0.4, 0.6]), 2:np.array([0.8, 1.0]), 3:np.array([0, 1.2])  }
+		y = [(3,1),(2,0),(1,2)]
+		weight_pair = { (3,1):0.4, (2,0):0.4, (1,2): 0.2 }
+
+		ranker = StumpRanker.create("continuous")
+		ranker.fit(X, y, weight_pair)
+	
+		print ranker.predict(X)
+		import pdb;pdb.set_trace()
+
+class StumpRanker_discrete(StumpRanker):
 	def __init__(self):
-		self.feature_index = None
-		self.children_nodes_prediction = {}
-	def fit(self, X, y, weight_pair = None):
-		"""
-		X is a hashtable with key being instance ID, value being the one-dimensional array containing its features
-		y is the list of tuples -- each tuple is one critial pair, pair[0] should be ranked higher than pair[1]
-
-		Assume the feature values are discrete.
-		"""
-		
-		if weight_pair is None:
-			weight_pair = {}
-			for pair in y:
-				weight_pair[pair] = float(1)/len(y)
-		
-		num_feature = len(X.values()[0]) 
-
-		weight_dict = {}
-		
-		for pair in weight_pair:
-			if pair[0] not in weight_dict:
-				weight_dict[pair[0]] = 0
-			weight_dict[pair[0]] += weight_pair[pair]
-
-			if pair[1] not in weight_dict:
-				weight_dict[pair[1]] = 0
-			weight_dict[pair[1]] -= weight_pair[pair]
-			
-		score_optimal = None
-		nodes_prediction_optimal = None
-		feature_index_optimal = None
-		for index in range(num_feature):
-			score, nodes_prediction = self.getScore(X, y, weight_dict,weight_pair, index)
-			
-			if score_optimal is None or score_optimal < score:
-				score_optimal = score
-				nodes_prediction_optimal = nodes_prediction
-				feature_index_optimal = index
-		self.feature_index = feature_index_optimal
-		self.children_nodes_prediction = nodes_prediction_optimal
-
-		
+		super(StumpRanker_discrete, self).__init__()
 
 	def predict(self, X):
 		"""
@@ -254,8 +316,7 @@ class StumpRanker(object):
 
 		
 		
-		return score, nodes_prediction
-
+		return score, nodes_prediction, None #the last None is to be consistent with the output of continuous version
 
 """
 class TestPredictMethod(unittest.TestCase):
