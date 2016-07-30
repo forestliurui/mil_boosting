@@ -23,8 +23,6 @@ class StumpRanker_derived(object):
 		self.feature_index = feature_index
 		self.children_nodes_prediction = children_nodes_prediction
 
-
-
 class StumpRanker(object):
 	def __init__(self):
 		self.feature_index = None

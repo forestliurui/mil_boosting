@@ -138,6 +138,7 @@ class ExperimentServer(object):
             task.ping()
         param ={}
 	param['ranker'] = task.ranker_name
+	param['dataset_name'] = key[0]
         arguments = {'key': key, 'param': param}
         return yaml.dump(arguments, Dumper=Dumper)
 
@@ -314,10 +315,10 @@ class Task(object):
 
     def __init__(self, user_id,
                  fold_index):
-      	self.key = (user_id, fold_index)
+      	self.key = (user_id, fold_index) #for UCI dataset, treat user_id as a string, representing the name of dataset
         self.user_id = user_id
         self.fold_index = fold_index
-	self.train = str(user_id)+'.'+str(fold_index)+'.train'  #its format is like '2.3.train', meaning training part of the 3rd fold of user with id being 2
+	self.train = str(user_id+'.'+str(fold_index)+'.train'  #its format is like '2.3.train', meaning training part of the 3rd fold of user with id being 2
 	self.test = str(user_id)+'.'+str(fold_index)+'.test' #its format is like '2.3.test', meaning test part of the 3rd fold of user with id being 2
         self.priority_adjustment = 0
 	self.parameter_id_str = '0'
@@ -339,8 +340,10 @@ class Task(object):
 	results_subdir = self.results_directory
         #results_subdir = os.path.join(self.results_directory,
         #                              self.experiment_name)
-        self.results_path = os.path.join(results_subdir,
-                                         'movieLen_'+ ranker_name +'.db')
+        #self.results_path = os.path.join(results_subdir,
+        #                                 'movieLen_'+ ranker_name +'.db')
+	self.results_path = os.path.join(results_subdir,
+                                         'UCI_'+ ranker_name +'.db')
 
         self.results_manager = get_result_manager(self.results_path)
         if self.results_manager.is_finished(self.train, self.test):

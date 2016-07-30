@@ -10,6 +10,15 @@ from RankBoost_ranking_nondistributed import RankBoost_ranking
 from RankBoost_modiII_ranking_nondistributed import RankBoost_modiII_ranking
 from RankBoost_modiIII_ranking_nondistributed import RankBoost_modiIII_ranking
 
+import sys
+if os.path.exists("/home/rui/MIL_Boost/MIL_Boosting/MIL_Boost/MIL_Boost/src/"):
+	sys.path.append("/home/rui/MIL_Boost/MIL_Boosting/MIL_Boost/MIL_Boost/src/")
+elif os.path.exists("/home/rui/MIL_Boosting/src/"):
+	sys.path.append("/home/rui/MIL_Boosting/src/")
+else:
+	sys.path.append("/home/rui/MIL_boosting/src/")
+
+from data import get_dataset
 
 CLASSIFIERS = {
     'rankboost': RankBoost_ranking,
@@ -54,17 +63,40 @@ class RankingDataSet(object):
 		self.instances = X
 		self.critical_pairs = p	
 
-def getDataset(user_id, fold_index):
+def getDataset(dataset_name, user_id, fold_index):
 	
-	data_dir = 'ranking/data/movieLen'
-	movieLen = dill.load(open( os.path.join(data_dir,  'movieLen_user'+str(user_id)+'.pkl')  ))
-	X_train = movieLen.X_train[fold_index]
-	p_train = movieLen.p_train[fold_index]
+	if dataset_name == "movieLen":
+		data_dir = 'ranking/data/movieLen'
+		movieLen = dill.load(open( os.path.join(data_dir,  'movieLen_user'+str(user_id)+'.pkl')  ))
+		X_train = movieLen.X_train[fold_index]
+		p_train = movieLen.p_train[fold_index]
 
-	X_test = movieLen.X_test[fold_index]
-	p_test = movieLen.p_test[fold_index]
+		X_test = movieLen.X_test[fold_index]
+		p_test = movieLen.p_test[fold_index]
 
-	return RankingDataSet(X_train, p_train), RankingDataSet(X_test, p_test)
+		return RankingDataSet(X_train, p_train), RankingDataSet(X_test, p_test)
+	else: #for UCI dataset
+		outer_folds = 10
+		train_dataset_name=string.replace( '%s.fold_%4d_of_%4d.train' % (dataset_name, fold_index, outer_folds),' ','0'  )
+    		test_dataset_name=string.replace( '%s.fold_%4d_of_%4d.test' % (dataset_name, fold_index, outer_folds),' ','0'   )		
+
+		train = get_dataset(train_dataset)
+    		test = get_dataset(test_dataset)
+		return convert_from_MIDataset_to_RankingDataSet(train),convert_from_MIDataset_to_RankingDataSet(test)
+
+def convert_from_MIDataset_to_RankingDataSet(dataset):
+	X = {}
+	for inst_index in range(dataset.instances.shape[0]):
+		X[inst_index] = dataset.instances[inst_index,:]
+	
+	p = []
+	for i in X.keys():
+		for j in X.keys():
+			if i != j and  dataset.instance_labels[i] == True and dataset.instance_labels[j] != True:
+				p.append((i,j))
+
+	return RankingDataSet(X, p)
+
 
 def client_target_test(task, callback):
     """
@@ -106,16 +138,13 @@ def client_target_test(task, callback):
 def client_target(task, callback):
     (user_id, fold_index) = task['key']
 
-    
-
     print 'Starting task ..'
-    print 'Rank name: ',  task['param']['ranker']
+    print 'Ranker name: ',  task['param']['ranker']
     print 'User id:     %d' % user_id
     print 'fold index:  %d' % fold_index
-    
-
-    train, test = getDataset(user_id, fold_index)
-
+	    
+    dataset_name = task['param'].pop('dataset_name')	
+    train, test = getDataset(dataset_name, user_id, fold_index)
     
     timer = Timer()
    
