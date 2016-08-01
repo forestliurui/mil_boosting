@@ -80,8 +80,8 @@ def getDataset(dataset_name, user_id, fold_index):
 		train_dataset_name=string.replace( '%s.fold_%4d_of_%4d.train' % (dataset_name, fold_index, outer_folds),' ','0'  )
     		test_dataset_name=string.replace( '%s.fold_%4d_of_%4d.test' % (dataset_name, fold_index, outer_folds),' ','0'   )		
 
-		train = get_dataset(train_dataset)
-    		test = get_dataset(test_dataset)
+		train = get_dataset(train_dataset_name)
+    		test = get_dataset(test_dataset_name)
 		return convert_from_MIDataset_to_RankingDataSet(train),convert_from_MIDataset_to_RankingDataSet(test)
 
 def convert_from_MIDataset_to_RankingDataSet(dataset):
@@ -107,7 +107,7 @@ def client_target_test(task, callback):
 
 
     print 'Starting task ..'
-    print 'User id:     %d' % user_id
+    print 'User id:     %s' % user_id
     print 'fold index:  %d' % fold_index
 
     time.sleep(5)
@@ -140,7 +140,7 @@ def client_target(task, callback):
 
     print 'Starting task ..'
     print 'Ranker name: ',  task['param']['ranker']
-    print 'User id:     %d' % user_id
+    print 'User id:     %s' % user_id
     print 'fold index:  %d' % fold_index
 	    
     dataset_name = task['param'].pop('dataset_name')	

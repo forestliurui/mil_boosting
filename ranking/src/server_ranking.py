@@ -318,7 +318,7 @@ class Task(object):
       	self.key = (user_id, fold_index) #for UCI dataset, treat user_id as a string, representing the name of dataset
         self.user_id = user_id
         self.fold_index = fold_index
-	self.train = str(user_id+'.'+str(fold_index)+'.train'  #its format is like '2.3.train', meaning training part of the 3rd fold of user with id being 2
+	self.train = str(user_id)+'.'+str(fold_index)+'.train'  #its format is like '2.3.train', meaning training part of the 3rd fold of user with id being 2
 	self.test = str(user_id)+'.'+str(fold_index)+'.test' #its format is like '2.3.test', meaning test part of the 3rd fold of user with id being 2
         self.priority_adjustment = 0
 	self.parameter_id_str = '0'
@@ -427,9 +427,9 @@ class Task(object):
         self.failed = False
         self.finish_time = time.time()
 
-def start_experiment(results_root_dir):
+def start_experiment(results_root_dir, ranker_name):
 
-    ranker_name = 'rankboost_modiIII'
+    #ranker_name = 'rankboost'
     task_dict = load_config( results_root_dir, ranker_name)
 
     
@@ -443,10 +443,22 @@ def load_config(results_directory, ranker_name):
 	#user_id_set = range(303) #to be changed to real set
 	#fold_index_set = range(5) #to be changed to real set
 
-	user_id_set  = [0]
-	fold_index_set= [0]
-
-
+	#user_id_set  = [0]
+	fold_index_set= range(10)
+	
+	user_id_set = ['Ionosphere',
+    		'Haberman',
+    		'Hepatitis',
+    		'Horse_colic',
+    		'volcanoes',
+    		'breast_cancer_wdbc',
+    		'wine',
+    		'car_evaluation',
+    		'Iris',
+    		'Poker_hand',
+    		'Credit_card_clients']
+	
+	#user_id_set = ['Ionosphere']
 	tasks = {}
 	for user_id in user_id_set:
 		for fold_index in fold_index_set:
@@ -463,7 +475,7 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
     options = dict(options.__dict__)
 	
-    num_args = 1
+    num_args = 2
 
     if len(args) != num_args:
         parser.print_help()

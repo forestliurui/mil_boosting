@@ -6,10 +6,14 @@ from collections import defaultdict
 
 from c45data import parse_c45
 
+
 DATA_DIR = 'data'
 VIEWS_PATH = [os.path.join(DATA_DIR, 'views')]
 SIVAL_DATA = 'sival.mat'
 VIEW_SUFFIX = '.view'
+
+FOLD_DIR = 'folds'
+VIEWS_PATH.append(FOLD_DIR)
 
 class LRUDatasetCache(object):
 

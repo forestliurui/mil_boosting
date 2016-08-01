@@ -120,7 +120,7 @@ class RankBoost_ranking(object):
 				weights_pair[pair] = weights_pair[pair]*np.exp(-self.alphas[-1]*(predictions[pair[0]]-predictions[pair[1]]))/self.Z[-1]
 
 		self.actual_rounds_of_boosting = len(self.alphas)
-		import pdb;pdb.set_trace()
+		#import pdb;pdb.set_trace()
 
 	def compute_epsilon(self, predictions, y, weights_pair):
 		epsilon0= 0

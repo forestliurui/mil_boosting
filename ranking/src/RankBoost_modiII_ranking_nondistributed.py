@@ -81,7 +81,10 @@ class RankBoost_modiII_ranking(object):
 		for index_Boosting in range(max_iter_boosting):
 
 			self.weights_pair.append(dict(weights_pair))
-			instance_classifier=WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
+			if self.weak_classifier_name != 'stump_ranker':
+				instance_classifier=WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
+			else:
+				instance_classifier= StumpRanker.create("continuous") #get the continuous version by default 	
 		
 			#import pdb;pdb.set_trace()
 
