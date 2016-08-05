@@ -148,7 +148,7 @@ def client_target(task, callback):
     
     timer = Timer()
    
-    parameters = {"max_iter_boosting":500, 'weak_classifier': 'stump_ranker'}
+    parameters = {"max_iter_boosting":200, 'weak_classifier': 'stump_ranker'}
     classifier_name = task['param'].pop('ranker')
 
     if classifier_name in CLASSIFIERS:

@@ -317,6 +317,62 @@ def getDataset10():
 	#import pdb;pdb.set_trace()
 	return X, y
 
+def getDataset11(noise_rate = None):
+	"""
+	two-sided noise dataset
+	construct synthetic dataset which looks like multiple instance learning dataset
+	We use two almost-nonoverlapping gaussians to represent positive and negative classes
+	the instances from any class will be flipped to another label with probability noise_rate (Note that noise-rate will never exceed 50% in real MI datasets)
+
+	"""
+	if noise_rate is None:
+		noise_rate = 0.3
+
+	num_inst_per_side_prior_flipping = 300
+	X1, y1 = make_gaussian_quantiles(cov=5.,
+                                 n_samples=num_inst_per_side_prior_flipping, n_features=2,
+                                 n_classes=1, random_state=1, shuffle = True)
+	
+	y1_noised = []
+	num_flipped = 0 # number of instances in y1 whose labeled is flipped
+	for i in range(y1.shape[0]):
+		if np.random.uniform() < noise_rate:
+			num_flipped += 1
+			y1_noised.append( - y1[i] + 1)
+		else:
+			y1_noised.append( y1[i] )
+
+	y1_noised = np.array(y1_noised)
+	
+	X2, y2 = make_gaussian_quantiles(mean=(10, 10), cov=5,
+                                 n_samples=num_inst_per_side_prior_flipping , n_features=2,
+                                 n_classes=1, random_state=1)
+
+	y2_noised = []
+	num_flipped = 0 # number of instances in y1 whose labeled is flipped
+	for i in range(y2.shape[0]):
+		if np.random.uniform() < noise_rate:
+			num_flipped += 1
+			y2_noised.append( y2[i] )
+		else:
+			y2_noised.append( - y2[i] + 1)
+
+	y2_noised = np.array(y2_noised)
+
+	X = np.concatenate((X1, X2))
+	y = np.concatenate((y1_noised, y2_noised))
+
+	y_denoised = np.concatenate((y1, - y2 + 1))
+
+	"""
+	f0_max = np.max( abs(X)[:,0] ) #scale the data to be within the unit box
+	f1_max = np.max( abs(X)[:,1] )
+	#import pdb;pdb.set_trace()
+	X = np.vstack((X[:,0]/f0_max, X[:,1]/f1_max )).transpose()
+	"""
+	return X, y, y_denoised
+
+
 def getDataset(index):
 	hashmap_dataset = {
 		0: getDataset0,
@@ -325,6 +381,7 @@ def getDataset(index):
 		7: getDataset7,
 		8: getDataset8,
 		9: getDataset9,
+		11: getDataset11,
 	}
 	return hashmap_dataset[index]
 		
@@ -496,6 +553,124 @@ def run_experiment():
 	print np.average((bdt.predict(X)>0)== (y>0))
 	import pdb;pdb.set_trace()
 
+
+def run_experiment_with_two_sided_noise():
+	"""
+	manually add different levels of noise
+
+	This function is used to test the reaction of algorithms to different noise density
+	"""
+	print "this is the beginning"
+	noise_rates =[x/10.0 for x in range(0, 5)]
+	accuracy = []
+	accuracy_false_label = []
+	for val in noise_rates:
+
+		X, y, y_true = getDataset(11)(val)
+		bdt = getMethod(2)()
+		#bdt = getMethod(7)() #rbf svm
+
+
+		#import pdb;pdb.set_trace()
+		#print "fitting the training set"
+		bdt.fit(X, y)
+
+		if abs(val - 0.4)<0.0001:
+			filename = 'decision_bounary_nr_4.pdf'
+			#plotDecisionBoundary(bdt, X, y, filename, y_true)
+		if abs(val - 0.3)<0.0001:
+			#import pdb;pdb.set_trace()
+			filename = 'decision_bounary_nr_3.pdf'
+			plotDecisionBoundary(bdt, X, y, filename, y_true)
+			#import pdb;pdb.set_trace()
+
+		if abs(val - 0.1)<0.0001:
+			filename = 'decision_bounary_nr_1.pdf'
+			#plotDecisionBoundary(bdt, X, y, filename, y_true)
+		accuracy.append( np.average(bdt.predict(X) == y_true) )
+		accuracy_false_label.append(np.average(bdt.predict(X) == y)   )
+	plt.figure()
+	plt.plot(noise_rates, accuracy, 'r.-')
+	plt.plot(noise_rates, accuracy_false_label, 'b.-')
+	plt.legend(["w.r.t true label", "w.r.t noisy label"])
+	plt.xlabel("noise_rate")
+	plt.ylabel("accuracy")
+	plt.savefig("noise_rate.pdf")
+	#import pdb;pdb.set_trace()
+
+
+def run_experiment_with_two_sided_noise_show_changing_boosting_round(run_ID):
+	"""
+	show figure of accuracy vs boosting round
+	manually add a fixed level of noise
+
+	This function is used to test the reaction of algorithms to different noise density
+	"""
+	print "this is the beginning"
+	#noise_rates =[x/10.0 for x in range(0, 5)]
+	noise_rate = 0.3
+	accuracy = []
+	accuracy_false_label = []
+
+	X, y, y_true = getDataset(11)(noise_rate)
+	bdt = getMethod(2)()
+	#bdt = getMethod(7)() #rbf svm
+	
+	#import pdb;pdb.set_trace()
+	#print "fitting the training set"
+	bdt.fit(X, y)
+	#import pdb;pdb.set_trace()
+	actual_round = len(bdt.estimators_)
+	for predictions in bdt.staged_predict(X):
+		#predictions = (bdt.predict_train(iter = round, getInstPrediction = True)>0)+0
+		accuracy.append( np.average(predictions == y_true) )
+		accuracy_false_label.append(np.average(predictions == y)   )
+	plt.figure()
+	plt.plot(range(actual_round), accuracy, 'r.-')
+	plt.plot(range(actual_round), accuracy_false_label, 'b.-')
+	plt.legend(["w.r.t true label", "w.r.t noisy label"])
+	plt.xlabel("boosting round")
+	plt.ylabel("accuracy")
+	plt.savefig("SYN"+str(run_ID)+"_boosting_round.pdf")
+
+	filename = "SYN"+str(run_ID)+"_decision_boundary.pdf"
+	plotDecisionBoundary(bdt, X, y, filename, y_true)
+	
+	alpha = bdt.estimator_weights_
+	
+
+	plt.figure()
+	plt.plot(range(actual_round), alpha, 'r.-')
+	plt.xlabel('boosting round')
+	plt.ylabel(r'$\alpha$')
+	plt.savefig("SYN"+str(run_ID)+"_alpha.pdf")
+	#import pdb;pdb.set_trace()
+	index_TN =  [x for x in range(len(y)) if y_true[x]==0 and y[x]==0]
+	index_FP =  [x for x in range(len(y)) if y_true[x]==0 and y[x]==1]
+	index_TP = [x for x in range(len(y)) if y_true[x]==1 and y[x] == 1]
+	index_FN = [x for x in range(len(y)) if y_true[x]==1 and y[x] == 0]
+
+
+	
+	D_TN =  [np.average([x[i] for i in index_TN ]) for x in bdt.sample_weights_]
+	D_FP =  [np.average([x[i] for i in index_FP ]) for x in bdt.sample_weights_]
+	D_TP =  [np.average([x[i] for i in index_TP ]) for x in bdt.sample_weights_]
+	D_FN =  [np.average([x[i] for i in index_FN ]) for x in bdt.sample_weights_]
+
+	plt.figure()
+	plt.plot(range(actual_round), D_TN, 'r.-')
+	plt.plot(range(actual_round), D_FP, 'b.-')
+	plt.plot(range(actual_round), D_TP, 'k.-')
+	plt.plot(range(actual_round), D_FN, 'c.-')
+
+	plt.legend(['$D^{--}$','$D^{-+}$','$D^{++}$', '$D^{+-}$'])
+	plt.xlabel("boosting round")
+	plt.ylabel("distribution weight")
+	plt.savefig("SYN"+str(run_ID)+"_distribution_weight.pdf")
+	#import pdb;pdb.set_trace()
+
+
+
 def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 	"""
 	show figure of accuracy vs boosting round
@@ -530,7 +705,7 @@ def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 	plt.savefig("SYN"+str(run_ID)+"_boosting_round.pdf")
 
 	filename = "SYN"+str(run_ID)+"_decision_boundary.pdf"
-	plotDecisionBoundary(bdt, X, y, filename)
+	plotDecisionBoundary(bdt, X, y, filename, y_true)
 	
 	alpha = bdt.estimator_weights_
 	
@@ -540,13 +715,15 @@ def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 	plt.xlabel('boosting round')
 	plt.ylabel(r'$\alpha$')
 	plt.savefig("SYN"+str(run_ID)+"_alpha.pdf")
+	#import pdb;pdb.set_trace()
+	index_TN =  [x for x in range(len(y)) if y_true[x]==0 and y[x]==0]
+	index_FP =  [x for x in range(len(y)) if y_true[x]==0 and y[x]==1]
+	index_TP = [x for x in range(len(y)) if y_true[x]==1]
 
-	index_TN =  np.array(range(len(y)))[y==0][0]
-	index_FP =  np.array(range(len(y)))[y==1][0]
 	
-	D_TN = [x[index_TN] for x in bdt.sample_weights_]
-	D_FP = [x[index_FP] for x in bdt.sample_weights_]
-	D_TP = [x[-1] for x in bdt.sample_weights_]
+	D_TN =  [np.average([x[i] for i in index_TN ]) for x in bdt.sample_weights_]
+	D_FP =  [np.average([x[i] for i in index_FP ]) for x in bdt.sample_weights_]
+	D_TP =  [np.average([x[i] for i in index_TP ]) for x in bdt.sample_weights_]
 
 	plt.figure()
 	plt.plot(range(actual_round), D_TN, 'r.-')
@@ -630,7 +807,7 @@ def getResults(bdt):
 	import pdb;pdb.set_trace()
 
 
-def plotDecisionBoundary(bdt, X, y, filename):
+def plotDecisionBoundary(bdt, X, y, filename, y_true = None):
 	"""
 	plot the decision boundary of the classifier bdt
 	"""
@@ -638,8 +815,8 @@ def plotDecisionBoundary(bdt, X, y, filename):
 	#preset some params
 	plot_colors = "br"
 	plot_step = 0.02
-	class_names = "AB"
-
+	class_names = [['TN', 'FP'], ['FN', 'TP']]
+	markers = ['o','v']
 	#plt.figure(figsize=(10, 5))
 	plt.figure()
 
@@ -658,11 +835,15 @@ def plotDecisionBoundary(bdt, X, y, filename):
 
 	# Plot the training points
 	print "Plot the training points"
-	for i, n, c in zip(range(2), class_names, plot_colors):
-    		idx = np.where(y == i)
-    		plt.scatter(X[idx, 0], X[idx, 1],s=10,
+	for j in range(2): #true label
+	   for i, n, c in zip(range(2), class_names, plot_colors): #observed label
+    		#idx = np.where(y == i)
+		idx = np.array( [ id for id in range(len(y)) if  y[id] == i and y_true[id] == j] )
+		if len(idx) ==0:
+			continue
+    		plt.scatter(X[idx, 0], X[idx, 1],s=10, marker = markers[j],
                 	c=c, cmap=plt.cm.Paired,
-                	label="Class %s" % n)
+                	label=class_names[j][i])
 	plt.xlim(x_min, x_max)
 	plt.ylim(y_min, y_max)
 	plt.legend(loc='upper left')
@@ -697,7 +878,13 @@ def plotTwoClassScores(bdt):
 
 if __name__ == "__main__":
 	#run_experiment_with_one_sided_noise()
+	#run_experiment_with_two_sided_noise()
 	#run_experiment()
+	
 	for i in range(50):
 		print "i: ",i
-		run_experiment_with_one_sided_noise_show_changing_boosting_round(i)
+		#run_experiment_with_one_sided_noise_show_changing_boosting_round(i)
+		run_experiment_with_two_sided_noise_show_changing_boosting_round(i)
+
+	
+	
