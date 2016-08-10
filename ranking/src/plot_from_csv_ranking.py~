@@ -228,7 +228,7 @@ def draw_plot1(directory, outputfile_name):
 			for method_name in method_names:
 				color_index +=1
 				#subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name]+'.-')
-				subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name]+linestyles[method_name])
+				subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], linestyles[method_name])
 
 			#plt.legend(method_names, fontsize = 35)
 	     		#plt.title(dataset_name, fontsize = 30)
