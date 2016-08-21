@@ -372,6 +372,106 @@ def getDataset11(noise_rate = None):
 	"""
 	return X, y, y_denoised
 
+def getDataset12(noise_rate = None):
+	"""
+	construct synthetic dataset which looks like multiple instance learning dataset
+	We use two almost-nonoverlapping gaussians to represent positive and negative classes. make them linearly separable.
+	the instances from negative class will be flipped to positive label with probability noise_rate (Note that noise-rate will never exceed 50% in real MI datasets)
+	Add neccesssary number of instances from  positive class to ensure equal number of pos-labeled instances and neg-labeled instances
+	"""
+	if noise_rate is None:
+		noise_rate = 0.3
+
+	num_inst_per_side_prior_flipping = 300
+	X1, y1 = make_gaussian_quantiles(cov=10.,
+                                 n_samples=num_inst_per_side_prior_flipping, n_features=2,
+                                 n_classes=1, random_state=1, shuffle = True)
+	
+	y1_noised = []
+	num_flipped = 0 # number of instances in y1 whose labeled is flipped
+	for i in range(y1.shape[0]):
+		if np.random.uniform() < noise_rate:
+			num_flipped += 1
+			y1_noised.append( - y1[i] + 1)
+		else:
+			y1_noised.append( y1[i] )
+
+	y1_noised = np.array(y1_noised)
+
+	
+	X2, y2 = make_gaussian_quantiles(mean=(20, 0), cov=10,
+                                 n_samples=num_inst_per_side_prior_flipping - num_flipped , n_features=2,
+                                 n_classes=1, random_state=1)
+
+	X = np.concatenate((X1, X2))
+	y = np.concatenate((y1_noised, - y2 + 1))
+
+	y_denoised = np.concatenate((y1, - y2 + 1))
+
+	"""
+	f0_max = np.max( abs(X)[:,0] ) #scale the data to be within the unit box
+	f1_max = np.max( abs(X)[:,1] )
+	#import pdb;pdb.set_trace()
+	X = np.vstack((X[:,0]/f0_max, X[:,1]/f1_max )).transpose()
+	"""
+	return X, y, y_denoised
+
+
+def getDataset13(noise_rate = None):
+	"""
+	two-sided noise dataset
+	construct synthetic dataset which looks like multiple instance learning dataset
+	We use two almost-nonoverlapping gaussians to represent positive and negative classes
+	the instances from any class will be flipped to another label with probability noise_rate (Note that noise-rate will never exceed 50% in real MI datasets)
+
+	"""
+	if noise_rate is None:
+		noise_rate = 0.3
+
+	num_inst_per_side_prior_flipping = 300
+	X1, y1 = make_gaussian_quantiles(cov=10.,
+                                 n_samples=num_inst_per_side_prior_flipping, n_features=2,
+                                 n_classes=1, random_state=1, shuffle = True)
+	
+	y1_noised = []
+	num_flipped = 0 # number of instances in y1 whose labeled is flipped
+	for i in range(y1.shape[0]):
+		if np.random.uniform() < noise_rate:
+			num_flipped += 1
+			y1_noised.append( - y1[i] + 1)
+		else:
+			y1_noised.append( y1[i] )
+
+	y1_noised = np.array(y1_noised)
+	
+	X2, y2 = make_gaussian_quantiles(mean=(20, 0), cov=10,
+                                 n_samples=num_inst_per_side_prior_flipping , n_features=2,
+                                 n_classes=1, random_state=1)
+
+	y2_noised = []
+	num_flipped = 0 # number of instances in y1 whose labeled is flipped
+	for i in range(y2.shape[0]):
+		if np.random.uniform() < noise_rate:
+			num_flipped += 1
+			y2_noised.append( y2[i] )
+		else:
+			y2_noised.append( - y2[i] + 1)
+
+	y2_noised = np.array(y2_noised)
+
+	X = np.concatenate((X1, X2))
+	y = np.concatenate((y1_noised, y2_noised))
+
+	y_denoised = np.concatenate((y1, - y2 + 1))
+
+	"""
+	f0_max = np.max( abs(X)[:,0] ) #scale the data to be within the unit box
+	f1_max = np.max( abs(X)[:,1] )
+	#import pdb;pdb.set_trace()
+	X = np.vstack((X[:,0]/f0_max, X[:,1]/f1_max )).transpose()
+	"""
+	return X, y, y_denoised
+
 
 def getDataset(index):
 	hashmap_dataset = {
@@ -382,6 +482,8 @@ def getDataset(index):
 		8: getDataset8,
 		9: getDataset9,
 		11: getDataset11,
+		12: getDataset12,
+		13: getDataset13,
 	}
 	return hashmap_dataset[index]
 		
@@ -612,7 +714,9 @@ def run_experiment_with_two_sided_noise_show_changing_boosting_round(run_ID):
 	accuracy = []
 	accuracy_false_label = []
 
-	X, y, y_true = getDataset(11)(noise_rate)
+	#X, y, y_true = getDataset(11)(noise_rate)
+	X, y, y_true = getDataset(13)(noise_rate)
+
 	bdt = getMethod(2)()
 	#bdt = getMethod(7)() #rbf svm
 	
@@ -684,7 +788,9 @@ def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 	accuracy = []
 	accuracy_false_label = []
 
-	X, y, y_true = getDataset(8)(noise_rate)
+	#X, y, y_true = getDataset(8)(noise_rate)
+	X, y, y_true = getDataset(12)(noise_rate)
+
 	bdt = getMethod(2)()
 	#bdt = getMethod(7)() #rbf svm
 	
@@ -841,12 +947,16 @@ def plotDecisionBoundary(bdt, X, y, filename, y_true = None):
 		idx = np.array( [ id for id in range(len(y)) if  y[id] == i and y_true[id] == j] )
 		if len(idx) ==0:
 			continue
-    		plt.scatter(X[idx, 0], X[idx, 1],s=10, marker = markers[j],
+  		#plt.scatter(X[idx, 0], X[idx, 1],s=10, marker = markers[j],
+                #	c=c, cmap=plt.cm.Paired,
+                #	label=class_names[j][i])
+
+		plt.scatter(X[idx, 0], X[idx, 1],s=25, marker = markers[j],
                 	c=c, cmap=plt.cm.Paired,
                 	label=class_names[j][i])
 	plt.xlim(x_min, x_max)
 	plt.ylim(y_min, y_max)
-	plt.legend(loc='upper left')
+	plt.legend(loc='upper right')
 	plt.xlabel('x')
 	plt.ylabel('y')
 	#plt.title('Decision Boundary on Synthetic Dataset')

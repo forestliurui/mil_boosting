@@ -15,7 +15,7 @@ import numpy as np
 def compute_statistics(method_name):
 	#method_name = "rankboost"
 	
-	outputfile_raw = method_name+'.csv'
+	outputfile_raw = method_name+'_UCI.csv'
 
 	#statistics_name = statistics_name + statistics_error
 	statistics_name = ['test_error', 'train_error']
@@ -23,24 +23,24 @@ def compute_statistics(method_name):
     	#num_dataset = None
 	dataset_map = {}
 	
-	dataset_result_path='ranking/movieLen/results/movieLen_'+ method_name+'.db'
+	dataset_result_path='ranking/result/UCI_'+ method_name+'.db'
 	conn=sqlite3.connect(dataset_result_path)
    	c=conn.cursor()
 	for row in c.execute('select * from datasets'):
-		index_dataset_str, index_fold_str, train_test_str = row[1].split('.')
+		dataset_str, index_fold_str, train_test_str = row[1].split('.')
 		if train_test_str == 'test':
-			if int(index_dataset_str) not in dataset_map:
-				dataset_map[int(index_dataset_str)] = {}	
-			dataset_map[int(index_dataset_str)][int(index_fold_str)] = int(row[0])
+			if dataset_str not in dataset_map:
+				dataset_map[dataset_str] = {}	
+			dataset_map[dataset_str][int(index_fold_str)] = int(row[0])
 			
 	#num_dataset = len(dataset_map) 
  	#num_dataset = 303
 
 	#fold_index_set = range(5)
 
-    	for index_dataset in dataset_map.keys():
-	     
-	     dataset_name = str(index_dataset)
+    	for dataset_name in dataset_map.keys():
+	     index_dataset = dataset_name
+	     #dataset_name = str(index_dataset)
 	     
 	     parameter_set_id_names = []
 	     string_to_be_exe = 'select * from parameter_sets'
@@ -67,6 +67,7 @@ def compute_statistics(method_name):
 	     if len(boosting_rounds_list) == 0:
 		continue
 	     iter_max_boosting=max(boosting_rounds_list)
+	     #iter_max_boosting = min(iter_max_boosting,200)
 
 	     for boosting_round in range(1,iter_max_boosting+1):
 		line=('%d' % boosting_round)
@@ -83,9 +84,12 @@ def compute_statistics(method_name):
 
 					string_to_be_exe = 'select  statistic_value from statistics_boosting where statistic_name_id = %d and boosting_rounds = %d and test_set_id = %d' % (stat_id, boosting_round, dataset_map[index_dataset][index_fold])
 
+					#if dataset_name == "Ionosphere":
+					#	import pdb;pdb.set_trace()
 					for row in c.execute(string_to_be_exe):
 						statistic_value_list.append(row[0])
-
+				#if dataset_name == "Ionosphere":
+				#	import pdb;pdb.set_trace()
 				line += (',%f' % np.average(statistic_value_list)  )
 		line +='\n'
 						
@@ -101,6 +105,7 @@ if __name__ == '__main__':
     #if len(args) != 1:
     #    parser.print_help()
     #    exit()
-    #compute_statistics(*args, **options)
+    compute_statistics(*args, **options)
     #import pdb;pdb.set_trace()	
-    compute_statistics('rankboost_modiIII')
+    #compute_statistics('rankboost_modiIII')
+    #compute_statistics('rankboost')
