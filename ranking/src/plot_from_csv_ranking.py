@@ -170,7 +170,10 @@ def draw_plot1(directory, outputfile_name):
 
 	#colors={'rankboost':'r', 'rankboost_modiOp':'b','adaboost':'k', 'martiboost':'c', 'rankboost_modiIII':'y','rankboost_m3':'m', 'rankboost_modiII':'g' }
 	colors={'rankboost':'b', 'rankboost_modiIII':'r','rankboost_modiII':'k' }
-	linestyles = {'rankboost':'--', 'rankboost_modiIII':'-','rankboost_modiII':':' }
+	#linestyles = {'rankboost':'--', 'rankboost_modiIII':'-','rankboost_modiII':':' },
+	# 'auerboost': (0,[40,10,10,10]), 'rboost':  (0,[40,10,10,10,10,10])
+	linestyles = {'rankboost_modiIII':'-', 'rankboost':(0,[10,10]),'rankboost_modiII':(0,[40,10]) }
+
 	statistics_name = ['test_error', 'train_error']
 	
 	# for modified rankboost
@@ -194,7 +197,7 @@ def draw_plot1(directory, outputfile_name):
 
 		output_name = 'ranking/'+dataset_name + outputfile_name
 		#plt.figure(figsize=(14*len(statistics_name), 10*len(statistics_name)))
-		plt.figure(figsize=(17*2, 17*2))
+		plt.figure(figsize=(17*2, 20*2))
 		index_dataset += 1
 		subplot_handle = {}
 		for stat_index in range(len(statistics_name)):
@@ -204,7 +207,7 @@ def draw_plot1(directory, outputfile_name):
 			plt.subplot(2, 1, stat_index+1)
 			plt.yticks(fontsize = 50)
 			plt.xticks(fontsize = 50)
-			plt.xlabel('Boosting Iterations', fontsize = 60)
+			plt.xlabel('Boosting Round', fontsize = 60)
 			if stat_name == 'test_instance_best_balanced_accuracy':
 				plt.ylabel('test_best_\nbalanced_accuracy', fontsize = 60)
 			elif stat_name == 'test_instance_AUC':
@@ -212,23 +215,25 @@ def draw_plot1(directory, outputfile_name):
 			elif stat_name == 'train_instance_AUC':
 				plt.ylabel('train AUC', fontsize = 60)
 			elif stat_name == 'train_error':
-				plt.ylabel('train error', fontsize = 60)	
+				plt.ylabel('Train Error', fontsize = 60)	
 			elif stat_name == 'test_error':
-				plt.ylabel('test error', fontsize = 60)		
+				plt.ylabel('Test Error', fontsize = 60)		
 			else:
 				plt.ylabel(stat_name, fontsize = 60)
 			color_index = -1
 			if stat_name != "ranking_error" and stat_name != "ranking_error_bound" and stat_name != "train_error" and stat_name != "test_error":
 				plt.axis([0, 150, 0.49, 1.1], fontsize = 50)
 			else:
-				plt.axis([0, 150, 0, 1.1], fontsize = 50)
+				plt.axis([0, 150, 0.1, 0.8], fontsize = 50)
 
 			method_names = results[stat_name][dataset_name].keys()
 		
 			for method_name in method_names:
 				color_index +=1
 				#subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name]+'.-')
-				subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name]+linestyles[method_name])
+				#subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name]+linestyles[method_name])
+				subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name], ls = linestyles[method_name], linewidth = 10)
+
 
 			#plt.legend(method_names, fontsize = 35)
 	     		#plt.title(dataset_name, fontsize = 30)

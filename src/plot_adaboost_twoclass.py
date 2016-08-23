@@ -32,6 +32,8 @@ sys.path.insert(0, "~/.lib/scikit-learn")
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 #from sklearn.neural_network import MLPClassifier
+from sklearn.linear_model import Perceptron
+
 from sklearn.datasets import make_gaussian_quantiles
 from sklearn.svm import SVC
 from RankBoost_nondistributed import RankBoost
@@ -581,12 +583,21 @@ def getMethod14():
 	bdt = RBoost(**params)
 	return bdt
 
+def getMethod15():
+	#AdaBoosted Perceptron
+	bdt = AdaBoostClassifier(Perceptron(penalty = 'l1', n_iter = 50),
+                         algorithm="SAMME",
+                         n_estimators=200)
+	return bdt
+
 def getMethod(index):
 	hashmap_method = {
 		1: getMethod1,
 		2: getMethod2,
+		3: getMethod3,
 		14: getMethod14,
 		7: getMethod7,
+		15: getMethod15,
 	}
 	return hashmap_method[index]
 
@@ -717,7 +728,8 @@ def run_experiment_with_two_sided_noise_show_changing_boosting_round(run_ID):
 	#X, y, y_true = getDataset(11)(noise_rate)
 	X, y, y_true = getDataset(13)(noise_rate)
 
-	bdt = getMethod(2)()
+	#bdt = getMethod(2)()
+	bdt = getMethod(15)()
 	#bdt = getMethod(7)() #rbf svm
 	
 	#import pdb;pdb.set_trace()
@@ -791,7 +803,8 @@ def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 	#X, y, y_true = getDataset(8)(noise_rate)
 	X, y, y_true = getDataset(12)(noise_rate)
 
-	bdt = getMethod(2)()
+	#bdt = getMethod(2)()
+	bdt = getMethod(15)()
 	#bdt = getMethod(7)() #rbf svm
 	
 	#import pdb;pdb.set_trace()
@@ -817,7 +830,7 @@ def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 	
 
 	plt.figure()
-	plt.plot(range(actual_round), alpha, 'r.-')
+	plt.plot(range(actual_round), alpha[0:actual_round], 'r.-')
 	plt.xlabel('boosting round')
 	plt.ylabel(r'$\alpha$')
 	plt.savefig("SYN"+str(run_ID)+"_alpha.pdf")
@@ -832,14 +845,14 @@ def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 	D_TP =  [np.average([x[i] for i in index_TP ]) for x in bdt.sample_weights_]
 
 	plt.figure()
-	plt.plot(range(actual_round), D_TN, 'r.-')
-	plt.plot(range(actual_round), D_FP, 'b.-')
-	plt.plot(range(actual_round), D_TP, 'k.-')
+	plt.plot(range(actual_round), D_TN[0:actual_round], 'r.-')
+	plt.plot(range(actual_round), D_FP[0:actual_round], 'b.-')
+	plt.plot(range(actual_round), D_TP[0:actual_round], 'k.-')
 	plt.legend(['$D^{--}$','$D^{-+}$','$D^{+}$'])
 	plt.xlabel("boosting round")
 	plt.ylabel("distribution weight")
 	plt.savefig("SYN"+str(run_ID)+"_distribution_weight.pdf")
-	#import pdb;pdb.set_trace()
+	import pdb;pdb.set_trace()
 
 
 
@@ -991,10 +1004,10 @@ if __name__ == "__main__":
 	#run_experiment_with_two_sided_noise()
 	#run_experiment()
 	
-	for i in range(50):
+	for i in range(3,50):
 		print "i: ",i
-		#run_experiment_with_one_sided_noise_show_changing_boosting_round(i)
-		run_experiment_with_two_sided_noise_show_changing_boosting_round(i)
+		run_experiment_with_one_sided_noise_show_changing_boosting_round(i)
+		#run_experiment_with_two_sided_noise_show_changing_boosting_round(i)
 
 	
 	

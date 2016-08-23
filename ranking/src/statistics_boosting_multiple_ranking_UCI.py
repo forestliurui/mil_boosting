@@ -67,7 +67,7 @@ def compute_statistics(method_name):
 	     if len(boosting_rounds_list) == 0:
 		continue
 	     iter_max_boosting=max(boosting_rounds_list)
-	     #iter_max_boosting = min(iter_max_boosting,200)
+	     iter_max_boosting = min(iter_max_boosting,200)
 
 	     for boosting_round in range(1,iter_max_boosting+1):
 		line=('%d' % boosting_round)

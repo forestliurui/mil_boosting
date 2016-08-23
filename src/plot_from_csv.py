@@ -103,7 +103,7 @@ def generateRank(directory, outputfile_name):
 	dataset_names = set(dataset_names)
 	method_names = set(method_names)
 	
-	method_names_prechosen = set(["rankboost","adaboost","martiboost","miboosting_xu", "rankboost_modiII", 'rboost'])
+	method_names_prechosen = set(["rankboost","adaboost","martiboost","miboosting_xu", "rankboost_modiII", 'rboost', 'auerboost'])
 	method_names = method_names.intersection(method_names_prechosen)
 	
 	for statistic in statistics_name:
@@ -227,6 +227,95 @@ def draw_plot1(directory, outputfile_name):
 		#break
 
 
+def draw_plot2(directory, outputfile_name):
+	"""
+	only plot test_instance_best_balanced_accuracy and train_instance_best_balanced_accuracy for writing papers
+	"""
+
+	colors={'rankboost':'r', 'miboosting_xu':'b','adaboost':'k', 'martiboost':'c', 'rankboost_pos':'y','rankboost_m3':'m', 'rankboost_m3_pos':'g','rankboost_modiII':'g' ,'rankboost_earlyStop': 'r', 'auerboost': 'y', 'rboost':'m'}
+	linestyles = {'adaboost':'-', 'miboosting_xu':(0,[10,10]),'martiboost':(0,[40,10]), 'auerboost': (0,[40,10,10,10]), 'rboost':  (0,[40,10,10,10,10,10]) }
+
+	#statistics_name = ['test_instance_AUC', 'train_instance_AUC', 'test_bag_AUC', 'train_bag_AUC', 'test_instance_balanced_accuracy', 'train_instance_balanced_accuracy', 'test_bag_balanced_accuracy', 'train_bag_balanced_accuracy']
+	#statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
+	#statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'train_instance_AUC', 'train_bag_AUC']
+	#statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
+	statistics_name_best = ['test_instance_best_balanced_accuracy',  'train_instance_best_balanced_accuracy']
+	
+
+
+	statistics_name = statistics_name_best
+	
+	# for modified rankboost
+	#earlyStop_name = ['test_instance_AUC', 'test_bag_AUC', 'train_instance_AUC', 'train_bag_AUC', 'ranking_error', 'ranking_error_bound']	
+	#statistics_name = earlyStop_name
+	# for modified rankboost
+
+
+	results = {}
+	dataset_names = []
+	for statistic in statistics_name:
+		results[statistic] = get_results(directory, statistic)
+		dataset_names += results[statistic].keys()
+	dataset_names = set(dataset_names)
+
+	index_dataset = -1
+	#matplotlib.rc('legend', fontsize=0.5, linewidth=2)
+	#plt.tick_params(labelsize=50)
+	#for dataset_name in dataset_names:
+	for dataset_name in ['banana~goldmedal']:
+		output_name = dataset_name + outputfile_name
+		#plt.figure(figsize=(14*len(statistics_name), 10*len(statistics_name)))
+		plt.figure(figsize=(17*2, 20*2))
+		index_dataset += 1
+		subplot_handle = {}
+		for stat_index in range(len(statistics_name)):
+			stat_name = statistics_name[stat_index]
+			#plt.subplot(4, math.ceil( len(statistics_name)/3), stat_index+1)
+			#plt.subplot(2, 2, stat_index+1)
+			#plt.subplot(3, 2, stat_index+1)
+			plt.subplot(2, 1, stat_index+1)
+			plt.yticks(fontsize = 50)
+			plt.xticks(fontsize = 50)
+			plt.xlabel('Boosting Round', fontsize = 60)
+			plt.ylabel(stat_name, fontsize = 60)
+			if stat_name == 'test_instance_best_balanced_accuracy':
+				plt.ylabel('Test Balanced Accuracy', fontsize = 60)
+			elif stat_name == 'train_instance_best_balanced_accuracy':
+				plt.ylabel('Train Balanced Accuracy', fontsize = 60)
+			elif stat_name == 'test_instance_AUC':
+				plt.ylabel('test AUC', fontsize = 60)
+			elif stat_name == 'train_instance_AUC':
+				plt.ylabel('train AUC', fontsize = 60)
+			elif stat_name == 'train_error':
+				plt.ylabel('train error', fontsize = 60)	
+			elif stat_name == 'test_error':
+				plt.ylabel('test error', fontsize = 60)		
+			else:
+				plt.ylabel(stat_name, fontsize = 60)
+
+			color_index = -1
+			if stat_name != "ranking_error" and stat_name != "ranking_error_bound":
+				plt.axis([0, 200, 0.4, 0.8], fontsize = 50)
+			else:
+				plt.axis([0, 500, 0, 1.1], fontsize = 50)
+
+			method_names = results[stat_name][dataset_name].keys()
+		
+			for method_name in method_names:
+				color_index +=1
+				subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name], ls = linestyles[method_name], linewidth = 10)
+
+			#plt.legend(method_names, fontsize = 35)
+	     		#plt.title(dataset_name, fontsize = 30)
+		#plt.suptitle(dataset_name, fontsize = 50)
+		#plt.legend(method_names, fontsize = 35)
+		#plt.figlegend([subplot_handle[x] for x in method_names], method_names, loc = 'upper right',  fontsize = 50)
+		plt.savefig(output_name, orientation = 'landscape')
+
+		#break
+
+
+
 
 if __name__ == '__main__':
 	from optparse import OptionParser, OptionGroup
@@ -241,8 +330,8 @@ if __name__ == '__main__':
 	statistic_name = args[1]
 	outputfile_name = args[2]
 
-	draw_plot1(directory, outputfile_name)
-	
+	#draw_plot1(directory, outputfile_name)
+	draw_plot2(directory, outputfile_name)
 	#generateRank(directory, outputfile_name)
 
 	#results = get_results(directory, statistic_name)
