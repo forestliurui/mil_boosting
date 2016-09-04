@@ -12,4 +12,5 @@ ranking/data/
 *.pdf
 *.pkl
 *.db
+*.txt
 *.eps

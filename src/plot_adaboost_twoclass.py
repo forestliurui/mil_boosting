@@ -155,7 +155,7 @@ def getDataset4():
 	train_class = dill.load(pkl_file)
 	test_class = dill.load(pkl_file)
 	X = train_class.instances
-	y= 2*train_class.instance_labels_SIL - 1 #convert the boolean values to +1/-1 values for the labels
+	y= (train_class.instance_labels_SIL >0)+0 #the boolean values 
 	return X, y
 
 def getDataset5():
@@ -376,6 +376,9 @@ def getDataset11(noise_rate = None):
 
 def getDataset12(noise_rate = None):
 	"""
+	one-sided noise, noise rate 0.3, Gaussian Covariance 10*I (I is identity matrix), Gaussian Center (0, 0) and (20, 0) to make sure they are linearly separable
+	the number of instances with observed positive labels is the same with the number of instances with observed negative labels (balanced w.r.t. observed labels)
+
 	construct synthetic dataset which looks like multiple instance learning dataset
 	We use two almost-nonoverlapping gaussians to represent positive and negative classes. make them linearly separable.
 	the instances from negative class will be flipped to positive label with probability noise_rate (Note that noise-rate will never exceed 50% in real MI datasets)
@@ -474,18 +477,68 @@ def getDataset13(noise_rate = None):
 	"""
 	return X, y, y_denoised
 
+def getDataset14(noise_rate = None):
+	"""
+	one-sided noise, noise rate 0.3, Gaussian Covariance 10*I (I is identity matrix), Gaussian Center (0, 0) and (20, 0) to make sure they are linearly separable
+	the number of instances with observed positive labels is not the same with the number of instances with observed negative labels (balanced w.r.t. observed labels)
+
+	construct synthetic dataset which looks like multiple instance learning dataset
+	We use two almost-nonoverlapping gaussians to represent positive and negative classes. make them linearly separable.
+	the instances from negative class will be flipped to positive label with probability noise_rate (Note that noise-rate will never exceed 50% in real MI datasets)
+	Add neccesssary number of instances from  positive class to ensure equal number of pos-labeled instances and neg-labeled instances
+	"""
+	if noise_rate is None:
+		noise_rate = 0.3
+
+	num_inst_per_side_prior_flipping = 300
+	X1, y1 = make_gaussian_quantiles(cov=10.,
+                                 n_samples=num_inst_per_side_prior_flipping, n_features=2,
+                                 n_classes=1, random_state=1, shuffle = True)
+	
+	y1_noised = []
+	num_flipped = 0 # number of instances in y1 whose labeled is flipped
+	for i in range(y1.shape[0]):
+		if np.random.uniform() < noise_rate:
+			num_flipped += 1
+			y1_noised.append( - y1[i] + 1)
+		else:
+			y1_noised.append( y1[i] )
+
+	y1_noised = np.array(y1_noised)
+
+	
+	X2, y2 = make_gaussian_quantiles(mean=(20, 0), cov=10,
+                                 n_samples=5000 , n_features=2,
+                                 n_classes=1, random_state=1)
+
+	X = np.concatenate((X1, X2))
+	y = np.concatenate((y1_noised, - y2 + 1))
+
+	y_denoised = np.concatenate((y1, - y2 + 1))
+
+	"""
+	f0_max = np.max( abs(X)[:,0] ) #scale the data to be within the unit box
+	f1_max = np.max( abs(X)[:,1] )
+	#import pdb;pdb.set_trace()
+	X = np.vstack((X[:,0]/f0_max, X[:,1]/f1_max )).transpose()
+	"""
+	return X, y, y_denoised
+
+
 
 def getDataset(index):
 	hashmap_dataset = {
 		0: getDataset0,
 		1: getDataset1,
 		2: getDataset2,
+		4: getDataset4, #banana~goldmedal
 		7: getDataset7,
 		8: getDataset8,
 		9: getDataset9,
 		11: getDataset11,
 		12: getDataset12,
 		13: getDataset13,
+		14: getDataset14,
 	}
 	return hashmap_dataset[index]
 		
@@ -592,12 +645,12 @@ def getMethod15():
 
 def getMethod(index):
 	hashmap_method = {
-		1: getMethod1,
-		2: getMethod2,
-		3: getMethod3,
-		14: getMethod14,
-		7: getMethod7,
-		15: getMethod15,
+		1: getMethod1, #self-implemented AdaBoost + decision stump
+		2: getMethod2, #AdaBoost+ decision stump
+		3: getMethod3, #AdaBoost+ linear SVM
+		14: getMethod14,  #rBoost+decision stump
+		7: getMethod7, #rbf svm
+		15: getMethod15, #Adaboost+perceptron
 	}
 	return hashmap_method[index]
 
@@ -681,7 +734,6 @@ def run_experiment_with_two_sided_noise():
 
 		X, y, y_true = getDataset(11)(val)
 		bdt = getMethod(2)()
-		#bdt = getMethod(7)() #rbf svm
 
 
 		#import pdb;pdb.set_trace()
@@ -710,6 +762,52 @@ def run_experiment_with_two_sided_noise():
 	plt.ylabel("accuracy")
 	plt.savefig("noise_rate.pdf")
 	#import pdb;pdb.set_trace()
+
+
+
+def run_experiment_with_MIL_show_changing_boosting_round(run_ID):
+	"""
+	show figure of accuracy vs boosting round
+	manually add a fixed level of noise
+
+	This function is used to test the reaction of algorithms to different noise density
+	"""
+	print "this is the beginning"
+
+	accuracy = []
+	accuracy_false_label = []
+
+	X, y= getDataset(4)() #banana~goldmedal
+
+	bdt = getMethod(2)() #AdaBoost+ decision stump
+	
+	#import pdb;pdb.set_trace()
+	#print "fitting the training set"
+	bdt.fit(X, y)
+	#import pdb;pdb.set_trace()
+	actual_round = len(bdt.estimators_)
+	for predictions in bdt.staged_predict(X):
+		#predictions = (bdt.predict_train(iter = round, getInstPrediction = True)>0)+0
+
+		accuracy_false_label.append(np.average(predictions == y)   )
+	plt.figure()
+	plt.plot(range(actual_round), accuracy_false_label, 'b.-')
+
+	plt.xlabel("boosting round")
+	plt.ylabel("accuracy")
+	plt.savefig("MIL"+str(run_ID)+"_boosting_round.pdf")
+	
+	alpha = bdt.estimator_weights_
+	
+
+	plt.figure()
+	plt.plot(range(actual_round), alpha, 'r.-')
+	plt.xlabel('boosting round')
+	plt.ylabel(r'$\alpha$')
+	plt.savefig("MIL"+str(run_ID)+"_alpha.pdf")
+	
+	import pdb;pdb.set_trace()
+
 
 
 def run_experiment_with_two_sided_noise_show_changing_boosting_round(run_ID):
@@ -801,10 +899,11 @@ def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 	accuracy_false_label = []
 
 	#X, y, y_true = getDataset(8)(noise_rate)
-	X, y, y_true = getDataset(12)(noise_rate)
+	#X, y, y_true = getDataset(12)(noise_rate)
+	X, y, y_true = getDataset(14)(noise_rate)
 
-	#bdt = getMethod(2)()
-	bdt = getMethod(15)()
+	bdt = getMethod(2)()
+	#bdt = getMethod(15)()
 	#bdt = getMethod(7)() #rbf svm
 	
 	#import pdb;pdb.set_trace()
@@ -852,7 +951,7 @@ def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 	plt.xlabel("boosting round")
 	plt.ylabel("distribution weight")
 	plt.savefig("SYN"+str(run_ID)+"_distribution_weight.pdf")
-	import pdb;pdb.set_trace()
+	#import pdb;pdb.set_trace()
 
 
 
@@ -1004,10 +1103,12 @@ if __name__ == "__main__":
 	#run_experiment_with_two_sided_noise()
 	#run_experiment()
 	
-	for i in range(3,50):
+	#run_experiment_with_MIL_show_changing_boosting_round(0)
+	
+	for i in range(10):
 		print "i: ",i
 		run_experiment_with_one_sided_noise_show_changing_boosting_round(i)
 		#run_experiment_with_two_sided_noise_show_changing_boosting_round(i)
-
+	
 	
 	

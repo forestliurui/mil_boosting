@@ -239,8 +239,9 @@ def draw_plot2(directory, outputfile_name):
 	#statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
 	#statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'train_instance_AUC', 'train_bag_AUC']
 	#statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
-	statistics_name_best = ['test_instance_best_balanced_accuracy',  'train_instance_best_balanced_accuracy']
 	
+	#statistics_name_best = ['test_instance_best_balanced_accuracy',  'train_instance_best_balanced_accuracy']
+	statistics_name_best = ['test_bag_best_balanced_accuracy',  'train_bag_best_balanced_accuracy']
 
 
 	statistics_name = statistics_name_best
@@ -282,6 +283,10 @@ def draw_plot2(directory, outputfile_name):
 				plt.ylabel('Test Balanced Accuracy', fontsize = 60)
 			elif stat_name == 'train_instance_best_balanced_accuracy':
 				plt.ylabel('Train Balanced Accuracy', fontsize = 60)
+			elif stat_name == 'test_bag_best_balanced_accuracy':
+				plt.ylabel('Test Balanced Accuracy', fontsize = 60)
+			elif stat_name == 'train_bag_best_balanced_accuracy':
+				plt.ylabel('Train Balanced Accuracy', fontsize = 60)
 			elif stat_name == 'test_instance_AUC':
 				plt.ylabel('test AUC', fontsize = 60)
 			elif stat_name == 'train_instance_AUC':
@@ -295,7 +300,7 @@ def draw_plot2(directory, outputfile_name):
 
 			color_index = -1
 			if stat_name != "ranking_error" and stat_name != "ranking_error_bound":
-				plt.axis([0, 200, 0.4, 0.8], fontsize = 50)
+				plt.axis([0, 200, 0, 1.1], fontsize = 50)
 			else:
 				plt.axis([0, 500, 0, 1.1], fontsize = 50)
 
@@ -331,8 +336,8 @@ if __name__ == '__main__':
 	outputfile_name = args[2]
 
 	#draw_plot1(directory, outputfile_name)
-	draw_plot2(directory, outputfile_name)
-	#generateRank(directory, outputfile_name)
+	#draw_plot2(directory, outputfile_name)
+	generateRank(directory, outputfile_name)
 
 	#results = get_results(directory, statistic_name)
 	#draw_plot(results, statistic_name,  outputfile_name)
