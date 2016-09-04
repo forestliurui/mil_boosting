@@ -171,10 +171,10 @@ def getPartition(X, y, num_folds):
 		lb = fold*(num_movie/num_folds)
 
 		#import pdb;pdb.set_trace()
-		X_train.append({ key: list(X[key]) for key in X.keys() if key not  in range(lb, ub) })
-		X_test.append({ key: list(X[key]) for key in X.keys() if key  in range(lb, ub) })
-		y_train.append( { key: y[key] for key in y.keys() if key not in range(lb, ub) } )
-		y_test.append( { key: y[key] for key in y.keys() if key  in range(lb, ub) } )
+		X_train.append({ X.keys()[key_index]: list(X[X.keys()[key_index]]) for key_index in range(len(X.keys())) if key_index not  in range(lb, ub) })
+		X_test.append({ X.keys()[key_index]: list(X[X.keys()[key_index]]) for key_index in range(len(X.keys())) if key_index  in range(lb, ub) })
+		y_train.append( { X.keys()[key_index]: y[X.keys()[key_index]] for key_index in range(len(X.keys())) if key_index not in range(lb, ub) } )
+		y_test.append( { X.keys()[key_index]: y[X.keys()[key_index]] for key_index in range(len(X.keys())) if key_index  in range(lb, ub) } )
 	return X_train, y_train, X_test, y_test
 
 def getMap(filename):

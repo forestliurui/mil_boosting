@@ -83,7 +83,7 @@ def getDataset(dataset_category, user_id, fold_index):
 
 		X_test = movieLen.X_test[fold_index]
 		p_test = movieLen.p_test[fold_index]
-
+		#import pdb;pdb.set_trace()
 		return RankingDataSet(X_train, p_train), RankingDataSet(X_test, p_test)
 
 	else: #for UCI dataset
@@ -107,43 +107,6 @@ def convert_from_MIDataset_to_RankingDataSet(dataset):
 				p.append((i,j))
 
 	return RankingDataSet(X, p)
-
-
-def client_target_test(task, callback):
-    """
-    used to test client/server
-    """
-    (dataset_catetory, user_id, fold_index) = task['key']
-
-
-
-    print 'Starting task ..'
-    print 'User id:     %s' % user_id
-    print 'fold index:  %d' % fold_index
-
-    time.sleep(5)
-
-    submission = {
-        'accum':{
-                'instance_predictions' : {
-                        'train' : {},
-                        'test'  : {},
-                },
-                'bag_predictions' : {
-                        'train' : {},
-                        'test'  : {},
-                },
-        },
-        'statistics_boosting' : {}
-    }
-    submission['statistics_boosting']['accuracy']= user_id+fold_index
-    submission_boosting = {}
-    submission_boosting[0] = submission
-    submission_boosting[1] = submission	
-    print 'Finished task.'
-    return submission_boosting
-
-
 
 
 def client_target(task, callback):
@@ -170,7 +133,7 @@ def client_target(task, callback):
         print 'Technique "%s" not supported' % classifier_name
         callback.quit = True
         return
-
+    #import pdb;pdb.set_trace()
     print 'Training...'
     timer.start('training')
     

@@ -41,7 +41,7 @@ def process(filename):
 			p_train.append( getCriticalPair(temp) )
 		for temp in y_test:
 			p_test.append( getCriticalPair(temp) )
-	
+		#import pdb;pdb.set_trace()
 		result = RankingData(X_train, p_train, X_test, p_test)
 		
 		#import pdb;pdb.set_trace()
