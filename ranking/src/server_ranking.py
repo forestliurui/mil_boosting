@@ -138,7 +138,7 @@ class ExperimentServer(object):
             task.ping()
         param ={}
 	param['ranker'] = task.ranker_name
-	param['dataset_name'] = key[0]
+	param['dataset_category'] = key[0]
         arguments = {'key': key, 'param': param}
         return yaml.dump(arguments, Dumper=Dumper)
 
@@ -242,8 +242,10 @@ def render(tasks):
     experiment_ids = set()
     parameter_ids = set()
     for key in tasks.keys():
-        experiment_names.add(str(key[0])+'.'+str(key[1]))
-        experiment_ids.add(str(key[0])+'.'+str(key[1]))
+	user_id = key[1]
+	fold_id = key[2]
+        experiment_names.add(str(user_id)+'.'+str(fold_id))
+        experiment_ids.add(str(user_id)+'.'+str(fold_id))
         parameter_ids.add('1')
 
     experiment_names = sorted(experiment_names)
@@ -253,7 +255,9 @@ def render(tasks):
 
     reindexed = defaultdict(list)
     for k, v in tasks.items():
-        reindexed[str(k[0])+'.'+str(k[1]), '1'].append(v)
+	user_id = k[1]
+	fold_id = k[2]
+        reindexed[str(user_id)+'.'+str(fold_id), '1'].append(v)
 
     tasks = reindexed
 
@@ -313,9 +317,10 @@ def render_task_summary(tasks):
 
 class Task(object):
 
-    def __init__(self, user_id,
+    def __init__(self, dataset_category, user_id,
                  fold_index):
-      	self.key = (user_id, fold_index) #for UCI dataset, treat user_id as a string, representing the name of dataset
+	
+      	self.key = (dataset_category, user_id, fold_index) #for UCI dataset, treat user_id as a string, representing the name of individual dataset
         self.user_id = user_id
         self.fold_index = fold_index
 	self.train = str(user_id)+'.'+str(fold_index)+'.train'  #its format is like '2.3.train', meaning training part of the 3rd fold of user with id being 2
@@ -440,30 +445,40 @@ def start_experiment(results_root_dir, ranker_name):
     cherrypy.quickstart(server)
 
 def load_config(results_directory, ranker_name):
-	#user_id_set = range(303) #to be changed to real set
-	#fold_index_set = range(5) #to be changed to real set
+	dataset_category = "LETOR"
 
-	#user_id_set  = [0]
-	fold_index_set= range(10)
+	if dataset_category == "movieLen":
+		user_id_set = range(303) #to be changed to real set
+		fold_index_set = range(5) #to be changed to real set
+
+	elif dataset_category == "UCI":
+		fold_index_set= range(10)
 	
-	user_id_set = ['Ionosphere',
-    		'Haberman',
-    		'Hepatitis',
-    		'Horse_colic',
-    		'volcanoes',
-    		'breast_cancer_wdbc',
-    		'wine',
-    		'car_evaluation',
-    		'Iris',
-    		'Poker_hand',
-    		'Credit_card_clients']
+		user_id_set = ['Ionosphere',
+    			'Haberman',
+    			'Hepatitis',
+    			'Horse_colic',
+    			'volcanoes',
+    			'breast_cancer_wdbc',
+    			'wine',
+    			'car_evaluation',
+    			'Iris',
+    			'Poker_hand',
+    			'Credit_card_clients']
 	
-	#user_id_set = ['Ionosphere']
+		#user_id_set = ['Ionosphere']
+
+	elif dataset_category == "LETOR":
+		user_id_set = range(21) 
+		fold_index_set = range(5) 
+	else:
+		raise error("Do NOT support data category %s" %dataset_category)
+
 	tasks = {}
 	for user_id in user_id_set:
 		for fold_index in fold_index_set:
-			task_key = (user_id, fold_index)
-			task = Task(user_id, fold_index)
+			task_key = (dataset_category, user_id, fold_index)
+			task = Task(dataset_category, user_id, fold_index)
 			
 			task.ground(results_directory, ranker_name)
 			tasks[task_key]= task

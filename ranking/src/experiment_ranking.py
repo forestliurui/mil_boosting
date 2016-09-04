@@ -63,9 +63,9 @@ class RankingDataSet(object):
 		self.instances = X
 		self.critical_pairs = p	
 
-def getDataset(dataset_name, user_id, fold_index):
+def getDataset(dataset_category, user_id, fold_index):
 	
-	if dataset_name == "movieLen":
+	if dataset_category == "movieLen":
 		data_dir = 'ranking/data/movieLen'
 		movieLen = dill.load(open( os.path.join(data_dir,  'movieLen_user'+str(user_id)+'.pkl')  ))
 		X_train = movieLen.X_train[fold_index]
@@ -75,6 +75,17 @@ def getDataset(dataset_name, user_id, fold_index):
 		p_test = movieLen.p_test[fold_index]
 
 		return RankingDataSet(X_train, p_train), RankingDataSet(X_test, p_test)
+	elif dataset_category == "LETOR":
+		data_dir = 'ranking/data/LETOR'
+		movieLen = dill.load(open( os.path.join(data_dir,  'LETOR_query_'+str(user_id)+'.pkl')  ))
+		X_train = movieLen.X_train[fold_index]
+		p_train = movieLen.p_train[fold_index]
+
+		X_test = movieLen.X_test[fold_index]
+		p_test = movieLen.p_test[fold_index]
+
+		return RankingDataSet(X_train, p_train), RankingDataSet(X_test, p_test)
+
 	else: #for UCI dataset
 		outer_folds = 10
 		train_dataset_name=string.replace( '%s.fold_%4d_of_%4d.train' % (dataset_name, fold_index, outer_folds),' ','0'  )
@@ -102,7 +113,7 @@ def client_target_test(task, callback):
     """
     used to test client/server
     """
-    (user_id, fold_index) = task['key']
+    (dataset_catetory, user_id, fold_index) = task['key']
 
 
 
@@ -136,15 +147,17 @@ def client_target_test(task, callback):
 
 
 def client_target(task, callback):
-    (user_id, fold_index) = task['key']
+    (dataset_catetory_no_use, user_id, fold_index) = task['key']
 
     print 'Starting task ..'
+    printCurrentDateTime()
     print 'Ranker name: ',  task['param']['ranker']
+    print "Dataset Category: %s" % dataset_catetory_no_use
     print 'User id:     %s' % user_id
     print 'fold index:  %d' % fold_index
 	    
-    dataset_name = task['param'].pop('dataset_name')	
-    train, test = getDataset(dataset_name, user_id, fold_index)
+    dataset_category = task['param'].pop('dataset_category')	
+    train, test = getDataset(dataset_category, user_id, fold_index)
     
     timer = Timer()
    
@@ -204,3 +217,9 @@ def construct_submissions(ranker, train, test, boosting_round, timer):
 
     return submission
     #import pdb;pdb.set_trace()
+
+def printCurrentDateTime():
+	from datetime import datetime
+	currentDT = datetime.now()
+	timeString = "%d/%d/%d %d:%d" % (currentDT.year, currentDT.month, currentDT.day, currentDT.hour, currentDT.minute)
+ 	print timeString
