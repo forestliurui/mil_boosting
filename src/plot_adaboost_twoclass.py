@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 
 import sys
 
-sys.path.insert(0, "~/.lib/scikit-learn")
+sys.path.insert(0, "~/.lib/scikit-learn/sklearn")
 
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -899,8 +899,8 @@ def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 	accuracy_false_label = []
 
 	#X, y, y_true = getDataset(8)(noise_rate)
-	#X, y, y_true = getDataset(12)(noise_rate)
-	X, y, y_true = getDataset(14)(noise_rate)
+	X, y, y_true = getDataset(12)(noise_rate)
+	#X, y, y_true = getDataset(14)(noise_rate)
 
 	bdt = getMethod(2)()
 	#bdt = getMethod(15)()
@@ -910,6 +910,9 @@ def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 	#print "fitting the training set"
 	bdt.fit(X, y)
 	actual_round = len(bdt.estimators_)
+
+	#import pdb;pdb.set_trace()
+
 	for predictions in bdt.staged_predict(X):
 		#predictions = (bdt.predict_train(iter = round, getInstPrediction = True)>0)+0
 		accuracy.append( np.average(predictions == y_true) )
@@ -918,8 +921,8 @@ def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 	plt.plot(range(actual_round), accuracy, 'r.-')
 	plt.plot(range(actual_round), accuracy_false_label, 'b.-')
 	plt.legend(["w.r.t true label", "w.r.t noisy label"])
-	plt.xlabel("boosting round")
-	plt.ylabel("accuracy")
+	plt.xlabel("Boosting Round")
+	plt.ylabel("Accuracy")
 	plt.savefig("SYN"+str(run_ID)+"_boosting_round.pdf")
 
 	filename = "SYN"+str(run_ID)+"_decision_boundary.pdf"
@@ -930,7 +933,7 @@ def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 
 	plt.figure()
 	plt.plot(range(actual_round), alpha[0:actual_round], 'r.-')
-	plt.xlabel('boosting round')
+	plt.xlabel('Boosting Round')
 	plt.ylabel(r'$\alpha$')
 	plt.savefig("SYN"+str(run_ID)+"_alpha.pdf")
 	#import pdb;pdb.set_trace()
@@ -948,9 +951,21 @@ def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 	plt.plot(range(actual_round), D_FP[0:actual_round], 'b.-')
 	plt.plot(range(actual_round), D_TP[0:actual_round], 'k.-')
 	plt.legend(['$D^{--}$','$D^{-+}$','$D^{+}$'])
-	plt.xlabel("boosting round")
-	plt.ylabel("distribution weight")
+	plt.xlabel("Boosting Round")
+	plt.ylabel("Distribution Weight")
 	plt.savefig("SYN"+str(run_ID)+"_distribution_weight.pdf")
+	#import pdb;pdb.set_trace()
+
+	margin_true_positive =  [np.average([x[i] for i in index_TP ]) for x in bdt.staged_decision_function_unnormalized(X)]
+	margin_true_negative =  [np.average([-x[i] for i in index_TN+index_FP ]) for x in bdt.staged_decision_function_unnormalized(X)]
+
+	plt.figure()
+	plt.plot(range(actual_round), margin_true_positive[0:actual_round],'r.-' )
+	plt.plot(range(actual_round), margin_true_negative[0:actual_round],'b.-' )
+	plt.legend(['True Positive', 'True Negative'], loc='upper left') #loc='upper right'
+	plt.xlabel("Boosting Round")
+	plt.ylabel("Margin")
+	plt.savefig("SYN"+str(run_ID)+"_margin.pdf")
 	#import pdb;pdb.set_trace()
 
 
@@ -993,7 +1008,7 @@ def run_experiment_with_one_sided_noise():
 	plt.figure()
 	plt.plot(noise_rates, accuracy, 'r.-')
 	plt.plot(noise_rates, accuracy_false_label, 'b.-')
-	plt.legend(["w.r.t true label", "w.r.t noisy label"])
+	plt.legend(["w.r.t true label", "w.r.t noisy label"])  
 	plt.xlabel("noise_rate")
 	plt.ylabel("accuracy")
 	plt.savefig("noise_rate.pdf")
@@ -1105,7 +1120,7 @@ if __name__ == "__main__":
 	
 	#run_experiment_with_MIL_show_changing_boosting_round(0)
 	
-	for i in range(10):
+	for i in range(50):
 		print "i: ",i
 		run_experiment_with_one_sided_noise_show_changing_boosting_round(i)
 		#run_experiment_with_two_sided_noise_show_changing_boosting_round(i)
