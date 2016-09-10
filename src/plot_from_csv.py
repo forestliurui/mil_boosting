@@ -76,6 +76,116 @@ def draw_plot(results, statistic_name,  outputfile_name):
 	     	plt.title(dataset_name)
 	plt.savefig(outputfile_name)
 
+def generateAppendixLikeTable(directory, outputfile_name):
+	boosting_round = 150
+
+	statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
+	statistics_name_best = ['test_instance_best_balanced_accuracy',  'test_bag_best_balanced_accuracy']
+	
+	statistics_name += statistics_name_best
+	
+	stat_caption_map = {'test_instance_AUC': 'Test Instance-level AUC', 'test_bag_AUC': 'Test Bag-level AUC', 'test_instance_balanced_accuracy': 'Test Instance-level Balanced Accuracy', 'test_bag_balanced_accuracy': 'Test Bag-level Balanced Accuracy','test_instance_best_balanced_accuracy': 'Test Instance-level Best Balanced Accuracy', 'test_bag_best_balanced_accuracy': 'Test Bag-level Best Balanced Accuracy'}
+
+	datasetname_map = {"cardboardbox~candlewithholder": "CB vs. CH", "wd40can~largespoon": "WC vs. LS", "smileyfacedoll~feltflowerrug": "SFD vs. FFR", "checkeredscarf~dataminingbook": "CS vs. DMB", "dirtyworkgloves~dirtyrunningshoe": "DWG vs. DRS", "bluescrunge~ajaxorange": "BS vs. AO", "apple~cokecan": "A vs. CC", "stripednotebook~greenteabox": "SN vs. GTB", "juliespot~rapbook": "JP vs. RB", "banana~goldmedal":"B vs. GM"}
+	
+	results = {}
+	dataset_names = []
+	method_names = []
+
+	ranks = {}
+	ranks_average = {}
+	for statistic in statistics_name:
+		results[statistic] = get_results(directory, statistic)
+		dataset_names += results[statistic].keys()
+		ranks[statistic] = {}
+		for dataset_name in results[statistic].keys():
+			method_names+=results[statistic][dataset_name].keys()
+			
+	dataset_names = set(dataset_names)
+	method_names = set(method_names)
+	
+	method_names_prechosen = set(["rankboost","adaboost","martiboost","miboosting_xu", "rankboost_modiII", 'rboost', 'auerboost'])
+	method_names = method_names.intersection(method_names_prechosen)
+
+	methodname_map = {"adaboost": "\\AB{}", "martiboost": "\\MB{}", "miboosting_xu":"\\MIB{}", "rboost":"\\rB{}", "auerboost":"\\AuerB{}"}
+
+	#import pdb;pdb.set_trace()
+
+	for statistic in statistics_name:
+
+		line  = "\\begin{table}[ht]\\footnotesize\n"
+		with open(outputfile_name, 'a+') as f:
+			f.write(line)
+		
+		line = "\centering\n"
+		with open(outputfile_name, 'a+') as f:
+			f.write(line)
+
+		line = "\caption{%s}\n" % stat_caption_map[ statistic]
+		with open(outputfile_name, 'a+') as f:
+			f.write(line)		
+
+		line = "\label{Table:mil_%s}\n" % statistic
+		with open(outputfile_name, 'a+') as f:
+			f.write(line)	
+
+		line = "\\begin{tabular}{|"  
+		line += "c|"*(len(method_names)+1)
+		line += "}\n"
+		with open(outputfile_name, 'a+') as f:
+			f.write(line)
+		
+		line = "  \hline\n"
+		with open(outputfile_name, 'a+') as f:
+			f.write(line)
+
+
+		if statistic not in ranks:
+			ranks[statistic] = {}
+		if statistic not in ranks_average:
+			ranks_average[statistic] = {}
+
+		#write the all method names 
+		line = "          &"
+		line += ("  &  ".join([methodname_map[x] for x in method_names]))
+		line += "\\\\ \n"
+		with open(outputfile_name, 'a+') as f:
+			f.write(line)
+
+		line = "  \hline\n"
+		with open(outputfile_name, 'a+') as f:
+			f.write(line)
+
+		for dataset_name in results[statistic].keys():
+			 
+			raw_data_per_stat_dataset = []
+			for method_name in method_names:
+				
+				if boosting_round < len(results[statistic][dataset_name][method_name]):
+					raw_data_per_stat_dataset.append(results[statistic][dataset_name][method_name][boosting_round])
+				else:
+					raw_data_per_stat_dataset.append(results[statistic][dataset_name][method_name][-1])
+
+			#write the statistic values for all methods
+			line = datasetname_map[dataset_name] if dataset_name in datasetname_map else  dataset_name
+			for value in raw_data_per_stat_dataset:
+				line += ("  &  %.2f " % float(value) )
+			line += "\\\\ \n"
+				
+			with open(outputfile_name, 'a+') as f:
+				f.write(line)
+		line = "\hline\n \end{tabular}\n  \end{table}\n"
+		with open(outputfile_name, 'a+') as f:
+			f.write(line)		
+
+		line = "\n"
+		with open(outputfile_name, 'a+') as f:
+			f.write(line)
+
+		line = "\n"
+		with open(outputfile_name, 'a+') as f:
+			f.write(line)
+
 def generateRank(directory, outputfile_name):
 	
 	boosting_round = 150
@@ -105,7 +215,9 @@ def generateRank(directory, outputfile_name):
 	
 	method_names_prechosen = set(["rankboost","adaboost","martiboost","miboosting_xu", "rankboost_modiII", 'rboost', 'auerboost'])
 	method_names = method_names.intersection(method_names_prechosen)
-	
+
+	#import pdb;pdb.set_trace()
+
 	for statistic in statistics_name:
 		if statistic not in ranks:
 			ranks[statistic] = {}
@@ -120,7 +232,7 @@ def generateRank(directory, outputfile_name):
 					raw_data_per_stat_dataset.append(results[statistic][dataset_name][method_name][boosting_round])
 				else:
 					raw_data_per_stat_dataset.append(results[statistic][dataset_name][method_name][-1])
-
+			import pdb;pdb.set_trace()
 			raw_rank = rankdata(map(lambda x: -float(x), raw_data_per_stat_dataset))
 			index = 0
 			for method_name in method_names:
@@ -337,7 +449,9 @@ if __name__ == '__main__':
 
 	#draw_plot1(directory, outputfile_name)
 	#draw_plot2(directory, outputfile_name)
-	generateRank(directory, outputfile_name)
+
+	#generateRank(directory, outputfile_name)
+	generateAppendixLikeTable(directory, outputfile_name)
 
 	#results = get_results(directory, statistic_name)
 	#draw_plot(results, statistic_name,  outputfile_name)
