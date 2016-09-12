@@ -12,10 +12,18 @@ import sqlite3
 import yaml
 import numpy as np
 
-def compute_statistics(method_name):
+def compute_statistics(method_name, dataset_category, outputfile_name):
+	"""
+	method_name is the string representing the method name, which appears as part of the name of the database file. E.g. method_name = 'rankboost_modiII'
+	dataset_category is the string representing the category of datasets that are used in experiments. Currently, it's 'LETOR' or 'movieLen'
+	outputfile_name is the string to respresent the basic name of csv file to store the output. It will be expanded to 'ranking/'+method_name+'_'+outputfile_name
+	
+	"""
 	#method_name = "rankboost"
 	
-	outputfile_raw = method_name+'.csv'
+	#outputfile_raw = method_name+'.csv'
+	outputfile_raw = method_name+'_'+outputfile_name
+
 
 	#statistics_name = statistics_name + statistics_error
 	statistics_name = ['test_error', 'train_error']
@@ -23,7 +31,10 @@ def compute_statistics(method_name):
     	#num_dataset = None
 	dataset_map = {}
 	
-	dataset_result_path='ranking/movieLen/results/movieLen_'+ method_name+'.db'
+	#dataset_result_path='ranking/movieLen/results/movieLen_'+ method_name+'.db'
+	#dataset_result_path = 'ranking/results/'+dataset_category+'/'+dataset_category+'_'+ method_name+ '.db'
+	dataset_result_path = 'ranking/results/'+dataset_category+'/'+'UCI'+'_'+ method_name+ '.db'
+
 	conn=sqlite3.connect(dataset_result_path)
    	c=conn.cursor()
 	for row in c.execute('select * from datasets'):
@@ -101,6 +112,6 @@ if __name__ == '__main__':
     #if len(args) != 1:
     #    parser.print_help()
     #    exit()
-    #compute_statistics(*args, **options)
+    compute_statistics(*args, **options)
     #import pdb;pdb.set_trace()	
-    compute_statistics('rankboost_modiIII')
+    #compute_statistics('rankboost_modiIII')

@@ -35,14 +35,20 @@ def check_file(fileanme, qid_count_doc):
 	#import pdb;pdb.set_trace()
 	#return qid_count_doc
 
-def merge_file(input_filename, output_filename, count, doc_count_threshold):
+def merge_file(input_filename, output_filename, count, doc_count_upperbound = None, doc_count_lowerbound = None):
+	
+	if doc_count_upperbound is None:
+		doc_count_upperbound =  max(count.values()) +1
+	if doc_count_lowerbound is None:
+		doc_count_lowerbound = -1
+
 	#doc_count_threshold = 500
 	num_feature = 136
 	with open(input_filename, "rb") as f:
 		reader = csv.reader(f, delimiter = " ")
 		for row in reader:
 			qid = int(row[1].split(":")[1])
-			if count[qid] >= doc_count_threshold:
+			if count[qid] >= doc_count_lowerbound and count[qid] <= doc_count_upperbound:
 				with open(output_filename, "a+") as f_out:
 					row_out = ",".join(row[0:2])
 					row_out += ","
@@ -64,13 +70,14 @@ if __name__ == "__main__":
 	print "checking vali.txt"
 	filename = "vali.txt"
 	check_file(filename, count)
+	#import pdb;pdb.set_trace()
+	doc_count_lowerbound = 400 #the min number of doc for querys that are to be stored at .csv
+	doc_count_upperbound = 600
 
-	doc_count_threshold = 500 #the min number of doc for querys that are to be stored at .csv
-
-	output_filename = "LETOR_doc_count"+str(doc_count_threshold)+".csv"
-	merge_file( "test.txt", output_filename, count, doc_count_threshold )
-	merge_file( "train.txt", output_filename, count, doc_count_threshold)
-	merge_file( "vali.txt", output_filename, count, doc_count_threshold)
+	output_filename = "LETOR_doc_upperbound_"+str(doc_count_upperbound)+"_lowerbound_"+str(doc_count_lowerbound)+".csv"
+	merge_file( "test.txt", output_filename, count, doc_count_upperbound, doc_count_lowerbound )
+	merge_file( "train.txt", output_filename, count, doc_count_upperbound, doc_count_lowerbound)
+	merge_file( "vali.txt", output_filename, count, doc_count_upperbound, doc_count_lowerbound)
 	#import pdb;pdb.set_trace()
 	
 

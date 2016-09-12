@@ -293,9 +293,9 @@ def draw_plot_test_error(directory, outputfile_name):
 			#plt.subplot(4, math.ceil( len(statistics_name)/3), stat_index+1)
 			#plt.subplot(2, 2, stat_index+1)
 			#plt.subplot(2, 1, stat_index+1)
-			plt.yticks(fontsize = 50)
-			plt.xticks(fontsize = 50)
-			plt.xlabel('Boosting Round', fontsize = 60)
+			plt.yticks(fontsize = 60)
+			plt.xticks(fontsize = 60)
+			plt.xlabel('Boosting Round', fontsize = 80)
 			if stat_name == 'test_instance_best_balanced_accuracy':
 				plt.ylabel('test_best_\nbalanced_accuracy', fontsize = 60)
 			elif stat_name == 'test_instance_AUC':
@@ -305,7 +305,7 @@ def draw_plot_test_error(directory, outputfile_name):
 			elif stat_name == 'train_error':
 				plt.ylabel('Train Error', fontsize = 60)	
 			elif stat_name == 'test_error':
-				plt.ylabel('Test Error', fontsize = 60)		
+				plt.ylabel('Test Error', fontsize = 80)		
 			else:
 				plt.ylabel(stat_name, fontsize = 60)
 			color_index = -1
@@ -313,7 +313,8 @@ def draw_plot_test_error(directory, outputfile_name):
 				plt.axis([0, 150, 0.49, 1.1], fontsize = 50)
 			else:
 				#plt.axis([0, 150, 0, 0.4], fontsize = 50)
-				plt.axis([0, 20, 0, 0.3], fontsize = 50)
+				#plt.axis([0, 20, 0, 0.3], fontsize = 50)
+				plt.axis([0, 10, 0, 0.1], fontsize = 70)
 
 
 			method_names = results[stat_name][dataset_name].keys()
@@ -322,7 +323,9 @@ def draw_plot_test_error(directory, outputfile_name):
 				color_index +=1
 				#subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name]+'.-')
 				#subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name]+linestyles[method_name])
-				subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name], ls = linestyles[method_name], linewidth = 10)
+				#subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name], ls = linestyles[method_name], linewidth = 10)
+				subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name], ls = '-', linewidth = 10)
+
 
 
 			#plt.legend(method_names, fontsize = 35)

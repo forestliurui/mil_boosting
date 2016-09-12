@@ -911,7 +911,7 @@ def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 	bdt.fit(X, y)
 	actual_round = len(bdt.estimators_)
 
-	import pdb;pdb.set_trace()
+	#import pdb;pdb.set_trace()
 
 	for predictions in bdt.staged_predict(X):
 		#predictions = (bdt.predict_train(iter = round, getInstPrediction = True)>0)+0
@@ -920,6 +920,7 @@ def run_experiment_with_one_sided_noise_show_changing_boosting_round(run_ID):
 	plt.figure()
 	plt.plot(range(actual_round), accuracy, 'r.-')
 	plt.plot(range(actual_round), accuracy_false_label, 'b.-')
+	plt.axis([0, 200, 0.8, 1.1])
 	plt.legend(["w.r.t true label", "w.r.t noisy label"])
 	plt.xlabel("Boosting Round")
 	plt.ylabel("Accuracy")

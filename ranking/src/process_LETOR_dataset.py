@@ -78,5 +78,6 @@ def getXy(data_map, qid):
 
 
 if __name__ == "__main__":
-	filename= "ranking/LETOR/LETOR_doc_count500.csv"
+	#filename= "ranking/LETOR/LETOR_doc_count500.csv"
+	filename= "ranking/LETOR/LETOR_doc_upperbound_600_lowerbound_400.csv"
 	process(filename)
