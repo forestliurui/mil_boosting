@@ -128,7 +128,7 @@ def generateRank(directory, outputfile_name):
 				else:
 					raw_data_per_stat_dataset.append(results[statistic][dataset_name][method_name][-1])
 
-			raw_rank = rankdata(map(lambda x: -float(x), raw_data_per_stat_dataset))
+			raw_rank = rankdata(map(lambda x: float(x), raw_data_per_stat_dataset)) #smallest value of error leads to rank score of value 1 
 			index = 0
 			for method_name in method_names:
 				if method_name not in ranks[statistic]:
@@ -363,7 +363,7 @@ if __name__ == '__main__':
 	outputfile_name = args[2]
 
 	#draw_plot(directory, outputfile_name)
-	draw_plot_test_error(directory, outputfile_name)
-	#generateRank(directory, outputfile_name)
+	#draw_plot_test_error(directory, outputfile_name)
+	generateRank(directory, outputfile_name)
 
 	#results = get_results(directory, statistic_name)

@@ -321,7 +321,8 @@ class Task(object):
                  fold_index):
 	
       	self.key = (dataset_category, user_id, fold_index) #for UCI dataset, treat user_id as a string, representing the name of individual dataset
-        self.user_id = user_id
+        self.dataset_category = dataset_category
+	self.user_id = user_id
         self.fold_index = fold_index
 	self.train = str(user_id)+'.'+str(fold_index)+'.train'  #its format is like '2.3.train', meaning training part of the 3rd fold of user with id being 2
 	self.test = str(user_id)+'.'+str(fold_index)+'.test' #its format is like '2.3.test', meaning test part of the 3rd fold of user with id being 2
@@ -347,8 +348,11 @@ class Task(object):
         #                              self.experiment_name)
         #self.results_path = os.path.join(results_subdir,
         #                                 'movieLen_'+ ranker_name +'.db')
+	#self.results_path = os.path.join(results_subdir,
+        #                                 'UCI_'+ ranker_name +'.db')
 	self.results_path = os.path.join(results_subdir,
-                                         'UCI_'+ ranker_name +'.db')
+                                        self.dataset_category+'_'+ ranker_name +'.db')
+
 
         self.results_manager = get_result_manager(self.results_path)
         if self.results_manager.is_finished(self.train, self.test):
@@ -469,7 +473,8 @@ def load_config(results_directory, ranker_name):
 		#user_id_set = ['Ionosphere']
 
 	elif dataset_category == "LETOR":
-		user_id_set = range(21) 
+		#user_id_set = range(21) 
+		user_id_set = range(40) 
 		fold_index_set = range(5) 
 	else:
 		raise error("Do NOT support data category %s" %dataset_category)

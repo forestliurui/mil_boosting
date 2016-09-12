@@ -32,8 +32,8 @@ def compute_statistics(method_name, dataset_category, outputfile_name):
 	dataset_map = {}
 	
 	#dataset_result_path='ranking/movieLen/results/movieLen_'+ method_name+'.db'
-	#dataset_result_path = 'ranking/results/'+dataset_category+'/'+dataset_category+'_'+ method_name+ '.db'
-	dataset_result_path = 'ranking/results/'+dataset_category+'/'+'UCI'+'_'+ method_name+ '.db'
+	dataset_result_path = 'ranking/results/'+dataset_category+'/'+dataset_category+'_'+ method_name+ '.db'
+	#dataset_result_path = 'ranking/results/'+dataset_category+'/'+'UCI'+'_'+ method_name+ '.db'
 
 	conn=sqlite3.connect(dataset_result_path)
    	c=conn.cursor()
