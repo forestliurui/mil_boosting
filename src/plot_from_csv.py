@@ -104,10 +104,10 @@ def generateAppendixLikeTable(directory, outputfile_name):
 	dataset_names = set(dataset_names)
 	method_names = set(method_names)
 	
-	method_names_prechosen = set(["rankboost","adaboost","martiboost","miboosting_xu", "rankboost_modiII", 'rboost', 'auerboost'])
+	method_names_prechosen = set(["rankboost","adaboost","martiboost","miboosting_xu", "rankboost_modiII", "rankboost_modiIII", 'rboost', 'auerboost'])
 	method_names = method_names.intersection(method_names_prechosen)
 
-	methodname_map = {"adaboost": "\\AB{}", "martiboost": "\\MB{}", "miboosting_xu":"\\MIB{}", "rboost":"\\rB{}", "auerboost":"\\AuerB{}"}
+	methodname_map = {"adaboost": "\\AB{}", "martiboost": "\\MB{}", "miboosting_xu":"\\MIB{}", "rboost":"\\rB{}", "auerboost":"\\AuerB{}", "rankboost_modiII": "\\RB{}+", "rankboost":"\\RB{}","rankboost_modiIII":"\\CRB{}" }
 
 	#import pdb;pdb.set_trace()
 
