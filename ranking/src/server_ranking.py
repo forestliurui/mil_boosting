@@ -474,7 +474,9 @@ def load_config(results_directory, ranker_name):
 
 	elif dataset_category == "LETOR":
 		#user_id_set = range(21) 
-		user_id_set = range(40) 
+		#user_id_set = range(40) 
+		user_id_set = range(51) 
+
 		fold_index_set = range(5) 
 	else:
 		raise error("Do NOT support data category %s" %dataset_category)
