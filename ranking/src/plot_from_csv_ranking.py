@@ -476,13 +476,12 @@ if __name__ == '__main__':
     	parser = OptionParser(usage="Usage: %resultsdir  statistic outputfile")
     	options, args = parser.parse_args()
     	options = dict(options.__dict__)
-    	if len(args) != 3:
+    	if len(args) != 2:
         		parser.print_help()
         		exit()		
 
 	directory = args[0]
-	statistic_name = args[1]
-	outputfile_name = args[2]
+	outputfile_name = args[1]
 
 	#draw_plot(directory, outputfile_name)
 	#draw_plot_test_error(directory, outputfile_name)

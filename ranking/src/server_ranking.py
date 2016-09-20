@@ -452,12 +452,13 @@ def load_config(results_directory, ranker_name):
 	dataset_category = "LETOR"
 
 	if dataset_category == "movieLen":
-		user_id_set = range(303) #to be changed to real set
-		fold_index_set = range(5) #to be changed to real set
+		user_id_set = range(303) #respresent the user ID in MovieLen dataset. After preprocessing, there are 303 users left
+		fold_index_set = range(5) #movies associated for each user ID is partitioned into 5 folds for cross validation
 
-	elif dataset_category == "UCI":
-		fold_index_set= range(10)
+	elif dataset_category == "UCI": 
+		fold_index_set= range(10) #each dataset is partitioned into 10 folds for cross validation
 	
+		#For UCI, user_id is a string representing each dataset
 		user_id_set = ['Ionosphere',
     			'Haberman',
     			'Hepatitis',
@@ -475,9 +476,9 @@ def load_config(results_directory, ranker_name):
 	elif dataset_category == "LETOR":
 		#user_id_set = range(21) 
 		#user_id_set = range(40) 
-		user_id_set = range(51) 
+		user_id_set = range(51) #for LETOR, the user_id is actually query ID
 
-		fold_index_set = range(5) 
+		fold_index_set = range(5) #URLs associated with each query is partitioned into 5 folds for cross-validation
 	else:
 		raise error("Do NOT support data category %s" %dataset_category)
 
