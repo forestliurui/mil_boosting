@@ -1,12 +1,37 @@
 #!/usr/bin/env python
 
-#usage: ./src/statistics_boosting.py config/nsk.yaml results test instance auc auc_stats.csv
-#the first argument is the config file you were using before. 
-#second argument is the same results directory
-#the third arugment can be train or test, depending on what you want the statsitics for
-#the fourth argument is instance or bag
-#the fifth argument is acuracy , auc or balanced_accuracy
-#Then the final argument is where you save it
+"""
+usage: (from the directory containing the 'ranking' directory)
+python ranking/src/statistics_boosting_multiple_ranking.py method_name dataset_category outputfile_name
+
+method_name is the string representing the method name, which appears as part of the name of the database file. E.g. method_name = 'rankboost_modiII'
+dataset_category is the string representing the category of datasets that are used in experiments. Currently, it's 'LETOR' or 'MovieLen'
+outputfile_name is the string to respresent the basic name of csv file to store the output. It will be expanded to 'ranking/'+method_name+'_'+outputfile_name
+	
+The format of outputfile is like, for example,
+
+user_0,test_error,train_error
+1,0.698972,0.658136
+2,0.560522,0.507537
+3,0.452127,0.421634
+4,0.428380,0.383730
+5,0.415185,0.366476
+...
+...
+38,0.434098,0.233784
+39,0.429312,0.232903
+40,0.434183,0.231904
+user_1,test_error,train_error
+1,0.662792,0.634783
+2,0.501789,0.468243
+3,0.434978,0.396406
+4,0.401508,0.357880
+5,0.385053,0.335721
+...
+...
+
+
+"""
 
 import sqlite3
 import yaml
@@ -15,7 +40,7 @@ import numpy as np
 def compute_statistics(method_name, dataset_category, outputfile_name):
 	"""
 	method_name is the string representing the method name, which appears as part of the name of the database file. E.g. method_name = 'rankboost_modiII'
-	dataset_category is the string representing the category of datasets that are used in experiments. Currently, it's 'LETOR' or 'movieLen'
+	dataset_category is the string representing the category of datasets that are used in experiments. Currently, it's 'LETOR' or 'MovieLen'
 	outputfile_name is the string to respresent the basic name of csv file to store the output. It will be expanded to 'ranking/'+method_name+'_'+outputfile_name
 	
 	"""
@@ -109,9 +134,6 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
     #import pdb;pdb.set_trace()
     options = dict(options.__dict__)
-    #if len(args) != 1:
-    #    parser.print_help()
-    #    exit()
+   
     compute_statistics(*args, **options)
-    #import pdb;pdb.set_trace()	
-    #compute_statistics('rankboost_modiIII')
+    
