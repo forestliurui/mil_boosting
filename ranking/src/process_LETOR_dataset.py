@@ -1,5 +1,8 @@
 """
 This script is used to process the raw data of Microsoft's Learning to Rank (LETOR) 10K dataset and partition it into appropriate training and test sets
+
+Intput is the raw data, stored in three txt files: text.txt, train.txt and vali.txt
+Output is a bunch of .pkl files, each corresponding to one query whose number of URLs is bewteen doc_count_lowerbound and doc_count_upperbound. The experiments on LETOR will read from these .pkl files
 """
 
 import unittest
@@ -7,10 +10,11 @@ import csv
 import dill
 import numpy as np
 
+from get_csv_for_letor import check_file, merge_file
 from process_movieLen_dataset import getPartition, getCriticalPair
 from process_movieLen_dataset import movieLenData as RankingData
 
-def process(filename):
+def process(filename, output_directory):
 	"""
 	This function is trying to partition the raw dataset, and store them into .pkl files
 	"""
@@ -45,7 +49,7 @@ def process(filename):
 		result = RankingData(X_train, p_train, X_test, p_test)
 		
 		#import pdb;pdb.set_trace()
-		dill.dump(result, open('ranking/LETOR/LETOR_query_'+str(output_index)+'.pkl', 'wb'))
+		dill.dump(result, open(output_directory+'/LETOR_query_'+str(output_index)+'.pkl', 'wb'))
 		output_index += 1
 
 def getMap(filename):
@@ -78,6 +82,46 @@ def getXy(data_map, qid):
 
 
 if __name__ == "__main__":
-	#filename= "ranking/LETOR/LETOR_doc_count500.csv"
-	filename= "ranking/LETOR/LETOR_doc_upperbound_600_lowerbound_400.csv"
-	process(filename)
+
+
+	from optparse import OptionParser, OptionGroup
+    	parser = OptionParser(usage="Usage: %resultsdir  statistic outputfile")
+    	options, args = parser.parse_args()
+    	options = dict(options.__dict__)
+    	if len(args) != 2:
+        		parser.print_help()
+        		exit()		
+
+	input_directory = args[0] #this is a directory containing the raw files of LETOR dataset, i.e. directory containinig text.txt, train.txt and vali.txt
+	outputfile_name = args[1] #this is the directory where the resulting .pkl files will be stored. Such directory must exist before running the script.
+
+	#generate 	
+	count = {} #map from query id to number of docs associated with this query
+	print "checking test.txt"
+	filename = input_directory+"/test.txt"
+	check_file(filename, count)
+
+	print "checking train.txt"
+	filename = input_directory+"/train.txt"
+	check_file(filename, count)
+
+	print "checking vali.txt"
+	filename = input_directory+"/vali.txt"
+	check_file(filename, count)
+	#import pdb;pdb.set_trace()
+	doc_count_lowerbound = 400 #the min number of doc/URL for querys that are to be stored at .csv
+	doc_count_upperbound = 600
+
+	temp_filename = "LETOR_doc_upperbound_"+str(doc_count_upperbound)+"_lowerbound_"+str(doc_count_lowerbound)+".csv"
+	merge_file( "test.txt", temp_filename, count, doc_count_upperbound, doc_count_lowerbound )
+	merge_file( "train.txt", temp_filename, count, doc_count_upperbound, doc_count_lowerbound)
+	merge_file( "vali.txt", temp_filename, count, doc_count_upperbound, doc_count_lowerbound)
+	#import pdb;pdb.set_trace()
+	
+
+
+	#temp_filename= "ranking/LETOR/LETOR_doc_count500.csv"
+	#temp_filename= "ranking/LETOR/LETOR_doc_upperbound_600_lowerbound_400.csv"
+	process(temp_filename, output_directory)
+
+		
