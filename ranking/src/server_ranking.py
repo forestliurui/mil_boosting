@@ -1,4 +1,22 @@
 #!/usr/bin/env python
+
+"""
+This is the server-side of the program to run experiments on general ranking problems (not bipartite).
+
+To run it, use command like (from the directory that contains the 'ranking' directory)
+
+python ranking/src/server_ranking.py results_root_dir ranker_name dataset_category
+
+where results_root_dir is the directory where database containing results will be stored, 
+ranker_name is one of {'rankboost','rankboost_modiII', 'rankboost_modiIII'},
+dataset_category is one of {'LETOR', 'UCI','MovieLen'}
+
+e.g. 
+
+python ranking/src/server_ranking.py ranking/results/LETOR rankboost_modiIII LETOR
+
+"""
+
 import os
 import yaml
 try:
@@ -346,8 +364,6 @@ class Task(object):
 	results_subdir = self.results_directory
         #results_subdir = os.path.join(self.results_directory,
         #                              self.experiment_name)
-        #self.results_path = os.path.join(results_subdir,
-        #                                 'movieLen_'+ ranker_name +'.db')
 	#self.results_path = os.path.join(results_subdir,
         #                                 'UCI_'+ ranker_name +'.db')
 	self.results_path = os.path.join(results_subdir,
@@ -436,10 +452,10 @@ class Task(object):
         self.failed = False
         self.finish_time = time.time()
 
-def start_experiment(results_root_dir, ranker_name):
+def start_experiment(results_root_dir, ranker_name, dataset_category):
 
     #ranker_name = 'rankboost'
-    task_dict = load_config( results_root_dir, ranker_name)
+    task_dict = load_config( results_root_dir, ranker_name, dataset_category)
 
     
 
@@ -448,10 +464,10 @@ def start_experiment(results_root_dir, ranker_name):
                             'server.socket_host': '0.0.0.0'})
     cherrypy.quickstart(server)
 
-def load_config(results_directory, ranker_name):
-	dataset_category = "LETOR"
+def load_config(results_directory, ranker_name, dataset_category):
+	#dataset_category = "LETOR"
 
-	if dataset_category == "movieLen":
+	if dataset_category == "MovieLen":
 		user_id_set = range(303) #respresent the user ID in MovieLen dataset. After preprocessing, there are 303 users left
 		fold_index_set = range(5) #movies associated for each user ID is partitioned into 5 folds for cross validation
 
@@ -498,7 +514,7 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
     options = dict(options.__dict__)
 	
-    num_args = 2
+    num_args = 3
 
     if len(args) != num_args:
         parser.print_help()

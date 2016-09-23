@@ -21,9 +21,9 @@ else:
 from data import get_dataset
 
 CLASSIFIERS = {
-    'rankboost': RankBoost_ranking,
-    'rankboost_modiII': RankBoost_modiII_ranking,
-    'rankboost_modiIII': RankBoost_modiIII_ranking,
+    'rankboost': RankBoost_ranking, #RankBoost in the paper
+    'rankboost_modiII': RankBoost_modiII_ranking, #RankBoost+ in the paper
+    'rankboost_modiIII': RankBoost_modiIII_ranking,  #CrankBoost in the paper
 }
 
 IDX_DIR = os.path.join('box_counting', 'converted_datasets')
@@ -65,8 +65,8 @@ class RankingDataSet(object):
 
 def getDataset(dataset_category, user_id, fold_index):
 	
-	if dataset_category == "movieLen":
-		data_dir = 'ranking/data/movieLen'
+	if dataset_category == "MovieLen":
+		data_dir = 'ranking/data/MovieLen'
 		movieLen = dill.load(open( os.path.join(data_dir,  'movieLen_user'+str(user_id)+'.pkl')  ))
 		X_train = movieLen.X_train[fold_index]
 		p_train = movieLen.p_train[fold_index]

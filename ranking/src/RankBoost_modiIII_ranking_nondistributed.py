@@ -1,6 +1,6 @@
 """
 This is the nondistributed version of RankBoost for bipartite setting, described in Figure 9.2 at the book "Foundation of Machine Learning"
-With modification to computation of alpha and z, suggested in the Modification III in my draft
+With modification to computation of alpha and z, suggested in the Modification III in my draft. We call this CrankBoost in our paper/thesis.
 
 This is for general ranking problem
 """

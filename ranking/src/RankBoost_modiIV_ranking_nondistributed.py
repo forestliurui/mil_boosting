@@ -1,6 +1,7 @@
 """
 This is the nondistributed version of RankBoost for bipartite setting, described in Figure 9.2 at the book "Foundation of Machine Learning"
-With modification to computation of alpha and z, suggested in the Modification II in my draft
+With modification to computation of alpha and z, suggested in the Modification IV in my draft. Here, alpha = 0.5*log( (\epsilon^+) / (\epsilon^- + \epsilon^0)) and Z is changed accordingly.
+This version is not included in the paper/thesis because it's pretty hard to fina a weak ranker with \epsilon^+ > \epsilon^- + \epsilon^0 .
 
 This is for general ranking problem
 """
