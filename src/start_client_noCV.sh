@@ -3,7 +3,7 @@
 #if no hostname or IP address is provided as argument from command-line, the local hostname will be used 
 
 
-if ["$1" == ""]; then
+if [ "$1" == "" ]; then
 	ip_address_local=$(hostname -I | awk '{print $1}')
 	server_name=${ip_address_local}
 else
