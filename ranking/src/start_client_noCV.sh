@@ -1,5 +1,6 @@
 #!/bin/bash
 #This is the bash script to automatically run the one-time client_noCV.py, i.e. client_noCV_1time.py 
+#if no hostname or IP address is provided as argument from command-line, the local hostname will be used 
 
 if ["$1" == ""]; then
 	ip_address_local=$(hostname -I | awk '{print $1}')

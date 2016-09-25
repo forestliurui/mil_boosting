@@ -2,7 +2,7 @@
 
 """
 usage: (from the directory containing the 'ranking' directory)
-python ranking/src/statistics_boosting_multiple_ranking.py method_name outputfile_name
+python ranking/src/statistics_boosting_multiple_ranking_UCI.py method_name outputfile_name
 
 method_name is the string representing the method name, which appears as part of the name of the database file. E.g. method_name = 'rankboost_modiII'
 outputfile_name is the string to respresent the basic name of csv file to store the output. It will be expanded to 'ranking/'+method_name+'_'+outputfile_name
