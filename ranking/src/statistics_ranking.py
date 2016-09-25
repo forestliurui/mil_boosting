@@ -1,12 +1,5 @@
 #!/usr/bin/env python
 
-#usage: ./src/statistics_boosting.py config/nsk.yaml results test instance auc auc_stats.csv
-#the first argument is the config file you were using before. 
-#second argument is the same results directory
-#the third arugment can be train or test, depending on what you want the statsitics for
-#the fourth argument is instance or bag
-#the fifth argument is acuracy , auc or balanced_accuracy
-#Then the final argument is where you save it
 
 import sqlite3
 import yaml
