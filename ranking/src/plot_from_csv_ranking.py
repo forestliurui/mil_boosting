@@ -7,14 +7,11 @@ from scipy.stats.mstats import rankdata
 import numpy as np
 
 def get_results(directory, statistic_name):
-	'''
-	statistics_names=['train_bag_AUC', 'train_bag_accuracy', 'train_bag_balanced_accuracy', 'train_instance_AUC', 'train_instance_accuracy', 'train_instance_balanced_accuracy', 'test_bag_AUC', 'test_bag_accuracy', 'test_bag_balanced_accuracy', 'test_instance_AUC', 'test_instance_accuracy', 'test_instance_balanced_accuracy']
-	statistics_names_SIL = ['SIL_train_instance_AUC', 'SIL_train_instance_accuracy', 'SIL_train_instance_balanced_accuracy', 'SIL_test_instance_AUC', 'SIL_test_instance_accuracy', 'SIL_test_instance_balanced_accuracy']
-	statistics_names_best = ['train_bag_best_balanced_accuracy', 'train_bag_best_threshold_for_balanced_accuracy', 'train_instance_best_balanced_accuracy', 'train_instance_best_threshold_for_balanced_accuracy', 'test_bag_best_balanced_accuracy', 'test_bag_best_balanced_accuracy_with_threshold_from_train', 'test_instance_best_balanced_accuracy', 'test_instance_best_balanced_accuracy_with_threshold_from_train']
-	earlyStop_names = ['ranking_error', 'ranking_error_bound']
-	
-	statistics_names = statistics_names + statistics_names_best
-	'''
+	"""
+	read from files in directory about results for statistic_name for every available boosting round.
+	return results as a dictionary
+	"""
+
 	statistics_names = ['test_error', 'train_error']
 
 	#for modified rankboost
@@ -80,14 +77,14 @@ def draw_plot_no_use(results, statistic_name,  outputfile_name):
 	plt.savefig(outputfile_name)
 
 
-
 def generateAppendixLikeTable(directory, outputfile_name):
-	boosting_round = 150
+	"""
+	generate the table used in appendix of latex files
+	"""
 
+	boosting_round = 150
 	statistics_name = ['test_error']
-		
-	
-	
+			
 	stat_caption_map = {'test_error': 'Test Ranking Error'}
 
 	datasetname_map = {"cardboardbox~candlewithholder": "CB vs. CH", "wd40can~largespoon": "WC vs. LS", "smileyfacedoll~feltflowerrug": "SFD vs. FFR", "checkeredscarf~dataminingbook": "CS vs. DMB", "dirtyworkgloves~dirtyrunningshoe": "DWG vs. DRS", "bluescrunge~ajaxorange": "BS vs. AO", "apple~cokecan": "A vs. CC", "stripednotebook~greenteabox": "SN vs. GTB", "juliespot~rapbook": "JP vs. RB", "banana~goldmedal":"B vs. GM"}
@@ -197,20 +194,22 @@ def generateAppendixLikeTable(directory, outputfile_name):
 		with open(outputfile_name, 'a+') as f:
 			f.write(line)
 
-
-
-
 def generateRank(directory, outputfile_name):
+	"""
+	generate the rankfiles with name 'ranking/'+statistic+"_"+outputfile_name. The rank is based on the boosting round being 'boosting_round'. Its format is like
 	
+	RankBoost, 2.4
+	RankBoost_modiII,1.9
+	RankBoost_modiIII,1.3
+
+	Input: a directory name which contains several csv files ( generated using ranking/statistics_boosting_multiple_ranking ), each csv file corresponding to 
+	one method/algorithm. The file name of each csv file should be the method name, and it must be included in the variable 'method_names_prechosen'
+	
+	"""	
+
+
 	boosting_round = 150
 	#boosting_round = 40
-        '''
-	statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
-	statistics_name_best = ['test_instance_best_balanced_accuracy',  'test_bag_best_balanced_accuracy']
-	
-	statistics_name += statistics_name_best
-	statistics_name += ['train_instance_AUC']
-        '''
 
 	statistics_name = ['test_error', 'train_error']
 
@@ -280,20 +279,14 @@ def generateRank(directory, outputfile_name):
 			with open(output_file_name_extended, 'a+') as f:
 				f.write(line)
 			
-
-			
- 
-			
-
-	
-	
-
 def draw_plot(directory, outputfile_name):
+	"""
+	plot the error vs boosting round figures. Each figure corresponds to all methods on one dataset. Each method is one input file. 
+	(The input is the same with the above generateRank())
+	"""
 
-	#colors={'rankboost':'r', 'rankboost_modiOp':'b','adaboost':'k', 'martiboost':'c', 'rankboost_modiIII':'y','rankboost_m3':'m', 'rankboost_modiII':'g' }
 	colors={'rankboost':'b', 'rankboost_modiIII':'r','rankboost_modiII':'k' }
-	#linestyles = {'rankboost':'--', 'rankboost_modiIII':'-','rankboost_modiII':':' },
-	# 'auerboost': (0,[40,10,10,10]), 'rboost':  (0,[40,10,10,10,10,10])
+	#linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
 	linestyles = {'rankboost_modiIII':'-', 'rankboost':(0,[10,10]),'rankboost_modiII':(0,[40,10]) }
 
 	statistics_name = ['test_error', 'train_error']
@@ -476,16 +469,24 @@ if __name__ == '__main__':
     	parser = OptionParser(usage="Usage: %resultsdir  statistic outputfile")
     	options, args = parser.parse_args()
     	options = dict(options.__dict__)
-    	if len(args) != 2:
-        		parser.print_help()
-        		exit()		
+    	if len(args) != 3:
+        	parser.print_help()
+        	exit()		
 
 	directory = args[0]
 	outputfile_name = args[1]
+	func_invoked = args[2]
 
-	#draw_plot(directory, outputfile_name)
-	#draw_plot_test_error(directory, outputfile_name)
-	#generateRank(directory, outputfile_name)
-	generateAppendixLikeTable(directory, outputfile_name)
+	if func_invoked == 'plot':
+	
+		draw_plot(directory, outputfile_name)
+	elif func_invoked == 'plotTest':
 
+		draw_plot_test_error(directory, outputfile_name)
+	elif func_invoked == 'rank':
+		generateRank(directory, outputfile_name)
+	elif func_invoked == 'table':
+		generateAppendixLikeTable(directory, outputfile_name)
+	else:
+		raise error('Do NOT support %s functionality' % func_invoked)
 	#results = get_results(directory, statistic_name)
