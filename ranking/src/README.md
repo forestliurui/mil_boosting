@@ -1,4 +1,4 @@
-All commands are assumed to be run from the root directory of this repository, i.e. the one containing 'ranking'
+All commands are assumed to be run from the root directory of this repository, i.e. the one containing the directory of 'ranking'
 
 (1) To run the server:
 
@@ -20,6 +20,6 @@ ii)For UCI
 python ranking/src/statistics_boosting_multiple_ranking_UCI.py method_name outputfile_name
 
 (4) To postprocess the statistics, like ploting, get rank scores for Critical Difference Diagram, use 
-python ranking/src/postprocess_statistics_boosting_ranking directory outputfile_name func_invoked 
+python ranking/src/postprocess_statistics_boosting_ranking.py directory outputfile_name func_invoked 
 
 See each source file for detailed usage information.

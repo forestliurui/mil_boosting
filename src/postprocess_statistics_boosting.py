@@ -7,7 +7,11 @@ from scipy.stats.mstats import rankdata
 import numpy as np
 
 def get_results(directory, statistic_name):
-	
+	"""
+	read from files in directory about results for statistic_name for every available boosting round.
+	return results as a dictionary
+	"""
+
 	statistics_names=['train_bag_AUC', 'train_bag_accuracy', 'train_bag_balanced_accuracy', 'train_instance_AUC', 'train_instance_accuracy', 'train_instance_balanced_accuracy', 'test_bag_AUC', 'test_bag_accuracy', 'test_bag_balanced_accuracy', 'test_instance_AUC', 'test_instance_accuracy', 'test_instance_balanced_accuracy']
 	statistics_names_SIL = ['SIL_train_instance_AUC', 'SIL_train_instance_accuracy', 'SIL_train_instance_balanced_accuracy', 'SIL_test_instance_AUC', 'SIL_test_instance_accuracy', 'SIL_test_instance_balanced_accuracy']
 	statistics_names_best = ['train_bag_best_balanced_accuracy', 'train_bag_best_threshold_for_balanced_accuracy', 'train_instance_best_balanced_accuracy', 'train_instance_best_threshold_for_balanced_accuracy', 'test_bag_best_balanced_accuracy', 'test_bag_best_balanced_accuracy_with_threshold_from_train', 'test_instance_best_balanced_accuracy', 'test_instance_best_balanced_accuracy_with_threshold_from_train']
@@ -48,35 +52,10 @@ def get_results(directory, statistic_name):
 					dataset_name = row[0]
 	return results
 
-def draw_plot(results, statistic_name,  outputfile_name):
-	#colors=['r', 'b', 'k','c', 'y', 'm']
-	colors={'rankboost':'r', 'miboosting_xu':'b','adaboost':'k', 'martiboost':'c', 'rankboost_m3':'m','martiboost_max':'y'}
-	dataset_names =  results.keys()
-	num_dataset = len(dataset_names)
-	plt.figure(figsize=(6*num_dataset, 6*num_dataset))
-
-	index_dataset = -1
-	for dataset_name in dataset_names:
-		index_dataset += 1
-
-		plt.subplot(math.ceil( len(dataset_names )/2 + 1), 3, index_dataset)
-
-		plt.xlabel('Boosting Iterations')
-		plt.ylabel(statistic_name)
-		color_index = -1
-		plt.axis([0, 500, 0.49, 1.1])
-
-		method_names = results[dataset_name].keys()
-		
-		for method_name in method_names:
-			color_index +=1
-			plt.plot(results[dataset_name][method_name], colors[method_name]+'.-')
-
-		plt.legend(method_names)
-	     	plt.title(dataset_name)
-	plt.savefig(outputfile_name)
-
 def generateAppendixLikeTable(directory, outputfile_name):
+	"""
+	generate the table used in appendix of latex files
+	"""
 	boosting_round = 150
 
 	statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
@@ -187,7 +166,17 @@ def generateAppendixLikeTable(directory, outputfile_name):
 			f.write(line)
 
 def generateRank(directory, outputfile_name):
+	"""
+	generate the rankfiles with name statistic+"_"+outputfile_name. The rank is based on the boosting round being 'boosting_round'. Its format is like
 	
+	RankBoost, 2.4
+	AdaBoost,1.9
+	MIBoosting,1.3
+
+	Input: a directory name which contains several csv files ( generated using statistics_boosting_multiple.py ), each csv file corresponding to 
+	one method/algorithm. The file name of each csv file should be the method name, and it must be included in the variable 'method_names_prechosen'
+	
+	"""	
 	boosting_round = 150
 
 	statistics_name = ['test_instance_AUC', 'test_bag_AUC',  'test_instance_balanced_accuracy', 'test_bag_balanced_accuracy']
@@ -233,7 +222,7 @@ def generateRank(directory, outputfile_name):
 				else:
 					raw_data_per_stat_dataset.append(results[statistic][dataset_name][method_name][-1])
 			import pdb;pdb.set_trace()
-			raw_rank = rankdata(map(lambda x: -float(x), raw_data_per_stat_dataset))
+			raw_rank = rankdata(map(lambda x: -float(x), raw_data_per_stat_dataset)) #greatest value of accuracy/AUC leads to rank score of value 1 
 			index = 0
 			for method_name in method_names:
 				if method_name not in ranks[statistic]:
@@ -263,16 +252,11 @@ def generateRank(directory, outputfile_name):
 			with open(output_file_name_extended, 'a+') as f:
 				f.write(line)
 			
-
-			
- 
-			
-
-	
-	
-
-def draw_plot1(directory, outputfile_name):
-
+def draw_plot(directory, outputfile_name):
+	"""
+	plot the error vs boosting round figures. Each figure corresponds to all methods on one dataset. Each method is one input file. 
+	(The input is the same with the above generateRank())
+	"""
 	colors={'rankboost':'r', 'miboosting_xu':'b','adaboost':'k', 'martiboost':'c', 'rankboost_pos':'y','rankboost_m3':'m', 'rankboost_m3_pos':'g','rankboost_modiII':'g' ,'rankboost_earlyStop': 'r', 'auerboost': 'y', 'rboost':'m'}
 
 
@@ -339,9 +323,9 @@ def draw_plot1(directory, outputfile_name):
 		#break
 
 
-def draw_plot2(directory, outputfile_name):
+def draw_plot1(directory, outputfile_name):
 	"""
-	only plot test_instance_best_balanced_accuracy and train_instance_best_balanced_accuracy for writing papers
+	only plot test_instance_best_balanced_accuracy and train_instance_best_balanced_accuracy for papers
 	"""
 
 	colors={'rankboost':'r', 'miboosting_xu':'b','adaboost':'k', 'martiboost':'c', 'rankboost_pos':'y','rankboost_m3':'m', 'rankboost_m3_pos':'g','rankboost_modiII':'g' ,'rankboost_earlyStop': 'r', 'auerboost': 'y', 'rboost':'m'}
@@ -444,14 +428,18 @@ if __name__ == '__main__':
         		exit()		
 
 	directory = args[0]
-	statistic_name = args[1]
-	outputfile_name = args[2]
+	outputfile_name = args[1]
+	func_invoked = args[2]
 
-	#draw_plot1(directory, outputfile_name)
-	#draw_plot2(directory, outputfile_name)
+	if func_invoked == 'plot':
+		draw_plot(directory, outputfile_name)
+		#draw_plot1(directory, outputfile_name)
 
-	#generateRank(directory, outputfile_name)
-	generateAppendixLikeTable(directory, outputfile_name)
+	elif func_invoked == 'rank':
+		generateRank(directory, outputfile_name)
+	
+	elif func_invoked == 'table':
+		generateAppendixLikeTable(directory, outputfile_name)
 
-	#results = get_results(directory, statistic_name)
-	#draw_plot(results, statistic_name,  outputfile_name)
+	else:
+		raise error('Do NOT support %s functionality' % func_invoked)
