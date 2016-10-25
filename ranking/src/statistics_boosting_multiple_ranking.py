@@ -2,10 +2,11 @@
 
 """
 usage: (from the directory containing the 'ranking' directory)
-python ranking/src/statistics_boosting_multiple_ranking.py method_name dataset_category outputfile_name
+python ranking/src/statistics_boosting_multiple_ranking.py method_name dataset_category database_path  outputfile_name
 
 method_name is the string representing the method name, which appears as part of the name of the database file. E.g. method_name = 'rankboost_modiII'
 dataset_category is the string representing the category of datasets that are used in experiments. Currently, it's 'LETOR' or 'MovieLen'
+database_path is the string (no trailing '/') representing the directory holding the .db database file
 outputfile_name is the string to respresent the basic name of csv file to store the output. It will be expanded to 'ranking/'+method_name+'_'+outputfile_name
 	
 The format of outputfile is like, for example,
@@ -37,11 +38,12 @@ import sqlite3
 import yaml
 import numpy as np
 
-def compute_statistics(method_name, dataset_category, outputfile_name):
+def compute_statistics(method_name, dataset_category, database_path, outputfile_name):
 	"""
 	method_name is the string representing the method name, which appears as part of the name of the database file. E.g. method_name = 'rankboost_modiII'
 	dataset_category is the string representing the category of datasets that are used in experiments. Currently, it's 'LETOR' or 'MovieLen'
-	outputfile_name is the string to respresent the basic name of csv file to store the output. It will be expanded to 'ranking/'+method_name+'_'+outputfile_name
+	database_path is the string representing the directory holding the database file (.db) where experimental results are stored
+        outputfile_name is the string to respresent the basic name of csv file to store the output. It will be expanded to 'ranking/'+method_name+'_'+outputfile_name
 	
 	"""
 	#method_name = "rankboost"
@@ -57,8 +59,9 @@ def compute_statistics(method_name, dataset_category, outputfile_name):
 	dataset_map = {}
 	
 	#dataset_result_path='ranking/movieLen/results/movieLen_'+ method_name+'.db'
-	dataset_result_path = 'ranking/results/'+dataset_category+'/'+dataset_category+'_'+ method_name+ '.db'
+	#dataset_result_path = 'ranking/results/'+dataset_category+'/'+dataset_category+'_'+ method_name+ '.db'
 	#dataset_result_path = 'ranking/results/'+dataset_category+'/'+'UCI'+'_'+ method_name+ '.db'
+        dataset_result_path = database_path+'/'+dataset_category+'_'+method_name+'.db'
 
 	conn=sqlite3.connect(dataset_result_path)
    	c=conn.cursor()
