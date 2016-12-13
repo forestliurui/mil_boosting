@@ -169,6 +169,10 @@ def construct_submissions(ranker, train, test, boosting_round, timer):
     predictions = ranker.predict_train(iter = j)
     error = ranker.getRankingError(predictions, train.critical_pairs)
     submission['statistics_boosting']["train_error"] = error
+
+    error_tied = ranker.getHalfTiedRankingError(predictions, train.critical_pairs)
+    submission['statistics_boosting']["train_error_tied"] = error_tied
+
     if j == 1:
 	predictions = ranker.predict(test.instances, iter = j)
     else:
@@ -176,9 +180,13 @@ def construct_submissions(ranker, train, test, boosting_round, timer):
     error = ranker.getRankingError(predictions, test.critical_pairs)
     submission['statistics_boosting']["test_error"] = error 
 
+    error_tied = ranker.getHalfTiedRankingError(predictions, test.critical_pairs)
+    submission['statistics_boosting']["test_error_tied"] = error_tied 
+
     print 'training_error: %f' % submission['statistics_boosting']["train_error"] 
     print 'testing_error:  %f' % submission['statistics_boosting']["test_error"]
-
+    print 'training_error_tied: %f' % submission['statistics_boosting']["train_error_tied"] 
+    print 'testing_error_tied:  %f' % submission['statistics_boosting']["test_error_tied"]
 
     return submission
     #import pdb;pdb.set_trace()

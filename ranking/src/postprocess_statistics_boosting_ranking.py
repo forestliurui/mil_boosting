@@ -264,7 +264,7 @@ def generateRank(directory, outputfile_name):
 			ranks_average[statistic][method_name]["rank"] = np.average(ranks[statistic][method_name])
 			ranks_average[statistic][method_name]["num_dataset"] = len(ranks[statistic][method_name])
 
-		#import pdb;pdb.set_trace()
+		import pdb;pdb.set_trace()
 		output_file_name_extended = 'ranking/'+statistic+"_"+outputfile_name
 		
 		for method_name in method_names:
@@ -307,14 +307,14 @@ def draw_plot(directory, outputfile_name):
 	index_dataset = -1
 	#matplotlib.rc('legend', fontsize=0.5, linewidth=2)
 	#plt.tick_params(labelsize=50)
-	#for dataset_name in dataset_names:
+	for dataset_name in dataset_names:
 	#for dataset_name in ['user_181']:
-	for dataset_name in ['user_wine']:
+	#for dataset_name in ['user_wine']:
 	#for dataset_name in ['user_Horse_colic']:
 
 		output_name = 'ranking/'+dataset_name + outputfile_name
-		#plt.figure(figsize=(14*len(statistics_name), 10*len(statistics_name)))
-		plt.figure(figsize=(17*2, 20*2))
+		plt.figure(figsize=(14*len(statistics_name), 10*len(statistics_name)))
+		#plt.figure(figsize=(17*2, 20*2))
 		index_dataset += 1
 		subplot_handle = {}
 		for stat_index in range(len(statistics_name)):
