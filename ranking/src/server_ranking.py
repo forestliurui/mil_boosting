@@ -147,8 +147,23 @@ class ExperimentServer(object):
         with self.status_lock:
             self.clean()
             # Select a job to perform
-            unfinished = list(self.unfinished)
-            shuffle(unfinished)
+	    rand_select = random.randint(1,30)
+	    dataset_category_all = ['LETOR',  'MovieLen', 'UCI']
+	    
+	    if rand_select<=5:
+	    	dataset_category = dataset_category_all[0]
+	    elif rand_select<=20:
+		dataset_category = dataset_category_all[1]
+	    else:
+		dataset_category = dataset_category_all[2]	
+
+            unfinished_raw = list(self.unfinished)
+            shuffle(unfinished_raw)
+
+	    unfinished_category = [x for x in unfinished_raw if x[1].dataset_category == dataset_category ]
+	    unfinished_no_category = [x for x in unfinished_raw if x[1].dataset_category != dataset_category ]
+	    unfinished = unfinished_category + unfinished_no_category
+	   
             #candidates = sorted(unfinished, key=lambda x: x[1].priority())
             candidates = sorted(unfinished, key = lambda x:x[1].fold_index)
             candidates = sorted(candidates, key = lambda x:x[1].user_id)
@@ -266,8 +281,9 @@ def render(tasks):
     for key in tasks.keys():
 	user_id = key[1]
 	fold_id = key[2]
-        experiment_names.add(str(user_id)+'.'+str(fold_id))
-        experiment_ids.add(str(user_id)+'.'+str(fold_id))
+        dataset_category = key[0]
+        experiment_names.add(dataset_category+'.'+str(user_id)+'.'+str(fold_id))
+        experiment_ids.add(dataset_category+'.'+str(user_id)+'.'+str(fold_id))
         parameter_ids.add('1')
 
     experiment_names = sorted(experiment_names)
@@ -279,7 +295,8 @@ def render(tasks):
     for k, v in tasks.items():
 	user_id = k[1]
 	fold_id = k[2]
-        reindexed[str(user_id)+'.'+str(fold_id), '1'].append(v)
+	dataset_category = k[0]
+        reindexed[dataset_category+'.'+str(user_id)+'.'+str(fold_id), '1'].append(v)
 
     tasks = reindexed
 
@@ -469,10 +486,12 @@ def start_experiment(results_root_dir, ranker_name, dataset_category):
     cherrypy.quickstart(server)
 
 def load_config(results_directory, ranker_name, dataset_category):
-	#dataset_category = "LETOR"
-
+    #dataset_category = "LETOR"
+    tasks = {}
+    for dataset_category in ["MovieLen", "UCI", "LETOR"]:
 	if dataset_category == "MovieLen":
-		user_id_set = range(303) #respresent the user ID in MovieLen dataset. After preprocessing, there are 303 users left
+		#user_id_set = range(303) #respresent the user ID in MovieLen dataset. After preprocessing, there are 303 users left
+		user_id_set = range(51) #to make sure the amount of users is same as LETOR
 		fold_index_set = range(5) #movies associated for each user ID is partitioned into 5 folds for cross validation
 
 	elif dataset_category == "UCI": 
@@ -502,7 +521,7 @@ def load_config(results_directory, ranker_name, dataset_category):
 	else:
 		raise error("Do NOT support data category %s" %dataset_category)
 
-	tasks = {}
+	
 	for user_id in user_id_set:
 		for fold_index in fold_index_set:
 			task_key = (dataset_category, user_id, fold_index)
@@ -510,7 +529,7 @@ def load_config(results_directory, ranker_name, dataset_category):
 			
 			task.ground(results_directory, ranker_name)
 			tasks[task_key]= task
-	return tasks
+    return tasks
 
 if __name__ == '__main__':
     from optparse import OptionParser, OptionGroup
