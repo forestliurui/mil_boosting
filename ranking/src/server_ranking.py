@@ -149,8 +149,12 @@ class ExperimentServer(object):
             # Select a job to perform
             unfinished = list(self.unfinished)
             shuffle(unfinished)
-            candidates = sorted(unfinished, key=lambda x: x[1].priority())
-            if len(candidates) == 0:
+            #candidates = sorted(unfinished, key=lambda x: x[1].priority())
+            candidates = sorted(unfinished, key = lambda x:x[1].fold_index)
+            candidates = sorted(candidates, key = lambda x:x[1].user_id)
+	    candidates = sorted(candidates, key = lambda x:x[1].in_progress)
+
+	    if len(candidates) == 0:
                 raise HTTPError(404)
             key, task = candidates.pop(0)
             task.ping()
