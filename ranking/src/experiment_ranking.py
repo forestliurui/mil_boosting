@@ -88,8 +88,8 @@ def getDataset(dataset_category, user_id, fold_index):
 
 	else: #for UCI dataset
 		outer_folds = 10
-		train_dataset_name=string.replace( '%s.fold_%4d_of_%4d.train' % (dataset_name, fold_index, outer_folds),' ','0'  )
-    		test_dataset_name=string.replace( '%s.fold_%4d_of_%4d.test' % (dataset_name, fold_index, outer_folds),' ','0'   )		
+		train_dataset_name=string.replace( '%s.fold_%4d_of_%4d.train' % (user_id, fold_index, outer_folds),' ','0'  )
+    		test_dataset_name=string.replace( '%s.fold_%4d_of_%4d.test' % (user_id, fold_index, outer_folds),' ','0'   )		
 
 		train = get_dataset(train_dataset_name)
     		test = get_dataset(test_dataset_name)

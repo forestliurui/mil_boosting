@@ -162,12 +162,21 @@ class ExperimentServer(object):
 
 	    unfinished_category = [x for x in unfinished_raw if x[1].dataset_category == dataset_category ]
 	    unfinished_no_category = [x for x in unfinished_raw if x[1].dataset_category != dataset_category ]
+	    
+            unfinished_category = sorted(unfinished_category, key = lambda x: x[1].fold_index)
+	    unfinished_no_category = sorted(unfinished_no_category, key = lambda x: x[1].fold_index)
+
+	    unfinished_category = sorted(unfinished_category, key = lambda x: x[1].user_id)
+	    unfinished_no_category = sorted(unfinished_no_category, key = lambda x: x[1].user_id)
+
 	    unfinished = unfinished_category + unfinished_no_category
 	   
             #candidates = sorted(unfinished, key=lambda x: x[1].priority())
-            candidates = sorted(unfinished, key = lambda x:x[1].fold_index)
-            candidates = sorted(candidates, key = lambda x:x[1].user_id)
-	    candidates = sorted(candidates, key = lambda x:x[1].in_progress)
+            #candidates = sorted(unfinished, key = lambda x:x[1].fold_index)
+            #candidates = sorted(candidates, key = lambda x:x[1].user_id)
+	    #candidates = sorted(candidates, key = lambda x:x[1].in_progress)
+
+	    candidates = sorted(unfinished, key = lambda x:x[1].in_progress)
 
 	    if len(candidates) == 0:
                 raise HTTPError(404)
