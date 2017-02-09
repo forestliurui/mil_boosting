@@ -289,8 +289,8 @@ def draw_plot(directory, outputfile_name):
 	#linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
 	linestyles = {'rankboost_modiIII':'-', 'rankboost':(0,[10,10]),'rankboost_modiII':(0,[40,10]) }
 
-	statistics_name = ['test_error', 'train_error']
-	
+	#statistics_name = ['test_error', 'train_error']
+	statistics_name = ['test_error', 'train_error', 'test_error_tied', 'train_error_tied']
 	# for modified rankboost
 	#earlyStop_name = ['test_instance_AUC', 'test_bag_AUC', 'train_instance_AUC', 'train_bag_AUC', 'ranking_error', 'ranking_error_bound']	
 	#statistics_name = earlyStop_name
@@ -313,15 +313,15 @@ def draw_plot(directory, outputfile_name):
 	#for dataset_name in ['user_Horse_colic']:
 
 		output_name = 'ranking/'+dataset_name + outputfile_name
-		plt.figure(figsize=(14*len(statistics_name), 10*len(statistics_name)))
-		#plt.figure(figsize=(17*2, 20*2))
+		#plt.figure(figsize=(14*len(statistics_name), 10*len(statistics_name)))
+		plt.figure(figsize=(17*2, 20*2))
 		index_dataset += 1
 		subplot_handle = {}
 		for stat_index in range(len(statistics_name)):
 			stat_name = statistics_name[stat_index]
 			#plt.subplot(4, math.ceil( len(statistics_name)/3), stat_index+1)
-			#plt.subplot(2, 2, stat_index+1)
-			plt.subplot(2, 1, stat_index+1)
+			plt.subplot(2, 2, stat_index+1)
+			#plt.subplot(2, 1, stat_index+1)
 			plt.yticks(fontsize = 50)
 			plt.xticks(fontsize = 50)
 			plt.xlabel('Boosting Round', fontsize = 60)

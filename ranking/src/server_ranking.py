@@ -147,15 +147,13 @@ class ExperimentServer(object):
         with self.status_lock:
             self.clean()
             # Select a job to perform
-	    rand_select = random.randint(1,30)
-	    dataset_category_all = ['LETOR',  'MovieLen', 'UCI']
+	    rand_select = random.randint(1,20)
+	    dataset_category_all = ['LETOR',  'MovieLen']
 	    
 	    if rand_select<=5:
 	    	dataset_category = dataset_category_all[0]
-	    elif rand_select<=20:
-		dataset_category = dataset_category_all[1]
 	    else:
-		dataset_category = dataset_category_all[2]	
+		dataset_category = dataset_category_all[1]	
 
             unfinished_raw = list(self.unfinished)
             shuffle(unfinished_raw)
@@ -497,7 +495,7 @@ def start_experiment(results_root_dir, ranker_name, dataset_category):
 def load_config(results_directory, ranker_name, dataset_category):
     #dataset_category = "LETOR"
     tasks = {}
-    for dataset_category in ["MovieLen", "UCI", "LETOR"]:
+    for dataset_category in ["MovieLen", "LETOR"]:
 	if dataset_category == "MovieLen":
 		#user_id_set = range(303) #respresent the user ID in MovieLen dataset. After preprocessing, there are 303 users left
 		user_id_set = range(51) #to make sure the amount of users is same as LETOR
