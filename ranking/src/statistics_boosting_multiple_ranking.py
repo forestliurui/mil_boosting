@@ -79,7 +79,7 @@ def compute_statistics(method_name, dataset_category, database_path, outputfile_
 
     	for index_dataset in dataset_map.keys():
 	     
-	     if index_dataset>10:
+	     if index_dataset>45:
 		continue
 
 	     dataset_name = str(index_dataset)

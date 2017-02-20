@@ -12,7 +12,7 @@ def get_results(directory, statistic_name):
 	return results as a dictionary
 	"""
 
-	statistics_names = ['test_error', 'train_error']
+	statistics_names = ['test_error', 'train_error', 'test_error_tied','train_error_tied']
 
 	#for modified rankboost
 		
@@ -208,10 +208,12 @@ def generateRank(directory, outputfile_name):
 	"""	
 
 
-	boosting_round = 150
+	#boosting_round = 150
 	#boosting_round = 40
+	boosting_round = 15
 
-	statistics_name = ['test_error', 'train_error']
+
+	statistics_name = ['test_error', 'train_error', 'test_error_tied', 'train_error_tied']
 
 	results = {}
 	dataset_names = []
@@ -287,7 +289,9 @@ def draw_plot(directory, outputfile_name):
 
 	colors={'rankboost':'b', 'rankboost_modiIII':'r','rankboost_modiII':'k' }
 	#linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
-	linestyles = {'rankboost_modiIII':'-', 'rankboost':(0,[10,10]),'rankboost_modiII':(0,[40,10]) }
+	#linestyles = {'rankboost_modiIII':'-', 'rankboost':(0,[10,10]),'rankboost_modiII':(0,[40,10]) }
+	linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiII':'dashed' }
+
 
 	#statistics_name = ['test_error', 'train_error']
 	statistics_name = ['test_error', 'train_error', 'test_error_tied', 'train_error_tied']
@@ -296,13 +300,15 @@ def draw_plot(directory, outputfile_name):
 	#statistics_name = earlyStop_name
 	# for modified rankboost
 
-
+	
 	results = {}
 	dataset_names = []
 	for statistic in statistics_name:
 		results[statistic] = get_results(directory, statistic)
 		dataset_names += results[statistic].keys()
 	dataset_names = set(dataset_names)
+
+	import pdb;pdb.set_trace()
 
 	index_dataset = -1
 	#matplotlib.rc('legend', fontsize=0.5, linewidth=2)
@@ -338,11 +344,11 @@ def draw_plot(directory, outputfile_name):
 			else:
 				plt.ylabel(stat_name, fontsize = 60)
 			color_index = -1
-			if stat_name != "ranking_error" and stat_name != "ranking_error_bound" and stat_name != "train_error" and stat_name != "test_error":
+			if stat_name != "ranking_error" and stat_name != "ranking_error_bound" and stat_name != "train_error" and stat_name != "test_error" and stat_name != "test_error_tied" and stat_name != "train_error_tied":
 				plt.axis([0, 150, 0.49, 1.1], fontsize = 50)
 			else:
 				#plt.axis([0, 150, 0, 0.4], fontsize = 50)
-				plt.axis([0, 20, 0, 0.3], fontsize = 50)
+				plt.axis([0, 150, 0, 0.6], fontsize = 50)
 
 
 			method_names = results[stat_name][dataset_name].keys()
@@ -363,6 +369,224 @@ def draw_plot(directory, outputfile_name):
 
 		#break
 
+def draw_plot_averaged(directory, outputfile_name):
+	"""
+	plot the error vs boosting round figures. Each figure corresponds to all methods on one dataset. Each method is one input file. 
+	(The input is the same with the above generateRank())
+	"""
+
+	colors={'rankboost':'b', 'rankboost_modiIII':'r','rankboost_modiII':'k' }
+	#linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
+	linestyles = {'rankboost_modiIII':'-', 'rankboost':(0,[10,10]),'rankboost_modiII':(0,[40,10]) }
+	#linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiII':'dashed' }
+
+
+	#statistics_name = ['test_error', 'train_error']
+	statistics_name = ['test_error', 'train_error', 'test_error_tied', 'train_error_tied']
+	# for modified rankboost
+	#earlyStop_name = ['test_instance_AUC', 'test_bag_AUC', 'train_instance_AUC', 'train_bag_AUC', 'ranking_error', 'ranking_error_bound']	
+	#statistics_name = earlyStop_name
+	# for modified rankboost
+
+
+	results = {}
+	dataset_names = []
+	for statistic in statistics_name:
+		results[statistic] = get_results(directory, statistic)
+		dataset_names += results[statistic].keys()
+	dataset_names = set(dataset_names)
+	data_plot = {}
+
+
+
+	index_dataset = -1
+	#matplotlib.rc('legend', fontsize=0.5, linewidth=2)
+	#plt.tick_params(labelsize=50)
+	for dataset_name in dataset_names:
+	#for dataset_name in ['user_181']:
+	#for dataset_name in ['user_wine']:
+	#for dataset_name in ['user_Horse_colic']:
+
+		index_dataset += 1
+		
+		for stat_index in range(len(statistics_name)):
+			stat_name = statistics_name[stat_index]
+			if stat_name not in data_plot:
+				data_plot[stat_name] = {}
+
+			method_names = results[stat_name][dataset_name].keys()
+			for method_name in method_names:
+				if method_name not in data_plot[stat_name]:
+					data_plot[stat_name][method_name] = []
+				data_plot[stat_name][method_name].append([float(x) for x in results[stat_name][dataset_name][method_name]])
+	
+	data_plot_average = {}
+	for stat_name in statistics_name:
+		if stat_name not in data_plot_average:
+			data_plot_average[stat_name] = {}
+		for method_name in method_names:
+			data_plot_average[stat_name][method_name] = np.average(np.array(data_plot[stat_name][method_name]), axis=0)
+	#import pdb;pdb.set_trace()
+	subplot_handle = {}
+	output_name = 'ranking/' + outputfile_name
+	#plt.figure(figsize=(14*len(statistics_name), 10*len(statistics_name)))
+	plt.figure(figsize=(17*2, 20*2))
+	for stat_index in range(len(statistics_name)):
+			stat_name = statistics_name[stat_index]
+
+			#plt.subplot(4, math.ceil( len(statistics_name)/3), stat_index+1)
+			plt.subplot(2, 2, stat_index+1)
+			#plt.subplot(2, 1, stat_index+1)
+			plt.yticks(fontsize = 50)
+			plt.xticks(fontsize = 50)
+			plt.xlabel('Boosting Round', fontsize = 60)
+			if stat_name == 'test_instance_best_balanced_accuracy':
+				plt.ylabel('test_best_\nbalanced_accuracy', fontsize = 60)
+			elif stat_name == 'test_instance_AUC':
+				plt.ylabel('test AUC', fontsize = 60)
+			elif stat_name == 'train_instance_AUC':
+				plt.ylabel('train AUC', fontsize = 60)
+			elif stat_name == 'train_error':
+				plt.ylabel('Train Error', fontsize = 60)	
+			elif stat_name == 'test_error':
+				plt.ylabel('Test Error', fontsize = 60)		
+			else:
+				plt.ylabel(stat_name, fontsize = 60)
+			color_index = -1
+			if stat_name != "ranking_error" and stat_name != "ranking_error_bound" and stat_name != "train_error" and stat_name != "test_error" and stat_name != "test_error_tied" and stat_name != "train_error_tied":
+				plt.axis([0, 150, 0.49, 1.1], fontsize = 50)
+			else:
+				#plt.axis([0, 150, 0, 0.4], fontsize = 50)
+				plt.axis([0, 150, 0, 0.6], fontsize = 50)
+
+
+			method_names = results[stat_name][dataset_name].keys()
+		
+			for method_name in method_names:
+
+				color_index +=1
+				subplot_handle[method_name], = plt.plot(data_plot_average[stat_name][method_name], colors[method_name], ls = linestyles[method_name], linewidth = 10)
+			
+
+			#plt.legend(method_names, fontsize = 35)
+	     		#plt.title(dataset_name, fontsize = 30)
+	#plt.suptitle(dataset_name, fontsize = 50)
+	#plt.legend(method_names, fontsize = 35)
+	#plt.figlegend([subplot_handle[x] for x in method_names], convertMethodNames(method_names), loc = 'upper right',  fontsize = 50)
+	plt.savefig(output_name, orientation = 'landscape')
+
+	#break
+
+def draw_plot_averaged_MovieLen(directory, outputfile_name):
+	"""
+	plot the error vs boosting round figures. Each figure corresponds to all methods on one dataset. Each method is one input file. 
+	(The input is the same with the above generateRank())
+	"""
+
+	colors={'rankboost':'b', 'rankboost_modiIII':'r','rankboost_modiII':'k' }
+	#linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
+	#linestyles = {'rankboost_modiIII':'-', 'rankboost':(0,[10,10]),'rankboost_modiII':(0,[40,10]) }
+	linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiII':'dashed' }
+
+
+	statistics_name = ['test_error', 'train_error']
+	#statistics_name = ['test_error', 'train_error', 'test_error_tied', 'train_error_tied']
+	# for modified rankboost
+	#earlyStop_name = ['test_instance_AUC', 'test_bag_AUC', 'train_instance_AUC', 'train_bag_AUC', 'ranking_error', 'ranking_error_bound']	
+	#statistics_name = earlyStop_name
+	# for modified rankboost
+
+
+	results = {}
+	dataset_names = []
+	for statistic in statistics_name:
+		results[statistic] = get_results(directory, statistic)
+		dataset_names += results[statistic].keys()
+	dataset_names = set(dataset_names)
+	data_plot = {}
+
+
+
+	index_dataset = -1
+	#matplotlib.rc('legend', fontsize=0.5, linewidth=2)
+	#plt.tick_params(labelsize=50)
+	for dataset_name in dataset_names:
+	#for dataset_name in ['user_181']:
+	#for dataset_name in ['user_wine']:
+	#for dataset_name in ['user_Horse_colic']:
+
+		index_dataset += 1
+		
+		for stat_index in range(len(statistics_name)):
+			stat_name = statistics_name[stat_index]
+			if stat_name not in data_plot:
+				data_plot[stat_name] = {}
+
+			method_names = results[stat_name][dataset_name].keys()
+			for method_name in method_names:
+				if method_name not in data_plot[stat_name]:
+					data_plot[stat_name][method_name] = []
+				data_plot[stat_name][method_name].append([float(x) for x in results[stat_name][dataset_name][method_name]])
+	
+	data_plot_average = {}
+	for stat_name in statistics_name:
+		if stat_name not in data_plot_average:
+			data_plot_average[stat_name] = {}
+		for method_name in method_names:
+			data_plot_average[stat_name][method_name] = np.average(np.array(data_plot[stat_name][method_name]), axis=0)
+	#import pdb;pdb.set_trace()
+	subplot_handle = {}
+	output_name = 'ranking/' + outputfile_name
+	plt.figure(figsize=(14*len(statistics_name), 10*len(statistics_name)))
+	#plt.figure(figsize=(17*2, 20*2))
+	for stat_index in range(len(statistics_name)):
+			stat_name = statistics_name[stat_index]
+
+			#plt.subplot(4, math.ceil( len(statistics_name)/3), stat_index+1)
+			#plt.subplot(2, 2, stat_index+1)
+			plt.subplot(2, 1, stat_index+1)
+			plt.yticks(fontsize = 50)
+			plt.xticks(fontsize = 50)
+			plt.xlabel('Boosting Round', fontsize = 60)
+			if stat_name == 'test_instance_best_balanced_accuracy':
+				plt.ylabel('test_best_\nbalanced_accuracy', fontsize = 60)
+			elif stat_name == 'test_instance_AUC':
+				plt.ylabel('test AUC', fontsize = 60)
+			elif stat_name == 'train_instance_AUC':
+				plt.ylabel('train AUC', fontsize = 60)
+			elif stat_name == 'train_error':
+				plt.ylabel('E_1 for training', fontsize = 60)	
+			elif stat_name == 'test_error':
+				plt.ylabel('E_1 for testing', fontsize = 60)		
+			else:
+				plt.ylabel(stat_name, fontsize = 60)
+			color_index = -1
+			if stat_name != "ranking_error" and stat_name != "ranking_error_bound" and stat_name != "train_error" and stat_name != "test_error" and stat_name != "test_error_tied" and stat_name != "train_error_tied":
+				plt.axis([0, 150, 0.49, 1.1], fontsize = 50)
+			else:
+				#plt.axis([0, 150, 0, 0.4], fontsize = 50)
+				plt.axis([0, 100, 0.1, 0.4], fontsize = 50)
+
+
+			method_names = results[stat_name][dataset_name].keys()
+		
+			for method_name in method_names:
+
+				color_index +=1
+				subplot_handle[method_name], = plt.plot(data_plot_average[stat_name][method_name], colors[method_name], ls = linestyles[method_name], linewidth = 10)
+			
+
+			#plt.legend(method_names, fontsize = 35)
+	     		#plt.title(dataset_name, fontsize = 30)
+	#plt.suptitle(dataset_name, fontsize = 50)
+	#plt.legend(method_names, fontsize = 35)
+	plt.figlegend([subplot_handle[x] for x in method_names], convertMethodNames(method_names), loc = 'upper right',  fontsize = 50)
+	plt.savefig(output_name, orientation = 'landscape')
+
+	#break
+
+
+
 def draw_plot_test_error(directory, outputfile_name):
 	"""
 	only plot test error
@@ -370,9 +594,9 @@ def draw_plot_test_error(directory, outputfile_name):
 
 	#colors={'rankboost':'r', 'rankboost_modiOp':'b','adaboost':'k', 'martiboost':'c', 'rankboost_modiIII':'y','rankboost_m3':'m', 'rankboost_modiII':'g' }
 	colors={'rankboost':'b', 'rankboost_modiIII':'r','rankboost_modiII':'k' }
-	#linestyles = {'rankboost':'--', 'rankboost_modiIII':'-','rankboost_modiII':':' },
+	linestyles = {'rankboost':'--', 'rankboost_modiIII':'-','rankboost_modiII':':' },
 	# 'auerboost': (0,[40,10,10,10]), 'rboost':  (0,[40,10,10,10,10,10])
-	linestyles = {'rankboost_modiIII':'-', 'rankboost':(0,[10,10]),'rankboost_modiII':(0,[40,10]) }
+	#linestyles = {'rankboost_modiIII':'-', 'rankboost':(0,[10,10]),'rankboost_modiII':(0,[40,10]) }
 
 	#statistics_name = ['test_error', 'train_error']
 	statistics_name = ['test_error']
@@ -456,11 +680,14 @@ def convertMethodNames(names):
 	result = []
 	for name in names:
 		if name == 'rankboost_modiII':
-			result.append('Rankboost+')
+			#result.append('Rankboost+')
+			result.append('RB-C')
 		elif name == 'rankboost_modiIII':
-			result.append('Crankboost')
+			#result.append('Crankboost')
+			result.append('RankBoost+')
 		elif name == 'rankboost':
-			result.append('Rankboost')
+			#result.append('Rankboost')
+			result.append('RB-D')
 		else:
 			result.append(name)
 	return result
@@ -480,6 +707,10 @@ if __name__ == '__main__':
 	if func_invoked == 'plot':
 	
 		draw_plot(directory, outputfile_name)
+
+	elif func_invoked == 'plotAvg':
+		draw_plot_averaged(directory, outputfile_name)
+
 	elif func_invoked == 'plotTest':
 
 		draw_plot_test_error(directory, outputfile_name)
@@ -487,6 +718,9 @@ if __name__ == '__main__':
 		generateRank(directory, outputfile_name)
 	elif func_invoked == 'table':
 		generateAppendixLikeTable(directory, outputfile_name)
+	elif func_invoked == 'plotAvgM':
+		draw_plot_averaged_MovieLen(directory, outputfile_name)
+
 	else:
 		raise error('Do NOT support %s functionality' % func_invoked)
 	#results = get_results(directory, statistic_name)
