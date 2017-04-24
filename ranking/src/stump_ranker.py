@@ -26,7 +26,6 @@ class StumpRanker_derived(object):
 class StumpRanker(object):
 	#static variable        
 	ValidWeakRankers = None	
-	train_X = None
 
 	def __init__(self):
 		self.feature_index = None
@@ -42,23 +41,47 @@ class StumpRanker(object):
 			return StumpRanker_ContinuousFeature()
 
 	@staticmethod
-	def prune(self, X, type):
+	def prune(type, X):
                 """
 		prune the basic rankers so that no duplicate and opposite rankers will be considered later for training. 
                 The duplication or opposition is with respect to X
 		"""
-		StumpRanker.train_X = X
+		
 		
 		StumpRanker.instantiateAll(type)
+		
+		
+		prune_dict = {}
+		for ranker in StumpRanker.ValidWeakRankers:
+			prediction = ranker.predict(X)	
+			key = prune_criteria(prediction)
+			if key not in prune_dict:
+			   prune_dict[key] = ranker
 
-		for 
+		new_ValidWeakRankers = {}
+		for ranker in prune_dict.values():
+			new_ValidWeakRankers[(ranker.feature_index, ranker.threshold)] = ranker
 
+		StumpRanker.ValidWeakRankers = new_ValidWeakRankers
 
+	@staticmethod
+	def pruneSingleRanker( ranker):
+		"""
+		prune single ranker from StumpRanker.ValidWeakRankers
+		"""
+		
+		if StumpRanker.ValidWeakRankers is None:
+			raise ValueError("StumpRanker.ValidWeakRankers is None")
+
+		key = (ranker.feature_index, ranker.threshold)
+
+		if key in StumpRanker.ValidWeakRankers:
+			del StumpRanker.ValidWeakRankers[key]
 
 	@staticmethod	
-	def instantiateAll(self, type):	
+	def instantiateAll(type, X, y):	
  		"""
-		instantiate all possible weak ranker according to the training data
+		instantiate all possible weak ranker according to the training data X and y
 		"""		
                 
                 rankers = {}
@@ -69,23 +92,23 @@ class StumpRanker(object):
 
 		   for index in range(num_feature):
 			param = {"feature_index": index}
-                	rankers[(index, None)] = self.instantiateSpecificParam(type, param)
+                	rankers[(index, None)] = StumpRanker.instantiateSpecificParam(type, param, X, y)
 		elif type == "continuous":
   		   for index in range(num_feature):
-	  		thresholds = self.getFeatureThresholds( index)
+	  		thresholds = StumpRanker.getFeatureThresholds( index, X)
 			for thred in thresholds:
 			    param = {"feature_index": index, "threshold": thred}
- 			    rankers[(index, thred)] = self.instantiateSpecificParam(type, param)
+ 			    rankers[(index, thred)] = StumpRanker.instantiateSpecificParam(type, param, X, y)
 		
 		StumpRanker.ValidWeakRankers = rankers
 
 	@staticmethod
-        def instantiateSpecificParam(self, type, param):
+        def instantiateSpecificParam(type, param, X, y):
 		"""
 		instantiate a weak ranker according to the training data with either "discrete" or "continuous" type
 		"""
 		
-		ranker = self.create(type)
+		ranker = StumpRanker.create(type)
 
 		if type == "discrete":
  		    ranker.feature_index = param["feature_index"]
@@ -96,18 +119,36 @@ class StumpRanker(object):
 		else:
 		    raise NotImplementedError("Please Implement this method")
 
+		ranker.setNodesPrediction( X, y)
 
                 return ranker
 
-
-	def loadTrainingData(self, X, y):
-                """
-                load the training data
-                """
-		self.train_X = X
-		self.train_y = y
-
 	@staticmethod
+	def getFeatureThresholds(index, X = None):
+		"""
+		get feature threshold list for continuous ranker
+		"""		
+
+		if X is None:
+			
+			raise ValueError("Please provide  X")
+			 
+
+  		feature = [ X[i][index]  for i in X.keys() ]
+		sorted_feature = sorted(feature)
+
+		#get the thresholds
+		temp = [ sorted_feature[0]-1 ]+sorted_feature + [ sorted_feature[1]+1 ]
+		raw_thresholds = [ (temp[i]+temp[i+1])/float(2)  for i in range(len(temp)-1)  ]
+
+		thresholds_len_max  = 500 
+		if len(raw_thresholds) > thresholds_len_max:
+			thresholds = random.sample(raw_thresholds, thresholds_len_max)
+		else:
+			thresholds = raw_thresholds
+	
+		return thresholds
+
 	def computeEpsilons(self, X, y):
                 """
 		compute the epsilon+, epsilon-, epsilon0
@@ -133,6 +174,24 @@ class StumpRanker(object):
 
                 return epsilons
 
+	def setNodesPrediction(self, X, y, weight_pair = None):
+		"""
+		assume member variables feature_index and threshold have been pre-specified, set the member variable children_nodes_prediction
+		"""
+		
+		if self.feature_index is None:
+			raise ValueError('member variable feature_index has NOT been pre-specified')
+
+		if weight_pair is None:
+			weight_pair = {}
+			for pair in y:
+				weight_pair[pair] = float(1)/len(y)
+
+		weight_dict = self.get_weight_dict(weight_pair)
+
+		score, nodes_prediction = self.getScore_helper(X, y, weight_dict, weight_pair, self.feature_index, self.threshold)
+
+		self.children_nodes_prediction = nodes_prediction
 
 	def fit(self, X, y, weight_pair = None):
 		"""
@@ -206,31 +265,12 @@ class StumpRanker(object):
 	def getScore(self, X, y, weight_dict, weight_pair, feature_index):
 		raise NotImplementedError("Please Implement this method")
 
-  	@staticmethod
-	def getFeatureThresholds(self, index, X = None):
-		"""
-		get feature threshold list for continuous ranker
-		"""		
+	def getScore_helper(self, X, y, weight_dict, weight_pair, feature_index, thred):
+		raise NotImplementedError("Please Implement this method")
 
-		if X is None:
-			if self.train_X is None:
-				raise ValueError("Please provide either self.train_X or X")
-			X = self.train_X 
-
-  		feature = [self.train_X[i][index]  for i in self.train_X.keys()]
-		sorted_feature = sorted(feature)
-
-		#get the thresholds
-		temp = [ sorted_feature[0]-1 ]+sorted_feature + [ sorted_feature[1]+1 ]
-		raw_thresholds = [ (temp[i]+temp[i+1])/float(2)  for i in range(len(temp)-1)  ]
-
-		thresholds_len_max  = 500 
-		if len(raw_thresholds) > thresholds_len_max:
-			thresholds = random.sample(raw_thresholds, thresholds_len_max)
-		else:
-			thresholds = raw_thresholds
-	
-		return thresholds
+class TestStumpRankerPrune(unittest.TestCase):
+	def test_prune1(self):
+		X = {}
 
 def prune_criteria(prediction):
  	"""
@@ -244,7 +284,7 @@ def prune_criteria(prediction):
 	"""
 	pre_key = {1:[], 0: []}
 
-	for item in prediction:
+	for item in prediction.items():
 
 	    pre_key[item[1]].append(item[0])
 	
@@ -255,6 +295,28 @@ def prune_criteria(prediction):
 
         key = tuple(sorted(temp_key))
 	return key
+
+class Test_prune_criteria(unittest.TestCase):
+	def test_1(self):
+                print('begin Test_prune_criteria: test_1')
+		prediction1 = {1:1, 2:1, 3:0, 4:0, 5:1}
+		prediction2 = {1:0, 2:0, 3:1, 4:1, 5:0}
+		prediction3 = {1:0, 2:1, 3:1, 4:1, 5:0}
+
+		key1 = prune_criteria(prediction1)
+		key2 = prune_criteria(prediction2)
+		key3 = prune_criteria(prediction3)
+
+		ans1 = ((1,2,5),(3,4))
+		ans2 = ((1,2,5),(3,4))
+		ans3 = ((1,5),(2,3,4))
+
+		self.assertEqual(key1, ans1)
+		self.assertEqual(key2, ans2)
+		self.assertEqual(key3, ans3)
+
+		print('finish Test_prune_criteria: test_1')
+	
 
 class StumpRanker_ContinuousFeature(StumpRanker):
 	def __init__(self):
@@ -394,7 +456,7 @@ class TestGetScoreHelper(unittest.TestCase):
 		ranker.fit(X, y, weight_pair)
 	
 		print ranker.predict(X)
-		import pdb;pdb.set_trace()
+		#import pdb;pdb.set_trace()
 
 class StumpRanker_discrete(StumpRanker):
 	def __init__(self):
