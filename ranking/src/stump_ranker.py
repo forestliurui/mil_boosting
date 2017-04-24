@@ -32,7 +32,7 @@ class StumpRanker(object):
 		self.children_nodes_prediction = {}
 		self.threshold = None
 		
-
+		self.weakRankerSelectionCriteria = None
 	@staticmethod
 	def create(type):
 		if type == "discrete":
@@ -56,7 +56,7 @@ class StumpRanker(object):
 
 		new_ValidWeakRankers = {}
 		for ranker in prune_dict.values():
-			new_ValidWeakRankers[(ranker.feature_index, ranker.threshold)] = ranker
+			new_ValidWeakRankers[(ranker.feature_index, ranker.threshold, tuple(ranker.children_nodes_prediction.items()))] = ranker
 
 		StumpRanker.ValidWeakRankers = new_ValidWeakRankers
 
@@ -69,7 +69,7 @@ class StumpRanker(object):
 		if StumpRanker.ValidWeakRankers is None:
 			raise ValueError("StumpRanker.ValidWeakRankers is None")
 
-		key = (ranker.feature_index, ranker.threshold)
+		key = (ranker.feature_index, ranker.threshold, tuple(ranker.children_nodes_prediction.items()) )
 
 		if key in StumpRanker.ValidWeakRankers:
 			del StumpRanker.ValidWeakRankers[key]
@@ -92,18 +92,22 @@ class StumpRanker(object):
 			all_nodes_prediction = generateAllNodesPredictions(node_keys)
 			for children_nodes_prediction in all_nodes_prediction:
 				param = {"feature_index": index, "children_nodes_prediction": children_nodes_prediction}
-                		rankers[(index, None, )] = StumpRanker.instantiateSpecificParam(type, param, X)
+                		rankers[( index, None, tuple(children_nodes_prediction.items()) )] = StumpRanker.instantiateSpecificParam(type, param)
 		elif type == "continuous":
   		   for index in range(num_feature):
 	  		thresholds = StumpRanker.getFeatureThresholds( index, X)
 			for thred in thresholds:
-			    param = {"feature_index": index, "threshold": thred}
- 			    rankers[(index, thred)] = StumpRanker.instantiateSpecificParam(type, param, X, y)
+			    node_keys = ["+", "-"]
+			    all_nodes_prediction = generateAllNodesPredictions(node_keys)
+			    for children_nodes_prediction in all_nodes_prediction:
+				
+			        param = {"feature_index": index, "threshold": thred, "children_nodes_prediction": children_nodes_prediction}
+ 			        rankers[( index, thred, tuple(children_nodes_prediction.items()) )] = StumpRanker.instantiateSpecificParam(type, param)
 		
 		StumpRanker.ValidWeakRankers = rankers
 
 	@staticmethod
-        def instantiateSpecificParam(type, param, X, y):
+        def instantiateSpecificParam(type, param):
 		"""
 		instantiate a weak ranker according to the training data with either "discrete" or "continuous" type
 		"""
@@ -119,7 +123,7 @@ class StumpRanker(object):
 		else:
 		    raise NotImplementedError("Please Implement this method")
 
-		ranker.setNodesPrediction( X, y)
+		ranker.children_nodes_prediction = param["children_nodes_prediction"]
 
                 return ranker
 
@@ -149,14 +153,19 @@ class StumpRanker(object):
 	
 		return thresholds
 
-	def computeEpsilons(self, X, y):
+	def computeEpsilons(self, predictions, y, weight_pair = None):
                 """
 		compute the epsilon+, epsilon-, epsilon0
 		"""
-                bound = 10^(-5)
+		if weight_pair is None:
+			weight_pair = {}
+			for pair in y:
+				weight_pair[pair] = float(1)/len(y)  
+
+
+              	bound = 10^(-5)
   
-                predictions = self.predict(X)
-  		
+                  		
 		epsilons_count = {"+": 0, "-": 0, "0": 0}
         
 		for pair in y:
@@ -263,6 +272,20 @@ class StumpRanker(object):
 			weight_dict[pair[1]] -= weight_pair[pair]
 		return weight_dict
 
+	def getWeakRankerSelectionCriteria(self, criteria_index):
+		#the higher the returned score, the better the weak ranker is
+		if criteria_index == 1:
+			return selectionCriteria1
+
+	def selectionCriteria1(self, inst_predictions, y, weight_pair):
+		epsilons = self.computeEpsilons(inst_predictions, y, weight_pair )
+		score = epsilons["+"] - epsilons["-"]
+		return score
+	
+	def selectionCriteria2(self, inst_predictions, y, weight_pair, addition_data):
+		epsilons = self.computeEpsilons(inst_predictions, y, weight_pair )
+
+		
 
 	def getScore(self, X, y, weight_dict, weight_pair, feature_index):
 		raise NotImplementedError("Please Implement this method")
@@ -277,21 +300,21 @@ class TestStumpRankerPrune(unittest.TestCase):
 		
 		type = 'continuous'
 
-		StumpRanker.instantiateAll(type, X, y)
-		#import pdb;pdb.set_trace()
+		StumpRanker.instantiateAll(type, X)
+		import pdb;pdb.set_trace()
 		StumpRanker.prune(X)
 		
 		ranker = StumpRanker.create(type)
 		ranker.fit(X, y)
  		
-		self.assertEqual((0, 3.0), (ranker.feature_index, ranker.threshold))
+		#self.assertEqual((0, 3.0), (ranker.feature_index, ranker.threshold))
 
 		StumpRanker.pruneSingleRanker(ranker)
 
 		ranker1 = StumpRanker.create(type)
 		ranker1.fit(X, y)
 
-		self.assertEqual((1, 3.0), (ranker1.feature_index, ranker1.threshold))
+		#self.assertEqual((1, 3.0), (ranker1.feature_index, ranker1.threshold))
 
 		import pdb;pdb.set_trace()
 
