@@ -75,9 +75,9 @@ class StumpRanker(object):
 			del StumpRanker.ValidWeakRankers[key]
 
 	@staticmethod	
-	def instantiateAll(type, X, y):	
+	def instantiateAll(type, X):	
  		"""
-		instantiate all possible weak ranker according to the training data X and y
+		instantiate all possible weak ranker according to the training data X
 		"""		
                 
                 rankers = {}
@@ -87,8 +87,12 @@ class StumpRanker(object):
 		if type == "discrete":
 
 		   for index in range(num_feature):
-			param = {"feature_index": index}
-                	rankers[(index, None)] = StumpRanker.instantiateSpecificParam(type, param, X, y)
+			
+			node_keys = list(set([X[i][index] for i in X.keys()]) ) #since it goes through set operation, nodes_key is a sorted list
+			all_nodes_prediction = generateAllNodesPredictions(node_keys)
+			for children_nodes_prediction in all_nodes_prediction:
+				param = {"feature_index": index, "children_nodes_prediction": children_nodes_prediction}
+                		rankers[(index, None, )] = StumpRanker.instantiateSpecificParam(type, param, X)
 		elif type == "continuous":
   		   for index in range(num_feature):
 	  		thresholds = StumpRanker.getFeatureThresholds( index, X)
@@ -290,6 +294,25 @@ class TestStumpRankerPrune(unittest.TestCase):
 		self.assertEqual((1, 3.0), (ranker1.feature_index, ranker1.threshold))
 
 		import pdb;pdb.set_trace()
+
+def generateAllNodesPredictions(node_keys):
+	"""
+	node_keys is a list without repeat values. Every entry in node_keys indicates a key to a child node in the stump ranker
+
+	@return a list of dictionarys. Each dictionary is a child_nodes_prediction. This list contains all possible child_nodes_prediction
+	"""	
+	
+	max_val = 2**len(node_keys) - 1 
+
+	output = []
+	for val in range(max_val+1):
+		nodes_prediction = {}
+		
+		for index in range(len(node_keys)):
+			nodes_prediction[node_keys[index]] = ((val>>index)&1)
+
+		output.append(nodes_prediction) 
+	return output
 
 def prune_criteria(prediction):
  	"""
