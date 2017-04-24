@@ -41,18 +41,14 @@ class StumpRanker(object):
 			return StumpRanker_ContinuousFeature()
 
 	@staticmethod
-	def prune(type, X):
+	def prune(X):
                 """
 		prune the basic rankers so that no duplicate and opposite rankers will be considered later for training. 
                 The duplication or opposition is with respect to X
 		"""
 		
-		
-		StumpRanker.instantiateAll(type)
-		
-		
 		prune_dict = {}
-		for ranker in StumpRanker.ValidWeakRankers:
+		for ranker in StumpRanker.ValidWeakRankers.values():
 			prediction = ranker.predict(X)	
 			key = prune_criteria(prediction)
 			if key not in prune_dict:
@@ -135,7 +131,7 @@ class StumpRanker(object):
 			 
 
   		feature = [ X[i][index]  for i in X.keys() ]
-		sorted_feature = sorted(feature)
+		sorted_feature = sorted(set(feature))
 
 		#get the thresholds
 		temp = [ sorted_feature[0]-1 ]+sorted_feature + [ sorted_feature[1]+1 ]
@@ -225,9 +221,10 @@ class StumpRanker(object):
 				nodes_prediction_optimal = nodes_prediction
 				feature_index_optimal = index
 				threshold_optimal = threshold_temp
-		else:#with pre-selected weak rankers as defined in StumpRanker.ValidWeakRankers
+		elif len(StumpRanker.ValidWeakRankers) != 0:#with pre-selected weak rankers as defined in StumpRanker.ValidWeakRankers
 		   for ranker in StumpRanker.ValidWeakRankers.values():
 			threshold_temp = ranker.threshold
+			index = ranker.feature_index
 			score, nodes_prediction = ranker.getScore_helper(X, y, weight_dict, weight_pair, index, threshold_temp)
 			
 			if score_optimal is None or score_optimal < score:
@@ -235,7 +232,8 @@ class StumpRanker(object):
 				nodes_prediction_optimal = nodes_prediction
 				feature_index_optimal = index
 				threshold_optimal = threshold_temp
-			
+		else:
+		   raise ValueError('StumpRanker.ValidWeakRankers contains NO weak ranker!')
 
 		self.feature_index = feature_index_optimal
 		self.children_nodes_prediction = nodes_prediction_optimal
@@ -270,7 +268,28 @@ class StumpRanker(object):
 
 class TestStumpRankerPrune(unittest.TestCase):
 	def test_prune1(self):
-		X = {}
+		X = {1:np.array([1,1]), 2:np.array([1,5]), 3:np.array([5,1]), 4:np.array([5,5])}
+		y = [(1,3), (2,4)]
+		
+		type = 'continuous'
+
+		StumpRanker.instantiateAll(type, X, y)
+		#import pdb;pdb.set_trace()
+		StumpRanker.prune(X)
+		
+		ranker = StumpRanker.create(type)
+		ranker.fit(X, y)
+ 		
+		self.assertEqual((0, 3.0), (ranker.feature_index, ranker.threshold))
+
+		StumpRanker.pruneSingleRanker(ranker)
+
+		ranker1 = StumpRanker.create(type)
+		ranker1.fit(X, y)
+
+		self.assertEqual((1, 3.0), (ranker1.feature_index, ranker1.threshold))
+
+		import pdb;pdb.set_trace()
 
 def prune_criteria(prediction):
  	"""
