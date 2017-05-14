@@ -1,8 +1,11 @@
 """
-This is the nondistributed version of RankBoost for bipartite setting, described in Figure 9.2 at the book "Foundation of Machine Learning"
-With modification to computation of alpha and z, suggested in the Modification III in my draft. We call this CrankBoost in our paper/thesis.
+This is the nondistributed version of RankBoost modiV class.
 
 This is for general ranking problem
+
+It basically follows the algorithm for crankboost, which use alpha = 0.5*log((e_p + 0.5*e_0)/(e_n + 0.5*e_0)) and also a different update function for distribution weight.
+
+The only change is that we will remove all the identical and opposite ranker on the training dataset. And we don't allow the algorithm to repick the same ranker in later boosting rounds, i.e. we remove a ranker from hypothesis space once it's being picked. 
 """
 
 from math import sqrt, exp
@@ -20,7 +23,7 @@ WEAK_CLASSIFIERS = {
 	'stump_ranker': StumpRanker,
 }
 
-class RankBoost_modiIII_ranking(object):
+class RankBoost_modiV_ranking(object):
 	def __init__(self, **parameters):
 
 		self.max_iter_boosting = parameters.pop("max_iter_boosting", 10)
@@ -78,19 +81,25 @@ class RankBoost_modiIII_ranking(object):
 		for pair in y:
 			weights_pair[pair] = float(1)/num_critical_pairs
 
+                type = "continuous"
+                StumpRanker.instantiateAll(type, X)
+                StumpRanker.prune(X)
+
 		for index_Boosting in range(max_iter_boosting):
 
 			self.weights_pair.append(dict(weights_pair))
-			if self.weak_classifier_name != 'stump_ranker':
-				instance_classifier=WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
-			else:
-				instance_classifier= StumpRanker.create("continuous") #get the continuous version by default 	
-		
+                        if self.weak_classifier_name != 'stump_ranker':
+
+			    instance_classifier=WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
+                        else:
+                            instance_classifier = StumpRanker.create('continuous')		
+
 			#import pdb;pdb.set_trace()
 
 			instance_classifier.fit(X, y, weights_pair)
 			self.weak_classifiers.append(copy.deepcopy(instance_classifier))
 			predictions = instance_classifier.predict(X) #predictions is a hashtable -- dictionary
+                        StumpRanker.pruneSingleRanker(instance_classifier) #prune the selected weak ranker from the hypothesis space
 
 			epsilon0, epsilon_pos, epsilon_neg = self.compute_epsilon( predictions, y, weights_pair)
 
@@ -104,32 +113,33 @@ class RankBoost_modiIII_ranking(object):
 			#self.epsilon_pair["positive"].append(epsilon_pair_pos_temp)
 			#self.epsilon_pair["negative"].append(epsilon_pair_neg_temp)
 
-			if self.epsilon["negative"][-1] == 0 and self.epsilon["zero"][-1] == 0:
-				self.alphas.append(20000)
-				break
-			else:
-				self.alphas.append(0.5*np.log(  (self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])  ))
-			self.Z=[]
-			
-			Z_cur = (self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])*sqrt((self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1]))+(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])*sqrt((self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1]))
-			self.Z.append(Z_cur)
+                        if self.epsilon["negative"][-1] == 0 and self.epsilon["zero"][-1] == 0:
+                                self.alphas.append(20000)
+                                break
+                        else:
+                                self.alphas.append(0.5*np.log(  (self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])  ))
+                        self.Z=[]
 
-			for pair in y:
-				m = predictions[pair[0]]-predictions[pair[1]]
-				weights_pair[pair] = weights_pair[pair]*( ( np.exp(self.alphas[-1]*(1-m^2))+np.exp(-self.alphas[-1]*(1-m^2)) )/2 )*np.exp(-self.alphas[-1]*m)/self.Z[-1]
+                        Z_cur = (self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])*sqrt((self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1]))+(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])*sqrt((self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1]))
+                        self.Z.append(Z_cur)
 
-	self.actual_rounds_of_boosting = len(self.alphas)
-		#import pdb;pdb.set_trace()
+                        for pair in y:
+                                m = predictions[pair[0]]-predictions[pair[1]]
+                                weights_pair[pair] = weights_pair[pair]*( ( np.exp(self.alphas[-1]*(1-m^2))+np.exp(-self.alphas[-1]*(1-m^2)) )/2 )*np.exp(-self.alphas[-1]*m)/self.Z[-1]
+
+		self.actual_rounds_of_boosting = len(self.alphas)
+
 	def compute_epsilon(self, predictions, y, weights_pair):
 		epsilon0= 0
 		epsilon_pos = 0
 		epsilon_neg = 0	
 
+                bound = 10**(-5)
 		for pair in y:
-			if predictions[pair[0]] > predictions[pair[1]]:
-				epsilon_pos += weights_pair[pair]
-			elif predictions[pair[0]] == predictions[pair[1]]:
+			if abs(predictions[pair[0]] - predictions[pair[1]])<= bound:
 				epsilon0 += weights_pair[pair]
+			elif predictions[pair[0]] - predictions[pair[1]]> bound:
+				epsilon_pos += weights_pair[pair]
 			else:
 				epsilon_neg += weights_pair[pair]
 		return epsilon0, epsilon_pos, epsilon_neg
@@ -181,23 +191,6 @@ class RankBoost_modiIII_ranking(object):
 
 		for pair in y:
 			if predictions[pair[0]]	<= predictions[pair[1]]:
-				ranking_error += 1
-		ranking_error = ranking_error/float(num_pair)
-		
-		return ranking_error
-
-        def getHalfTiedRankingError(self, predictions, y):
-                """
-                get the training ranking error which treats tie as half
-                """
-               	num_pair = len(y)
-
-		ranking_error = 0
-
-		for pair in y:
-                        if abs( predictions[pair[0]] - predictions[pair[1]] ) < 10**(-5):
-                                ranking_error += 0.5
-			elif predictions[pair[0]]  < predictions[pair[1]]:
 				ranking_error += 1
 		ranking_error = ranking_error/float(num_pair)
 		

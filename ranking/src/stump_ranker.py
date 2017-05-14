@@ -11,6 +11,8 @@ We also have  a list of weights for each pair, like weight_pair = [w1, w2, ...].
 
 For each example in a specific node, we check if it appears as the former point in some critical pair p_i. If so, we get a score of w_i. If as latter point, we
 get a score of -w_i. Add scores for examples in all critical pairs, we get a final score s. If s>=0, we assign +1 to this node as predicted socre, otherwise 0.
+
+Ni has
 """
 
 import numpy as np
@@ -33,7 +35,16 @@ class StumpRanker(object):
 		self.threshold = None
 		
 		self.weakRankerSelectionCriteria = None
-	@staticmethod
+        def signature(self):
+                return 	(self.feature_index, self.threshold, tuple(self.children_nodes_prediction.items()) )
+
+        def __eq__(self, othr):
+                return self.signature() == othr.signature()
+
+        def __hash__(self):
+                return hash( self.signature() )
+
+        @staticmethod
 	def create(type):
 		if type == "discrete":
 			return StumpRanker_discrete()
@@ -162,16 +173,14 @@ class StumpRanker(object):
 			for pair in y:
 				weight_pair[pair] = float(1)/len(y)  
 
-
-              	bound = 10^(-5)
-  
+              	bound = 10**(-5)
                   		
 		epsilons_count = {"+": 0, "-": 0, "0": 0}
         
 		for pair in y:
-		    if abs( predictions[pair[0]] - pedictions[pair[1]] ) <= bound:
+		    if abs( predictions[pair[0]] - predictions[pair[1]] ) <= bound:
 			epsilons_count["0"] += 1
-                    elif predictions[pair[0]] > predictions[pair[1]] > bound:
+                    elif predictions[pair[0]] - predictions[pair[1]] > bound:
 			epsilons_count["+"] += 1
 		    else:
                         epsilons_count["-"] += 1
@@ -202,7 +211,7 @@ class StumpRanker(object):
 
 		self.children_nodes_prediction = nodes_prediction
 
-	def fit(self, X, y, weight_pair = None):
+	def fit(self, X, y, weight_pair = None, additional_data = None):
 		"""
 		X is a hashtable with key being instance ID, value being the one-dimensional array containing its features
 		y is the list of tuples -- each tuple is one critial pair, pair[0] should be ranked higher than pair[1]
@@ -239,12 +248,17 @@ class StumpRanker(object):
 			threshold_temp = ranker.threshold
 			index = ranker.feature_index
 			score, nodes_prediction = ranker.getScore_helper(X, y, weight_dict, weight_pair, index, threshold_temp)
-			
+			#import pdb;pdb.set_trace()
+                        if additional_data is not None:
+                            if ranker in additional_data:
+                                score += 0.5*np.cos(additional_data[ranker])/np.sin(additional_data[ranker]) 
+
 			if score_optimal is None or score_optimal < score:
 				score_optimal = score
 				nodes_prediction_optimal = nodes_prediction
 				feature_index_optimal = index
 				threshold_optimal = threshold_temp
+                                #import pdb;pdb.set_trace()
 		else:
 		   raise ValueError('StumpRanker.ValidWeakRankers contains NO weak ranker!')
 
@@ -301,7 +315,7 @@ class TestStumpRankerPrune(unittest.TestCase):
 		type = 'continuous'
 
 		StumpRanker.instantiateAll(type, X)
-		import pdb;pdb.set_trace()
+		#import pdb;pdb.set_trace()
 		StumpRanker.prune(X)
 		
 		ranker = StumpRanker.create(type)
@@ -410,7 +424,10 @@ class StumpRanker_ContinuousFeature(StumpRanker):
 		Assume feature values are continuous
 		"""
 
-		thresholds =  self.getFeatureThresholds(index, X)		
+                if self.threshold is None:
+		    thresholds =  self.getFeatureThresholds(index, X)		
+                else:
+                    thresholds = [self.threshold]
 
 		score_max = None
 		nodes_predictions_max = None
@@ -443,23 +460,21 @@ class StumpRanker_ContinuousFeature(StumpRanker):
 		#inst_predictions is a dict, with key being instance ID, value being the prediction value (1 or 0) for this instance ID
 		inst_predictions = {}
 		for key in partition.keys():
+                     if self.children_nodes_prediction is None:
 			temp = sum( [weight_dict[x] for x in  partition[key] ] )
 			if temp >= 0:
 				nodes_predictions[key] = 1
 			else:
 				nodes_predictions[key] = 0
-			for inst_id in partition[key]:
-				inst_predictions[inst_id] = nodes_predictions[key]
-		
-		#score is the weighted accuracy of this partition
-		score = 0
-		for pair in y:
-			if inst_predictions[pair[0]] > inst_predictions[pair[1]]:
-				score += weight_pair[pair]
+                     else:
+                        nodes_predictions = self.children_nodes_prediction
+
+		     for inst_id in partition[key]:
+			inst_predictions[inst_id] = nodes_predictions[key]
+
+                score = self.selectionCriteria1(inst_predictions, y, weight_pair)
+
 		return score, nodes_predictions
-
-	
-
 
 class TestGetScoreHelper(unittest.TestCase):
 	def test_getScore(self):
@@ -574,19 +589,26 @@ class StumpRanker_discrete(StumpRanker):
 		nodes_prediction = {}
 		inst_predictions = {}
 		for val in partition.keys():
+                     if self.children_nodes_prediction is None:
 			score = sum([weight_dict[x]  for x in partition[val] ])
 			if score >= 0:
 				nodes_prediction[val] = 1
 			else:
 				nodes_prediction[val] = 0
-			for i in partition[val]:
+                     else:
+                        nodes_prediction = self.children_nodes_prediction
+
+		     for i in partition[val]:
 				inst_predictions[i] = nodes_prediction[val]
 			
+
+                score = self.selectionCriteria1(inst_predictions, y, weight_pair)
+                """
 		score = 0
 		for pair in y:
 			if inst_predictions[pair[0]]> inst_predictions[pair[1]]:
 				score += weight_pair[pair]
-
+                """
 		
 		
 		return score, nodes_prediction, None #the last None is to be consistent with the output of continuous version

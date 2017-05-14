@@ -1,6 +1,5 @@
 """
-This is the nondistributed version of RankBoost for bipartite setting, described in Figure 9.2 at the book "Foundation of Machine Learning"
-With modification to computation of alpha and z, suggested in the Modification III in my draft. We call this CrankBoost in our paper/thesis.
+This is the nondistributed version of RankBoost base class.
 
 This is for general ranking problem
 """
@@ -20,11 +19,11 @@ WEAK_CLASSIFIERS = {
 	'stump_ranker': StumpRanker,
 }
 
-class RankBoost_modiIII_ranking(object):
+class RankBoost_base_ranking(object):
 	def __init__(self, **parameters):
 
 		self.max_iter_boosting = parameters.pop("max_iter_boosting", 10)
-		self.weak_classifier_name = parameters.pop('weak_classifier', 'weak_ranker') 
+		self.weak_classifier_name = parameters.pop('weak_classifier', 'stump_ranker') 
 		if self.weak_classifier_name == 'dtree_stump':
 			parameters['max_depth'] = 1
 		parameters.pop('normalization', 0)
@@ -40,8 +39,8 @@ class RankBoost_modiIII_ranking(object):
 		self.predictions_list_train = []
 		self.X_test = None
 
-		self.X_train= None
-		self.y_train= None
+		self.X_train = None
+		self.y_train = None
 		
 
 		self.instance_labels_generated_from_bag_labels = None
@@ -68,12 +67,12 @@ class RankBoost_modiIII_ranking(object):
 		num_instances = len(X)
 		num_critical_pairs = len(y)
 
-		self.c=[] #the list of weights for weak classifiers
+		self.c = [] #the list of weights for weak classifiers
 
 		#import pdb;pdb.set_trace()
 
 		#initial critical pair weights, which is a hashtable
-		weights_pair= {}
+		weights_pair = {}
 	
 		for pair in y:
 			weights_pair[pair] = float(1)/num_critical_pairs
@@ -81,10 +80,7 @@ class RankBoost_modiIII_ranking(object):
 		for index_Boosting in range(max_iter_boosting):
 
 			self.weights_pair.append(dict(weights_pair))
-			if self.weak_classifier_name != 'stump_ranker':
-				instance_classifier=WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
-			else:
-				instance_classifier= StumpRanker.create("continuous") #get the continuous version by default 	
+			instance_classifier = WEAK_CLASSIFIERS[self.weak_classifier_name](**self.parameters)
 		
 			#import pdb;pdb.set_trace()
 
@@ -107,29 +103,33 @@ class RankBoost_modiIII_ranking(object):
 			if self.epsilon["negative"][-1] == 0 and self.epsilon["zero"][-1] == 0:
 				self.alphas.append(20000)
 				break
+			elif abs(self.epsilon["positive"][-1] - (self.epsilon["negative"][-1]+self.epsilon["zero"][-1]) )<0.000001:
+				self.alphas.append(0.00001)
+				break
 			else:
-				self.alphas.append(0.5*np.log(  (self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])  ))
-			self.Z=[]
+				self.alphas.append(0.5*np.log(  (self.epsilon["positive"][-1])/(self.epsilon["negative"][-1]+self.epsilon["zero"][-1])  ))
+			self.Z = []
 			
-			Z_cur = (self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])*sqrt((self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1]))+(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])*sqrt((self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1]))
+			Z_cur = 2*sqrt(self.epsilon["positive"][-1]*(self.epsilon["zero"][-1]+self.epsilon["negative"][-1]))
 			self.Z.append(Z_cur)
 
 			for pair in y:
-				m = predictions[pair[0]]-predictions[pair[1]]
-				weights_pair[pair] = weights_pair[pair]*( ( np.exp(self.alphas[-1]*(1-m^2))+np.exp(-self.alphas[-1]*(1-m^2)) )/2 )*np.exp(-self.alphas[-1]*m)/self.Z[-1]
+				m = (predictions[pair[0]]-predictions[pair[1]] )**2 + predictions[pair[0]]-predictions[pair[1]] - 1
+				weights_pair[pair] = weights_pair[pair]*np.exp(-self.alphas[-1]*m)/self.Z[-1]
 
-	self.actual_rounds_of_boosting = len(self.alphas)
-		#import pdb;pdb.set_trace()
+		self.actual_rounds_of_boosting = len(self.alphas)
+
 	def compute_epsilon(self, predictions, y, weights_pair):
-		epsilon0= 0
+		epsilon0 = 0
 		epsilon_pos = 0
 		epsilon_neg = 0	
 
+                bound = 10**(-5)
 		for pair in y:
-			if predictions[pair[0]] > predictions[pair[1]]:
-				epsilon_pos += weights_pair[pair]
-			elif predictions[pair[0]] == predictions[pair[1]]:
+			if abs(predictions[pair[0]] - predictions[pair[1]]) <= bound:
 				epsilon0 += weights_pair[pair]
+			elif predictions[pair[0]] - predictions[pair[1]] > bound:
+				epsilon_pos += weights_pair[pair]
 			else:
 				epsilon_neg += weights_pair[pair]
 		return epsilon0, epsilon_pos, epsilon_neg
@@ -186,23 +186,6 @@ class RankBoost_modiIII_ranking(object):
 		
 		return ranking_error
 
-        def getHalfTiedRankingError(self, predictions, y):
-                """
-                get the training ranking error which treats tie as half
-                """
-               	num_pair = len(y)
-
-		ranking_error = 0
-
-		for pair in y:
-                        if abs( predictions[pair[0]] - predictions[pair[1]] ) < 10**(-5):
-                                ranking_error += 0.5
-			elif predictions[pair[0]]  < predictions[pair[1]]:
-				ranking_error += 1
-		ranking_error = ranking_error/float(num_pair)
-		
-		return ranking_error
-
 	def getRankingErrorBound(self, iter = None):
 		self.c = self.alphas
 		threshold = 0.5
@@ -215,7 +198,34 @@ class RankBoost_modiIII_ranking(object):
 		bound = np.exp( -2*( np.sum( ((epsilon_pos - epsilon_neg)/2 )**2 ) )  )
 		return bound
 
-		
+        def getE_vanilla(self, iter = None):
+                """
+                return the E for vanilla rankboost, which is defined as E = (1/m)*( \sum_{i=1}^{m} exp(-y_i (g(x'_i) - g(x_i))) ),
+                   where m is the number of examples, and g(x) is the predicted value for the example x, and y_i is the label for i-th pair
+                """
+
+                predictions_train = self.predict_train(iter)
+                res = []
+
+                for pair in self.y_train:
+                    res.append( np.exp( -( predictions_train[pair[0]] - predictions_train[pair[1]] ) ) )
+                
+                return np.mean(res)
+
+
+	def getE(self, iter = None):
+                """
+                return E, which is the upper bound for 0-1 loss, based on the assumption that E( \sum_{s=1}^{t} alpha_s*h_s ) = \prod_{s=1}^{t} Z_s
+                Note that for vanilla rankboost, E is actually exponential function. However, E might take another form for other variants of rankboost algorithms.
+                Note that iter here means the number of boosting rounds/iterations that we checked.
+                """
+
+                if iter == None or iter > len(self.alphas):
+                     iter = len(self.alphas)
+
+                E = reduce(lambda x, y: x*y, self.Z[:iter])
+                return E
+
 	
 	def getEpsilonPair(self, predictions, labels, weights):
 		"""
