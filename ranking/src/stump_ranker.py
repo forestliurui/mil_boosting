@@ -31,7 +31,7 @@ class StumpRanker(object):
 
 	def __init__(self):
 		self.feature_index = None
-		self.children_nodes_prediction = {}
+		self.children_nodes_prediction = None #it's a dict normally
 		self.threshold = None
 		
 		self.weakRankerSelectionCriteria = None
@@ -237,7 +237,7 @@ class StumpRanker(object):
                    #without pre-selected weak rankers
 		   for index in range(num_feature):
 			score, nodes_prediction, threshold_temp = self.getScore(X, y, weight_dict,weight_pair, index)
-			
+		        import pdb;pdb.set_trace()	
 			if score_optimal is None or score_optimal < score:
 				score_optimal = score
 				nodes_prediction_optimal = nodes_prediction
@@ -470,7 +470,7 @@ class StumpRanker_ContinuousFeature(StumpRanker):
 				nodes_predictions[key] = 0
                      else:
                         nodes_predictions = self.children_nodes_prediction
-
+                     #import pdb;pdb.set_trace()
 		     for inst_id in partition[key]:
 			inst_predictions[inst_id] = nodes_predictions[key]
 

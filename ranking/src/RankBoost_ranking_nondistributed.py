@@ -15,17 +15,18 @@ import unittest
 
 from weak_ranker import WeakRanker
 from stump_ranker import StumpRanker
+from RankBoost_base_ranking_nondistributed import RankBoost_base_ranking
 
 WEAK_CLASSIFIERS = {
         'weak_ranker': WeakRanker,
 	'stump_ranker': StumpRanker,
 }
 
-class RankBoost_ranking(object):
+class RankBoost_ranking(RankBoost_base_ranking):
 	def __init__(self, **parameters):
 
 		self.max_iter_boosting = parameters.pop("max_iter_boosting", 10)
-		self.weak_classifier_name = parameters.pop('weak_classifier', 'weak_ranker') 
+		self.weak_classifier_name = parameters.pop('weak_classifier', 'stump_ranker') 
 		if self.weak_classifier_name == 'dtree_stump':
 			parameters['max_depth'] = 1
 		parameters.pop('normalization', 0)
@@ -288,7 +289,7 @@ def get_bag_label(instance_predictions, bags):
 
 
 class TestRankboostRanking(unittest.TestCase):
-	def test_rankboost(self):
+    def no_test_rankboost(self):
 		X = {0: np.array([1, 2]), 1: np.array([1, 1]), 2: np.array([1, 0]), 3: np.array([1, -1]), 4: np.array([1, -2]), 5:np.array([2, 2]), 6: np.array([2, 1]), 7: np.array([2,0]), 8: np.array([2, -1]), 9: np.array([2, -2]), 10: np.array([3, 0]), 11: np.array([0, 0])}
 		y = []
 		neg_set = [0, 1,2, 3,4,10]
@@ -301,6 +302,56 @@ class TestRankboostRanking(unittest.TestCase):
 		booster = RankBoost_ranking(**param)	
 		booster.fit(X, y)
 		import pdb;pdb.set_trace()
+
+    def no_test1(self):
+        """
+        use some random data to test the syntactic error
+        """
+        X = {0: np.array([ 1,0, 0 ]), 1: np.array([0, 1, 0]), 2: np.array([0,0,1]), 3: np.array([1,0,1])}
+        y = [(0,1), (2,3),(3,1)]
+  
+        print(X)
+        print(y)
+       
+        ranker = RankBoost_ranking()
+        ranker.fit(X, y) 
+        print(ranker.predict_train())
+        print(ranker.predict(X))
+        import pdb;pdb.set_trace()
+    
+    def no_test2(self):
+        """
+        use some random data to test the syntactic error
+        """
+        X = {0: np.array([ 1,0, 0 ]), 1: np.array([0, 1, 0]), 2: np.array([0,0,1]), 3: np.array([1,0,1])}
+        y = [(0,1), (2, 1),(3,1)]
+  
+        print(X)
+        print(y)
+       
+        ranker = RankBoost_ranking()
+        ranker.fit(X, y) 
+        print(ranker.predict_train())
+        print(ranker.predict(X))
+        import pdb;pdb.set_trace()
+
+    def test3(self):
+        """
+        use some random data to test the syntactic error
+        """
+        X = {0: np.array([ 1,0, 0 ]), 1: np.array([0, 1, 0]), 2: np.array([0,0,2]), 3: np.array([1,0,1])}
+        y = [(0,1), (2,3),(3,1)]
+  
+        print(X)
+        print(y)
+       
+        ranker = RankBoost_ranking()
+        ranker.fit(X, y) 
+        print(ranker.predict_train())
+        print(ranker.predict(X))
+        import pdb;pdb.set_trace()
+
+
 if __name__ == '__main__':
 	unittest.main()	
 

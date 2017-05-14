@@ -68,12 +68,19 @@ class RankBoost_modiV_ranking(RankBoost_base_ranking):
                             instance_classifier = StumpRanker.create('continuous')		
 
 			#import pdb;pdb.set_trace()
+                        try:
+			   instance_classifier.fit(X, y, weights_pair, True)
+			
+                           StumpRanker.pruneSingleRanker(instance_classifier) #prune the selected weak ranker from the hypothesis space
+                        except ValueError as e:
+                           if e.message == 'StumpRanker.ValidWeakRankers contains NO weak ranker!':
+                                break
+                           else:
+                                raise e
 
-			instance_classifier.fit(X, y, weights_pair, True)
-			self.weak_classifiers.append(copy.deepcopy(instance_classifier))
+                        self.weak_classifiers.append(copy.deepcopy(instance_classifier))
 			predictions = instance_classifier.predict(X) #predictions is a hashtable -- dictionary
-                        StumpRanker.pruneSingleRanker(instance_classifier) #prune the selected weak ranker from the hypothesis space
-
+                       
 			epsilon0, epsilon_pos, epsilon_neg = self.compute_epsilon( predictions, y, weights_pair)
 
 			self.epsilon["positive"].append( epsilon_pos )
@@ -99,7 +106,7 @@ class RankBoost_modiV_ranking(RankBoost_base_ranking):
                         for pair in y:
                                 m = predictions[pair[0]]-predictions[pair[1]]
                                 weights_pair[pair] = weights_pair[pair]*( ( np.exp(self.alphas[-1]*(1-m^2))+np.exp(-self.alphas[-1]*(1-m^2)) )/2 )*np.exp(-self.alphas[-1]*m)/self.Z[-1]
-                        import pdb;pdb.set_trace()
+                        #import pdb;pdb.set_trace()
 
 		self.actual_rounds_of_boosting = len(self.alphas)
 
