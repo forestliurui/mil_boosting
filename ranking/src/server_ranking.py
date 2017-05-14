@@ -184,6 +184,7 @@ class ExperimentServer(object):
 	param['ranker'] = task.ranker_name
 	param['dataset_category'] = key[0]
         arguments = {'key': key, 'param': param}
+        import pdb;pdb.set_trace()
         return yaml.dump(arguments, Dumper=Dumper)
 
     @plaintext

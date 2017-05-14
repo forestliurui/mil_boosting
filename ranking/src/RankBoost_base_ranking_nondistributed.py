@@ -186,6 +186,24 @@ class RankBoost_base_ranking(object):
 		
 		return ranking_error
 
+        def getHalfTiedRankingError(self, predictions, y):
+                """
+                get the training ranking error which treats tie as half
+                """
+                num_pair = len(y)
+
+                ranking_error = 0
+
+                for pair in y:
+                        if abs( predictions[pair[0]] - predictions[pair[1]] ) < 10**(-5):
+                                ranking_error += 0.5
+                        elif predictions[pair[0]]  < predictions[pair[1]]:
+                                ranking_error += 1
+                ranking_error = ranking_error/float(num_pair)
+
+                return ranking_error
+
+
 	def getRankingErrorBound(self, iter = None):
 		self.c = self.alphas
 		threshold = 0.5

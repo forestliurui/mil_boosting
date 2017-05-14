@@ -9,7 +9,10 @@ import dill
 from RankBoost_ranking_nondistributed import RankBoost_ranking
 from RankBoost_modiII_ranking_nondistributed import RankBoost_modiII_ranking
 from RankBoost_modiIII_ranking_nondistributed import RankBoost_modiIII_ranking
+from RankBoost_modiV_ranking_nondistributed import RankBoost_modiV_ranking
+from RankBoost_modiVI_ranking_nondistributed import RankBoost_modiVI_ranking
 
+import unittest
 import sys
 if os.path.exists("/home/rui/MIL_Boost/MIL_Boosting/MIL_Boost/MIL_Boost/src/"):
 	sys.path.append("/home/rui/MIL_Boost/MIL_Boosting/MIL_Boost/MIL_Boost/src/")
@@ -24,6 +27,8 @@ CLASSIFIERS = {
     'rankboost': RankBoost_ranking, #RankBoost in the paper
     'rankboost_modiII': RankBoost_modiII_ranking, #RankBoost+ in the paper
     'rankboost_modiIII': RankBoost_modiIII_ranking,  #CrankBoost in the paper
+    'rankboost_modiV': RankBoost_modiV_ranking, #a slight variant of CrankBoost in the paper
+    'rankboost_modiVI': RankBoost_modiVI_ranking, #a new rankboost algorithm proposed by Harold, which keep track of total weights for any repicked weak ranker
 }
 
 IDX_DIR = os.path.join('box_counting', 'converted_datasets')
@@ -173,6 +178,12 @@ def construct_submissions(ranker, train, test, boosting_round, timer):
     error_tied = ranker.getHalfTiedRankingError(predictions, train.critical_pairs)
     submission['statistics_boosting']["train_error_tied"] = error_tied
 
+    E_vanilla = ranker.getE_vanilla(iter = j)
+    E_modi = ranker.getE(iter = j)
+
+    submission['statistics_boosting']['train_E_vanilla'] = E_vanilla
+    submission['statistics_boosting']['train_E_modi'] = E_modi
+
     if j == 1:
 	predictions = ranker.predict(test.instances, iter = j)
     else:
@@ -196,3 +207,10 @@ def printCurrentDateTime():
 	currentDT = datetime.now()
 	timeString = "%d/%d/%d %d:%d" % (currentDT.year, currentDT.month, currentDT.day, currentDT.hour, currentDT.minute)
  	print timeString
+
+class TestExperiment(unittest.TestCase):
+    def test_experiment(self):
+
+
+if __name__ == "__main__":
+    unittest.main()
