@@ -24,39 +24,9 @@ WEAK_CLASSIFIERS = {
 
 class RankBoost_ranking(RankBoost_base_ranking):
 	def __init__(self, **parameters):
-
-		self.max_iter_boosting = parameters.pop("max_iter_boosting", 10)
-		self.weak_classifier_name = parameters.pop('weak_classifier', 'stump_ranker') 
-		if self.weak_classifier_name == 'dtree_stump':
-			parameters['max_depth'] = 1
-		parameters.pop('normalization', 0)
-		self.parameters = parameters
-		self.weak_classifiers = []
-		self.epsilon = {}
-		self.epsilon["positive"] = []
-		self.epsilon["negative"] = []
-		self.epsilon["zero"] = []
-		self.alphas = []
-		self.weights_pair=[]
-
-		self.predictions_list_train = []
-		self.X_test = None
-
-		self.X_train= None
-		self.y_train= None
-		
-
-		self.instance_labels_generated_from_bag_labels = None
-
-		self.epsilon_pair = {}
-		self.epsilon_pair["positive"] = []
-		self.epsilon_pair["negative"] = []
-
-
-		self.epsilon_pair_fast = {}
-		self.epsilon_pair_fast["positive"] = []
-		self.epsilon_pair_fast["negative"] = []
-		self.epsilon_pair_fast["zero"] = []
+            
+            self.Z = []
+            super(RankBoost_ranking, self).__init__(**parameters)
 
 	def fit(self, X, y):
 		'''
@@ -111,7 +81,6 @@ class RankBoost_ranking(RankBoost_base_ranking):
 				break
 			else:
 				self.alphas.append(0.5*np.log(  (self.epsilon["positive"][-1])/(self.epsilon["negative"][-1])  ))
-			self.Z=[]
 			
 			Z_cur = self.epsilon["zero"][-1]+2*sqrt(self.epsilon["positive"][-1]*self.epsilon["negative"][-1])
 			self.Z.append(Z_cur)

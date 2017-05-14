@@ -237,7 +237,7 @@ class StumpRanker(object):
                    #without pre-selected weak rankers
 		   for index in range(num_feature):
 			score, nodes_prediction, threshold_temp = self.getScore(X, y, weight_dict,weight_pair, index)
-		        import pdb;pdb.set_trace()	
+		        #import pdb;pdb.set_trace()	
 			if score_optimal is None or score_optimal < score:
 				score_optimal = score
 				nodes_prediction_optimal = nodes_prediction
