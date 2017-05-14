@@ -80,7 +80,7 @@ class StumpRanker(object):
 		if StumpRanker.ValidWeakRankers is None:
 			raise ValueError("StumpRanker.ValidWeakRankers is None")
 
-		key = (ranker.feature_index, ranker.threshold, tuple(ranker.children_nodes_prediction.items()) )
+		key = ranker.signature()
 
 		if key in StumpRanker.ValidWeakRankers:
 			del StumpRanker.ValidWeakRankers[key]
@@ -211,7 +211,7 @@ class StumpRanker(object):
 
 		self.children_nodes_prediction = nodes_prediction
 
-	def fit(self, X, y, weight_pair = None, additional_data = None):
+	def fit(self, X, y, weight_pair = None, useAbs = False, additional_data = None):
 		"""
 		X is a hashtable with key being instance ID, value being the one-dimensional array containing its features
 		y is the list of tuples -- each tuple is one critial pair, pair[0] should be ranked higher than pair[1]
@@ -251,7 +251,9 @@ class StumpRanker(object):
 			#import pdb;pdb.set_trace()
                         if additional_data is not None:
                             if ranker in additional_data:
-                                score += 0.5*np.cos(additional_data[ranker])/np.sin(additional_data[ranker]) 
+                                score -= 0.5*np.cos(additional_data[ranker])/np.sin(additional_data[ranker])
+                        if useAbs is True: 
+                           score = abs(score)
 
 			if score_optimal is None or score_optimal < score:
 				score_optimal = score

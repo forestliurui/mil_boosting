@@ -8,6 +8,7 @@ If, at any iteration, it picks a weak ranker, that has been used before, we shou
 """
 
 from math import sqrt, exp
+import sys
 
 import string
 import numpy as np
@@ -60,7 +61,7 @@ class RankBoost_modiVI_ranking(RankBoost_base_ranking):
                 else:
                      instance_classifier = StumpRanker.create("continuous")
 
-                instance_classifier.fit(X, y, weights_pair, self.alphas_dict)
+                instance_classifier.fit(X, y, weights_pair, True, self.alphas_dict)
                 self.weak_classifiers.append(copy.deepcopy(instance_classifier))
                 predictions = instance_classifier.predict(X)
                 
@@ -78,13 +79,20 @@ class RankBoost_modiVI_ranking(RankBoost_base_ranking):
 
                 numerator = epsilon_pos + epsilon0*( (np.exp(-pre_alpha))/(2*np.cosh(pre_alpha))  )
                 denominator = epsilon_neg + epsilon0*( (np.exp(pre_alpha))/(2*np.cosh(pre_alpha))  )
-                new_alpha = 0.5*np.log( float(numerator)/denominator )
+                if numerator == 0:
+                      new_alpha = -sys.maxint
+                elif denominator == 0:
+                      new_alpha = sys.maxint
+                else:
+                      new_alpha = 0.5*np.log( float(numerator)/denominator )
                 self.alphas_dict[instance_classifier] = new_alpha #i.e. the total alpha for any instance so far            
    
                 ad_alpha = new_alpha - pre_alpha
                 self.alphas.append(ad_alpha)
              
-
+                if numerator == 0 or denominator == 0:
+                     break
+                
                 cur_Z = epsilon_pos*np.exp(-new_alpha) + epsilon_neg*np.exp(new_alpha) + epsilon0*(np.cosh(new_alpha+pre_alpha))/np.cosh(pre_alpha)
 
                 self.Z.append(cur_Z)  
@@ -99,16 +107,49 @@ class RankBoost_modiVI_ranking(RankBoost_base_ranking):
  
                      weights_pair[pair] = (weights_pair[pair]/cur_Z)*0.5*(first_part + float(second_part_numerator)/second_part_denominator)
 
+                #import pdb;pdb.set_trace()
       
             self.actual_rounds_of_boosting = len(self.alphas)
 
 
 class TestRankBoost_ModiVI(unittest.TestCase):
-    def test1(self):
+    def no_test1(self):
         """
         use some random data to test the syntactic error
         """
         X = {0: np.array([ 1,0, 0 ]), 1: np.array([0, 1, 0]), 2: np.array([0,0,1]), 3: np.array([1,0,1])}
+        y = [(0,1), (2,3),(3,1)]
+  
+        print(X)
+        print(y)
+       
+        ranker = RankBoost_modiVI_ranking()
+        ranker.fit(X, y) 
+        print(ranker.predict_train())
+        print(ranker.predict(X))
+        import pdb;pdb.set_trace()
+    
+    def no_test2(self):
+        """
+        use some random data to test the syntactic error
+        """
+        X = {0: np.array([ 1,0, 0 ]), 1: np.array([0, 1, 0]), 2: np.array([0,0,1]), 3: np.array([1,0,1])}
+        y = [(0,1), (2, 1),(3,1)]
+  
+        print(X)
+        print(y)
+       
+        ranker = RankBoost_modiVI_ranking()
+        ranker.fit(X, y) 
+        print(ranker.predict_train())
+        print(ranker.predict(X))
+        import pdb;pdb.set_trace()
+
+    def test3(self):
+        """
+        use some random data to test the syntactic error
+        """
+        X = {0: np.array([ 1,0, 0 ]), 1: np.array([0, 1, 0]), 2: np.array([0,0,2]), 3: np.array([1,0,1])}
         y = [(0,1), (2,3),(3,1)]
   
         print(X)

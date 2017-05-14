@@ -272,7 +272,7 @@ class RankBoost_base_ranking(object):
 			iter = len(self.c)
 		results = {}
 		for inst_ID in self.X_train.keys():
-			results[inst_ID] = np.average( [self.predictions_list_train[index][inst_ID] for index in range(iter) ] , weights = self.c[0:iter]   )
+			results[inst_ID] = np.average( [self.predictions_list_train[index][inst_ID] for index in range(iter) ] , weights = self.c[0:iter]   )*np.sign(sum(self.c[0:iter]))
 
 		return results
 
@@ -292,12 +292,12 @@ class RankBoost_base_ranking(object):
 			self.predictions_list_test = predictions_list
 			results = {}
 			for inst_ID in X.keys():
-				results[inst_ID] = np.average( [self.predictions_list_test[index][inst_ID] for index in range(iter) ] , weights = self.c[0:iter]   )
+				results[inst_ID] = np.average( [self.predictions_list_test[index][inst_ID] for index in range(iter) ] , weights = self.c[0:iter]   )*np.sign(sum(self.c[0:iter]))
 			return results
 		else:
 			results = {}
 			for inst_ID in self.X_test.keys():
-				results[inst_ID] = np.average( [self.predictions_list_test[index][inst_ID] for index in range(iter) ] , weights = self.c[0:iter]   )
+				results[inst_ID] = np.average( [self.predictions_list_test[index][inst_ID] for index in range(iter) ] , weights = self.c[0:iter]   )*np.sign(sum(self.c[0:iter]))
 			return results
 
 
