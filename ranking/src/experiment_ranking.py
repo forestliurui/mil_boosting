@@ -129,8 +129,8 @@ def client_target(task, callback):
     
     timer = Timer()
    
-    #parameters = {"max_iter_boosting":40, 'weak_classifier': 'stump_ranker'}
-    parameters = {"max_iter_boosting":200, 'weak_classifier': 'stump_ranker'}
+    parameters = {"max_iter_boosting":40, 'weak_classifier': 'stump_ranker'}
+    #parameters = {"max_iter_boosting":200, 'weak_classifier': 'stump_ranker'}
 
     classifier_name = task['param'].pop('ranker')
 
@@ -199,6 +199,9 @@ def construct_submissions(ranker, train, test, boosting_round, timer):
     print 'training_error_tied: %f' % submission['statistics_boosting']["train_error_tied"] 
     print 'testing_error_tied:  %f' % submission['statistics_boosting']["test_error_tied"]
 
+    print 'training_E_vanilla: %f' % submission['statistics_boosting']['train_E_vanilla']
+    print 'training_E_modi:    %f' % submission['statistics_boosting']['train_E_modi']
+
     return submission
     #import pdb;pdb.set_trace()
 
@@ -210,7 +213,7 @@ def printCurrentDateTime():
 
 class TestExperiment(unittest.TestCase):
     def test_experiment(self):
-
+         pass
 
 if __name__ == "__main__":
     unittest.main()

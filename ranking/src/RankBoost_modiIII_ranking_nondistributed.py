@@ -118,7 +118,7 @@ class RankBoost_modiIII_ranking(object):
 				m = predictions[pair[0]]-predictions[pair[1]]
 				weights_pair[pair] = weights_pair[pair]*( ( np.exp(self.alphas[-1]*(1-m^2))+np.exp(-self.alphas[-1]*(1-m^2)) )/2 )*np.exp(-self.alphas[-1]*m)/self.Z[-1]
 
-	self.actual_rounds_of_boosting = len(self.alphas)
+	        self.actual_rounds_of_boosting = len(self.alphas)
 		#import pdb;pdb.set_trace()
 	def compute_epsilon(self, predictions, y, weights_pair):
 		epsilon0= 0

@@ -152,8 +152,11 @@ class StumpRanker(object):
   		feature = [ X[i][index]  for i in X.keys() ]
 		sorted_feature = sorted(set(feature))
 
+                #print(index)
+                #print(sorted_feature)
+                #import pdb;pdb.set_trace()
 		#get the thresholds
-		temp = [ sorted_feature[0]-1 ]+sorted_feature + [ sorted_feature[1]+1 ]
+		temp = [ sorted_feature[0]-1 ]+sorted_feature + [ sorted_feature[-1]+1 ]
 		raw_thresholds = [ (temp[i]+temp[i+1])/float(2)  for i in range(len(temp)-1)  ]
 
 		thresholds_len_max  = 500 
@@ -247,6 +250,10 @@ class StumpRanker(object):
 		   for ranker in StumpRanker.ValidWeakRankers.values():
 			threshold_temp = ranker.threshold
 			index = ranker.feature_index
+                        nodes_prediction = ranker.children_nodes_prediction
+           
+                        score = ranker.getScoreForWeakSelection(X, y, weight_pair, useAbs, additional_data)  
+                        """
 			score, nodes_prediction = ranker.getScore_helper(X, y, weight_dict, weight_pair, index, threshold_temp)
 			#import pdb;pdb.set_trace()
                         if additional_data is not None:
@@ -254,7 +261,7 @@ class StumpRanker(object):
                                 score -= 0.5*np.cos(additional_data[ranker])/np.sin(additional_data[ranker])
                         if useAbs is True: 
                            score = abs(score)
-
+                        """
 			if score_optimal is None or score_optimal < score:
 				score_optimal = score
 				nodes_prediction_optimal = nodes_prediction
@@ -301,7 +308,34 @@ class StumpRanker(object):
 	def selectionCriteria2(self, inst_predictions, y, weight_pair, addition_data):
 		epsilons = self.computeEpsilons(inst_predictions, y, weight_pair )
 
-		
+	def getScoreForWeakSelection(self, X, y, weight_pair = None, useAbs = False, additional_data = None):
+                """
+                return the score of the weak ranker, whose self.feature_index, self.threshold and self.children_nodes_prediction
+                have been determined
+                """
+                if self.feature_index is None:
+                        raise ValueError("self.feature_index is None")
+                elif  self.threshold is None:
+                        raise ValueError("self.threshold is None")
+                elif self.children_nodes_prediction is None:
+                        raise ValueError("self.children_nodes_prediction is None")
+
+                if weight_pair is None:
+                        weight_pair = {}
+                        for pair in y:
+                                weight_pair[pair] = float(1)/len(y)
+
+                weight_dict = self.get_weight_dict(weight_pair)               
+ 
+                score, nodes_predictions = self.getScore_helper(X, y, weight_dict, weight_pair, self.feature_index, self.threshold)
+
+                if additional_data is not None:
+                        if self in additional_data:
+                                score -= 0.5*np.cos(additional_data[self])/np.sin(additional_data[self])
+                if useAbs is True:
+                           score = abs(score)
+
+                return score
 
 	def getScore(self, X, y, weight_dict, weight_pair, feature_index):
 		raise NotImplementedError("Please Implement this method")

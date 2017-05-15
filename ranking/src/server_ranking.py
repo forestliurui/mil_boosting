@@ -43,7 +43,7 @@ else:
 #from progress import ProgressMonitor
 from results import get_result_manager
 
-PORT = 2115
+PORT = 2117
 DEFAULT_TASK_EXPIRE = 120 # Seconds
 TEMPLATE = """
 <html>
@@ -184,7 +184,7 @@ class ExperimentServer(object):
 	param['ranker'] = task.ranker_name
 	param['dataset_category'] = key[0]
         arguments = {'key': key, 'param': param}
-        import pdb;pdb.set_trace()
+        #import pdb;pdb.set_trace()
         return yaml.dump(arguments, Dumper=Dumper)
 
     @plaintext
@@ -486,7 +486,7 @@ def start_experiment(results_root_dir, ranker_name, dataset_category):
     #ranker_name = 'rankboost'
     task_dict = load_config( results_root_dir, ranker_name, dataset_category)
 
-    
+    #import pdb;pdb.set_trace() 
 
     server = ExperimentServer(task_dict, render)
     cherrypy.config.update({'server.socket_port': PORT,
