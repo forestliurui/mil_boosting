@@ -178,20 +178,15 @@ class StumpRanker(object):
 
               	bound = 10**(-5)
                   		
-		epsilons_count = {"+": 0, "-": 0, "0": 0}
+		epsilons = {"+": 0, "-": 0, "0": 0}
         
 		for pair in y:
 		    if abs( predictions[pair[0]] - predictions[pair[1]] ) <= bound:
-			epsilons_count["0"] += 1
+			epsilons["0"] += weight_pair[pair]
                     elif predictions[pair[0]] - predictions[pair[1]] > bound:
-			epsilons_count["+"] += 1
+			epsilons["+"] += weight_pair[pair]
 		    else:
-                        epsilons_count["-"] += 1
-
-                epsilons = {}
-                epsilons["+"] = epsilons_count["+"]/float(len(y))
-                epsilons["-"] = epsilons_count["-"]/float(len(y))
-                epsilons["0"] = epsilons_count["0"]/float(len(y))
+                        epsilons["-"] += weight_pair[pair]
 
                 return epsilons
 
@@ -325,13 +320,16 @@ class StumpRanker(object):
                         for pair in y:
                                 weight_pair[pair] = float(1)/len(y)
 
-                weight_dict = self.get_weight_dict(weight_pair)               
- 
-                score, nodes_predictions = self.getScore_helper(X, y, weight_dict, weight_pair, self.feature_index, self.threshold)
+                inst_predictions = self.predict(X)
+                epsilons = self.computeEpsilons(inst_predictions, y, weight_pair )
+                score = epsilons["+"] - epsilons["-"]
+
+                #weight_dict = self.get_weight_dict(weight_pair)               
+                #score, nodes_predictions = self.getScore_helper(X, y, weight_dict, weight_pair, self.feature_index, self.threshold)
 
                 if additional_data is not None:
                         if self in additional_data:
-                                score -= 0.5*np.cos(additional_data[self])/np.sin(additional_data[self])
+                                score -= epsilons["0"]*np.tanh(additional_data[self])
                 if useAbs is True:
                            score = abs(score)
 
