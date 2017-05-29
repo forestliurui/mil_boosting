@@ -270,7 +270,7 @@ def generateRank(directory, outputfile_name):
 			ranks_average[statistic][method_name]["rank"] = np.average(ranks[statistic][method_name])
 			ranks_average[statistic][method_name]["num_dataset"] = len(ranks[statistic][method_name])
 
-		import pdb;pdb.set_trace()
+		#import pdb;pdb.set_trace()
 		output_file_name_extended = 'ranking/'+statistic+"_"+outputfile_name
 		
 		for method_name in method_names:
@@ -291,14 +291,24 @@ def draw_plot(directory, outputfile_name):
 	(The input is the same with the above generateRank())
 	"""
 
-	colors={'rankboost':'b', 'rankboost_modiIII':'r','rankboost_modiII':'k' }
+
+        colors={'rankboost':'b', 'rankboost_modiV':'r','rankboost_modiVI':'k', 'rankboost_modiIII': 'c'}
+        #linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
+        linestyles = {'rankboost_modiVI':'-', 'rankboost':(0,[10,10]),'rankboost_modiV':(0,[40,10]), 'rankboost_modiIII': (0, [40,10,10,10]) }
+        #linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiII':'dashed' }
+
+
+        #statistics_name = ['test_error', 'train_error']
+        statistics_name = ['test_error', 'train_error', 'train_E_modi', 'train_E_vanilla']
+
+	#colors={'rankboost':'b', 'rankboost_modiIII':'r','rankboost_modiII':'k' }
 	#linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
 	#linestyles = {'rankboost_modiIII':'-', 'rankboost':(0,[10,10]),'rankboost_modiII':(0,[40,10]) }
-	linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiII':'dashed' }
+	#linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiII':'dashed' }
 
 
 	#statistics_name = ['test_error', 'train_error']
-	statistics_name = ['test_error', 'train_error', 'test_error_tied', 'train_error_tied']
+	#statistics_name = ['test_error', 'train_error', 'test_error_tied', 'train_error_tied']
 	# for modified rankboost
 	#earlyStop_name = ['test_instance_AUC', 'test_bag_AUC', 'train_instance_AUC', 'train_bag_AUC', 'ranking_error', 'ranking_error_bound']	
 	#statistics_name = earlyStop_name
@@ -312,7 +322,7 @@ def draw_plot(directory, outputfile_name):
 		dataset_names += results[statistic].keys()
 	dataset_names = set(dataset_names)
 
-	import pdb;pdb.set_trace()
+	#import pdb;pdb.set_trace()
 
 	index_dataset = -1
 	#matplotlib.rc('legend', fontsize=0.5, linewidth=2)
@@ -349,10 +359,14 @@ def draw_plot(directory, outputfile_name):
 				plt.ylabel(stat_name, fontsize = 60)
 			color_index = -1
 			if stat_name != "ranking_error" and stat_name != "ranking_error_bound" and stat_name != "train_error" and stat_name != "test_error" and stat_name != "test_error_tied" and stat_name != "train_error_tied":
-				plt.axis([0, 150, 0.49, 1.1], fontsize = 50)
-			else:
+				#plt.axis([0, 150, 0.49, 1.1], fontsize = 50)
+			        plt.axis([0, 50, 0, 10], fontsize = 50)
+                        else:
 				#plt.axis([0, 150, 0, 0.4], fontsize = 50)
-				plt.axis([0, 150, 0, 0.6], fontsize = 50)
+				#plt.axis([0, 150, 0, 0.6], fontsize = 50)
+                                plt.axis([0, 50, 0, 0.6], fontsize = 50)
+
+                               
 
 
 			method_names = results[stat_name][dataset_name].keys()
@@ -360,7 +374,7 @@ def draw_plot(directory, outputfile_name):
 			for method_name in method_names:
 				color_index +=1
 				#subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name]+'.-')
-				#subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name]+linestyles[method_name])
+              			#subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name]+linestyles[method_name])
 				subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name], ls = linestyles[method_name], linewidth = 10)
 
 
@@ -393,9 +407,9 @@ def draw_plot_averaged(directory, outputfile_name):
 	# for modified rankboost
         """
  
-        colors={'rankboost':'b', 'rankboost_modiV':'r','rankboost_modiVI':'k' }
+        colors={'rankboost':'b', 'rankboost_modiV':'r','rankboost_modiVI':'k', 'rankboost_modiIII': 'c'}
         #linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
-        linestyles = {'rankboost_modiVI':'-', 'rankboost':(0,[10,10]),'rankboost_modiV':(0,[40,10]) }
+        linestyles = {'rankboost_modiVI':'-', 'rankboost':(0,[10,10]),'rankboost_modiV':(0,[40,10]), 'rankboost_modiIII': (0, [40,10,10,10]) }
         #linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiII':'dashed' }
 
 
@@ -410,7 +424,7 @@ def draw_plot_averaged(directory, outputfile_name):
 	dataset_names = set(dataset_names)
 	data_plot = {}
 
-
+        #import pdb;pdb.set_trace()
 
 	index_dataset = -1
 	#matplotlib.rc('legend', fontsize=0.5, linewidth=2)
@@ -426,7 +440,7 @@ def draw_plot_averaged(directory, outputfile_name):
 			stat_name = statistics_name[stat_index]
 			if stat_name not in data_plot:
 				data_plot[stat_name] = {}
-
+                        #import pdb;pdb.set_trace()
 			method_names = results[stat_name][dataset_name].keys()
 			for method_name in method_names:
 				if method_name not in data_plot[stat_name]:

@@ -1,0 +1,4132 @@
+Getting task...
+Starting task...
+Starting task ..
+2017/5/24 9:1
+Ranker name:  rankboost_modiVI
+Dataset Category: MovieLen
+User id:     0
+fold index:  0
+Training...
+iter: 0, weak ranker: 1
+iter: 1, weak ranker: 2
+iter: 2, weak ranker: 3
+iter: 3, weak ranker: 4
+iter: 4, weak ranker: 5
+iter: 5, weak ranker: 6
+iter: 6, weak ranker: 7
+iter: 7, weak ranker: 8
+iter: 8, weak ranker: 9
+iter: 9, weak ranker: 10
+iter: 10, weak ranker: 11
+iter: 11, weak ranker: 12
+iter: 12, weak ranker: 13
+iter: 13, weak ranker: 14
+iter: 14, weak ranker: 15
+iter: 15, weak ranker: 16
+iter: 16, weak ranker: 17
+iter: 17, weak ranker: 18
+iter: 18, weak ranker: 19
+iter: 19, weak ranker: 20
+iter: 20, weak ranker: 21
+iter: 21, weak ranker: 22
+iter: 22, weak ranker: 23
+iter: 23, weak ranker: 23
+iter: 24, weak ranker: 23
+iter: 25, weak ranker: 24
+iter: 26, weak ranker: 25
+iter: 27, weak ranker: 26
+iter: 28, weak ranker: 27
+iter: 29, weak ranker: 28
+iter: 30, weak ranker: 29
+iter: 31, weak ranker: 29
+iter: 32, weak ranker: 29
+iter: 33, weak ranker: 30
+iter: 34, weak ranker: 31
+iter: 35, weak ranker: 31
+iter: 36, weak ranker: 31
+iter: 37, weak ranker: 32
+iter: 38, weak ranker: 33
+iter: 39, weak ranker: 34
+
+computing the submission for boosting round: # 1
+training_error: 0.580507
+testing_error:  0.633397
+training_error_tied: 0.346662
+testing_error_tied:  0.398273
+training_E_vanilla: 0.928681
+training_E_modi:    0.951814
+
+computing the submission for boosting round: # 2
+training_error: 0.408902
+testing_error:  0.437620
+training_error_tied: 0.290670
+testing_error_tied:  0.318618
+training_E_vanilla: 0.851004
+training_E_modi:    0.924195
+
+computing the submission for boosting round: # 3
+training_error: 0.335832
+testing_error:  0.366603
+training_error_tied: 0.268357
+testing_error_tied:  0.286948
+training_E_vanilla: 0.872644
+training_E_modi:    0.902942
+
+computing the submission for boosting round: # 4
+training_error: 0.282994
+testing_error:  0.293666
+training_error_tied: 0.248126
+testing_error_tied:  0.254319
+training_E_vanilla: 2.381895
+training_E_modi:    0.885136
+
+computing the submission for boosting round: # 5
+training_error: 0.257646
+testing_error:  0.251440
+training_error_tied: 0.236582
+testing_error_tied:  0.220729
+training_E_vanilla: 0.818002
+training_E_modi:    0.868425
+
+computing the submission for boosting round: # 6
+training_error: 0.235630
+testing_error:  0.238004
+training_error_tied: 0.224801
+testing_error_tied:  0.223608
+training_E_vanilla: 0.729424
+training_E_modi:    0.851408
+
+computing the submission for boosting round: # 7
+training_error: 0.231584
+testing_error:  0.213052
+training_error_tied: 0.223313
+testing_error_tied:  0.204415
+training_E_vanilla: 0.731019
+training_E_modi:    0.839661
+
+computing the submission for boosting round: # 8
+training_error: 0.215875
+testing_error:  0.203455
+training_error_tied: 0.211175
+testing_error_tied:  0.199616
+training_E_vanilla: 0.733285
+training_E_modi:    0.830537
+
+computing the submission for boosting round: # 9
+training_error: 0.215399
+testing_error:  0.195777
+training_error_tied: 0.211591
+testing_error_tied:  0.191939
+training_E_vanilla: 0.699438
+training_E_modi:    0.820360
+
+computing the submission for boosting round: # 10
+training_error: 0.209568
+testing_error:  0.193858
+training_error_tied: 0.205879
+testing_error_tied:  0.190019
+training_E_vanilla: 0.682990
+training_E_modi:    0.812858
+
+computing the submission for boosting round: # 11
+training_error: 0.197548
+testing_error:  0.182342
+training_error_tied: 0.194990
+testing_error_tied:  0.181382
+training_E_vanilla: 0.674446
+training_E_modi:    0.805555
+
+computing the submission for boosting round: # 12
+training_error: 0.193859
+testing_error:  0.180422
+training_error_tied: 0.191777
+testing_error_tied:  0.179463
+training_E_vanilla: 0.681166
+training_E_modi:    0.798349
+
+computing the submission for boosting round: # 13
+training_error: 0.193502
+testing_error:  0.180422
+training_error_tied: 0.191539
+testing_error_tied:  0.179463
+training_E_vanilla: 0.690737
+training_E_modi:    0.791916
+
+computing the submission for boosting round: # 14
+training_error: 0.184934
+testing_error:  0.165067
+training_error_tied: 0.183684
+testing_error_tied:  0.165067
+training_E_vanilla: 0.661866
+training_E_modi:    0.785131
+
+computing the submission for boosting round: # 15
+training_error: 0.181364
+testing_error:  0.172745
+training_error_tied: 0.180590
+testing_error_tied:  0.172745
+training_E_vanilla: 0.640169
+training_E_modi:    0.780360
+
+computing the submission for boosting round: # 16
+training_error: 0.172319
+testing_error:  0.176583
+training_error_tied: 0.171605
+testing_error_tied:  0.176583
+training_E_vanilla: 0.645828
+training_E_modi:    0.774857
+
+computing the submission for boosting round: # 17
+training_error: 0.171605
+testing_error:  0.176583
+training_error_tied: 0.171010
+testing_error_tied:  0.176583
+training_E_vanilla: 0.659736
+training_E_modi:    0.769032
+
+computing the submission for boosting round: # 18
+training_error: 0.169582
+testing_error:  0.165067
+training_error_tied: 0.168987
+testing_error_tied:  0.165067
+training_E_vanilla: 0.670537
+training_E_modi:    0.764209
+
+computing the submission for boosting round: # 19
+training_error: 0.165298
+testing_error:  0.174664
+training_error_tied: 0.164882
+testing_error_tied:  0.174664
+training_E_vanilla: 0.646828
+training_E_modi:    0.759561
+
+computing the submission for boosting round: # 20
+training_error: 0.160538
+testing_error:  0.174664
+training_error_tied: 0.160240
+testing_error_tied:  0.174664
+training_E_vanilla: 0.625357
+training_E_modi:    0.755872
+
+computing the submission for boosting round: # 21
+training_error: 0.159229
+testing_error:  0.170825
+training_error_tied: 0.158931
+testing_error_tied:  0.170825
+training_E_vanilla: 0.635908
+training_E_modi:    0.752440
+
+computing the submission for boosting round: # 22
+training_error: 0.160181
+testing_error:  0.165067
+training_error_tied: 0.159883
+testing_error_tied:  0.165067
+training_E_vanilla: 0.616907
+training_E_modi:    0.749439
+
+computing the submission for boosting round: # 23
+training_error: 0.157682
+testing_error:  0.155470
+training_error_tied: 0.157444
+testing_error_tied:  0.155470
+training_E_vanilla: 0.627636
+training_E_modi:    0.745984
+
+computing the submission for boosting round: # 24
+training_error: 0.168511
+testing_error:  0.145873
+training_error_tied: 0.168273
+testing_error_tied:  0.145873
+training_E_vanilla: 0.612089
+training_E_modi:    0.743275
+
+computing the submission for boosting round: # 25
+training_error: 0.154112
+testing_error:  0.153551
+training_error_tied: 0.153874
+testing_error_tied:  0.153551
+training_E_vanilla: 0.610697
+training_E_modi:    0.733425
+
+computing the submission for boosting round: # 26
+training_error: 0.155302
+testing_error:  0.157390
+training_error_tied: 0.155064
+testing_error_tied:  0.157390
+training_E_vanilla: 0.591874
+training_E_modi:    0.730832
+
+computing the submission for boosting round: # 27
+training_error: 0.153041
+testing_error:  0.153551
+training_error_tied: 0.152803
+testing_error_tied:  0.153551
+training_E_vanilla: 0.604919
+training_E_modi:    0.727466
+
+computing the submission for boosting round: # 28
+training_error: 0.151732
+testing_error:  0.161228
+training_error_tied: 0.151494
+testing_error_tied:  0.161228
+training_E_vanilla: 0.617357
+training_E_modi:    0.724916
+
+computing the submission for boosting round: # 29
+training_error: 0.149113
+testing_error:  0.155470
+training_error_tied: 0.148935
+testing_error_tied:  0.155470
+training_E_vanilla: 0.597906
+training_E_modi:    0.722393
+
+computing the submission for boosting round: # 30
+training_error: 0.148161
+testing_error:  0.151631
+training_error_tied: 0.147983
+testing_error_tied:  0.151631
+training_E_vanilla: 0.609084
+training_E_modi:    0.719820
+
+computing the submission for boosting round: # 31
+training_error: 0.148518
+testing_error:  0.157390
+training_error_tied: 0.148399
+testing_error_tied:  0.157390
+training_E_vanilla: 0.620138
+training_E_modi:    0.717762
+
+computing the submission for boosting round: # 32
+training_error: 0.153517
+testing_error:  0.186180
+training_error_tied: 0.153398
+testing_error_tied:  0.186180
+training_E_vanilla: 0.581729
+training_E_modi:    0.715458
+
+computing the submission for boosting round: # 33
+training_error: 0.146138
+testing_error:  0.166987
+training_error_tied: 0.146019
+testing_error_tied:  0.166987
+training_E_vanilla: 0.604090
+training_E_modi:    0.708959
+
+computing the submission for boosting round: # 34
+training_error: 0.145186
+testing_error:  0.166987
+training_error_tied: 0.145067
+testing_error_tied:  0.166987
+training_E_vanilla: 0.618003
+training_E_modi:    0.706402
+
+computing the submission for boosting round: # 35
+training_error: 0.146614
+testing_error:  0.165067
+training_error_tied: 0.146495
+testing_error_tied:  0.165067
+training_E_vanilla: 0.627921
+training_E_modi:    0.704391
+
+computing the submission for boosting round: # 36
+training_error: 0.147923
+testing_error:  0.159309
+training_error_tied: 0.147804
+testing_error_tied:  0.159309
+training_E_vanilla: 0.702017
+training_E_modi:    0.701960
+
+computing the submission for boosting round: # 37
+training_error: 0.143282
+testing_error:  0.159309
+training_error_tied: 0.143163
+testing_error_tied:  0.159309
+training_E_vanilla: 0.650264
+training_E_modi:    0.696775
+
+computing the submission for boosting round: # 38
+training_error: 0.140188
+testing_error:  0.163148
+training_error_tied: 0.140069
+testing_error_tied:  0.163148
+training_E_vanilla: 0.666184
+training_E_modi:    0.694182
+
+computing the submission for boosting round: # 39
+training_error: 0.137332
+testing_error:  0.168906
+training_error_tied: 0.137272
+testing_error_tied:  0.168906
+training_E_vanilla: 0.653686
+training_E_modi:    0.692358
+
+computing the submission for boosting round: # 40
+training_error: 0.139950
+testing_error:  0.163148
+training_error_tied: 0.139891
+testing_error_tied:  0.163148
+training_E_vanilla: 0.634849
+training_E_modi:    0.690354
+Finished task.
+Task finished.
+Submitting result...
+Result submitted!
+Getting task...
+Starting task...
+Starting task ..
+2017/5/24 9:1
+Ranker name:  rankboost_modiVI
+Dataset Category: MovieLen
+User id:     0
+fold index:  1
+Training...
+iter: 0, weak ranker: 1
+iter: 1, weak ranker: 2
+iter: 2, weak ranker: 3
+iter: 3, weak ranker: 4
+iter: 4, weak ranker: 5
+iter: 5, weak ranker: 6
+iter: 6, weak ranker: 7
+iter: 7, weak ranker: 8
+iter: 8, weak ranker: 9
+iter: 9, weak ranker: 10
+iter: 10, weak ranker: 11
+iter: 11, weak ranker: 12
+iter: 12, weak ranker: 13
+iter: 13, weak ranker: 14
+iter: 14, weak ranker: 14
+iter: 15, weak ranker: 14
+iter: 16, weak ranker: 15
+iter: 17, weak ranker: 16
+iter: 18, weak ranker: 16
+iter: 19, weak ranker: 16
+iter: 20, weak ranker: 17
+iter: 21, weak ranker: 18
+iter: 22, weak ranker: 18
+iter: 23, weak ranker: 18
+iter: 24, weak ranker: 19
+iter: 25, weak ranker: 20
+iter: 26, weak ranker: 21
+iter: 27, weak ranker: 22
+iter: 28, weak ranker: 23
+iter: 29, weak ranker: 24
+iter: 30, weak ranker: 25
+iter: 31, weak ranker: 26
+iter: 32, weak ranker: 27
+iter: 33, weak ranker: 28
+iter: 34, weak ranker: 29
+iter: 35, weak ranker: 29
+iter: 36, weak ranker: 29
+iter: 37, weak ranker: 29
+iter: 38, weak ranker: 30
+iter: 39, weak ranker: 31
+
+computing the submission for boosting round: # 1
+training_error: 0.582038
+testing_error:  0.716446
+training_error_tied: 0.334430
+testing_error_tied:  0.453686
+training_E_vanilla: 0.884981
+training_E_modi:    0.943581
+
+computing the submission for boosting round: # 2
+training_error: 0.417484
+testing_error:  0.565217
+training_error_tied: 0.273559
+testing_error_tied:  0.415879
+training_E_vanilla: 0.819013
+training_E_modi:    0.906191
+
+computing the submission for boosting round: # 3
+training_error: 0.330065
+testing_error:  0.478261
+training_error_tied: 0.247907
+testing_error_tied:  0.393195
+training_E_vanilla: 0.810535
+training_E_modi:    0.883298
+
+computing the submission for boosting round: # 4
+training_error: 0.268955
+testing_error:  0.427221
+training_error_tied: 0.228055
+testing_error_tied:  0.375236
+training_E_vanilla: 0.760949
+training_E_modi:    0.865990
+
+computing the submission for boosting round: # 5
+training_error: 0.245396
+testing_error:  0.359168
+training_error_tied: 0.219086
+testing_error_tied:  0.336484
+training_E_vanilla: 0.757008
+training_E_modi:    0.848110
+
+computing the submission for boosting round: # 6
+training_error: 0.232361
+testing_error:  0.344045
+training_error_tied: 0.212389
+testing_error_tied:  0.325142
+training_E_vanilla: 0.756901
+training_E_modi:    0.831417
+
+computing the submission for boosting round: # 7
+training_error: 0.204975
+testing_error:  0.357278
+training_error_tied: 0.194272
+testing_error_tied:  0.344045
+training_E_vanilla: 0.717319
+training_E_modi:    0.819519
+
+computing the submission for boosting round: # 8
+training_error: 0.195527
+testing_error:  0.328922
+training_error_tied: 0.189010
+testing_error_tied:  0.319471
+training_E_vanilla: 0.726109
+training_E_modi:    0.807280
+
+computing the submission for boosting round: # 9
+training_error: 0.183927
+testing_error:  0.328922
+training_error_tied: 0.179921
+testing_error_tied:  0.324197
+training_E_vanilla: 0.735787
+training_E_modi:    0.798263
+
+computing the submission for boosting round: # 10
+training_error: 0.180100
+testing_error:  0.319471
+training_error_tied: 0.177111
+testing_error_tied:  0.316635
+training_E_vanilla: 0.697333
+training_E_modi:    0.787508
+
+computing the submission for boosting round: # 11
+training_error: 0.180698
+testing_error:  0.313800
+training_error_tied: 0.178067
+testing_error_tied:  0.311909
+training_E_vanilla: 0.660972
+training_E_modi:    0.778465
+
+computing the submission for boosting round: # 12
+training_error: 0.173523
+testing_error:  0.304348
+training_error_tied: 0.172208
+testing_error_tied:  0.304348
+training_E_vanilla: 0.631517
+training_E_modi:    0.772213
+
+computing the submission for boosting round: # 13
+training_error: 0.170773
+testing_error:  0.310019
+training_error_tied: 0.169935
+testing_error_tied:  0.310019
+training_E_vanilla: 0.644598
+training_E_modi:    0.765901
+
+computing the submission for boosting round: # 14
+training_error: 0.168022
+testing_error:  0.302457
+training_error_tied: 0.167185
+testing_error_tied:  0.302457
+training_E_vanilla: 0.619365
+training_E_modi:    0.760622
+
+computing the submission for boosting round: # 15
+training_error: 0.175795
+testing_error:  0.275992
+training_error_tied: 0.175018
+testing_error_tied:  0.275992
+training_E_vanilla: 0.774378
+training_E_modi:    0.755535
+
+computing the submission for boosting round: # 16
+training_error: 0.163238
+testing_error:  0.291115
+training_error_tied: 0.162461
+testing_error_tied:  0.291115
+training_E_vanilla: 0.606736
+training_E_modi:    0.740582
+
+computing the submission for boosting round: # 17
+training_error: 0.161205
+testing_error:  0.283554
+training_error_tied: 0.160548
+testing_error_tied:  0.283554
+training_E_vanilla: 0.618028
+training_E_modi:    0.736452
+
+computing the submission for boosting round: # 18
+training_error: 0.159531
+testing_error:  0.277883
+training_error_tied: 0.158873
+testing_error_tied:  0.277883
+training_E_vanilla: 0.626847
+training_E_modi:    0.731449
+
+computing the submission for boosting round: # 19
+training_error: 0.161325
+testing_error:  0.272212
+training_error_tied: 0.160667
+testing_error_tied:  0.272212
+training_E_vanilla: 0.610244
+training_E_modi:    0.726921
+
+computing the submission for boosting round: # 20
+training_error: 0.155704
+testing_error:  0.270321
+training_error_tied: 0.155047
+testing_error_tied:  0.270321
+training_E_vanilla: 0.612284
+training_E_modi:    0.716217
+
+computing the submission for boosting round: # 21
+training_error: 0.154748
+testing_error:  0.260870
+training_error_tied: 0.154210
+testing_error_tied:  0.260870
+training_E_vanilla: 0.588734
+training_E_modi:    0.712794
+
+computing the submission for boosting round: # 22
+training_error: 0.153671
+testing_error:  0.260870
+training_error_tied: 0.153372
+testing_error_tied:  0.260870
+training_E_vanilla: 0.578599
+training_E_modi:    0.708744
+
+computing the submission for boosting round: # 23
+training_error: 0.152356
+testing_error:  0.255198
+training_error_tied: 0.152057
+testing_error_tied:  0.255198
+training_E_vanilla: 0.977333
+training_E_modi:    0.705113
+
+computing the submission for boosting round: # 24
+training_error: 0.147214
+testing_error:  0.262760
+training_error_tied: 0.146915
+testing_error_tied:  0.262760
+training_E_vanilla: 0.573402
+training_E_modi:    0.700107
+
+computing the submission for boosting round: # 25
+training_error: 0.147572
+testing_error:  0.251418
+training_error_tied: 0.147333
+testing_error_tied:  0.251418
+training_E_vanilla: 0.564999
+training_E_modi:    0.697239
+
+computing the submission for boosting round: # 26
+training_error: 0.142430
+testing_error:  0.236295
+training_error_tied: 0.142191
+testing_error_tied:  0.236295
+training_E_vanilla: 0.571318
+training_E_modi:    0.694506
+
+computing the submission for boosting round: # 27
+training_error: 0.142550
+testing_error:  0.228733
+training_error_tied: 0.142310
+testing_error_tied:  0.228733
+training_E_vanilla: 0.581719
+training_E_modi:    0.691396
+
+computing the submission for boosting round: # 28
+training_error: 0.142191
+testing_error:  0.228733
+training_error_tied: 0.141952
+testing_error_tied:  0.228733
+training_E_vanilla: 0.597887
+training_E_modi:    0.689091
+
+computing the submission for boosting round: # 29
+training_error: 0.137168
+testing_error:  0.228733
+training_error_tied: 0.136929
+testing_error_tied:  0.228733
+training_E_vanilla: 0.570371
+training_E_modi:    0.685888
+
+computing the submission for boosting round: # 30
+training_error: 0.138603
+testing_error:  0.230624
+training_error_tied: 0.138364
+testing_error_tied:  0.230624
+training_E_vanilla: 0.556365
+training_E_modi:    0.683487
+
+computing the submission for boosting round: # 31
+training_error: 0.137527
+testing_error:  0.226843
+training_error_tied: 0.137288
+testing_error_tied:  0.226843
+training_E_vanilla: 0.565134
+training_E_modi:    0.680868
+
+computing the submission for boosting round: # 32
+training_error: 0.136211
+testing_error:  0.223062
+training_error_tied: 0.135972
+testing_error_tied:  0.223062
+training_E_vanilla: 0.549618
+training_E_modi:    0.678652
+
+computing the submission for boosting round: # 33
+training_error: 0.135733
+testing_error:  0.228733
+training_error_tied: 0.135554
+testing_error_tied:  0.228733
+training_E_vanilla: 0.558557
+training_E_modi:    0.676527
+
+computing the submission for boosting round: # 34
+training_error: 0.135135
+testing_error:  0.241966
+training_error_tied: 0.134956
+testing_error_tied:  0.241966
+training_E_vanilla: 0.573507
+training_E_modi:    0.674414
+
+computing the submission for boosting round: # 35
+training_error: 0.135733
+testing_error:  0.236295
+training_error_tied: 0.135554
+testing_error_tied:  0.236295
+training_E_vanilla: 0.556136
+training_E_modi:    0.672594
+
+computing the submission for boosting round: # 36
+training_error: 0.142310
+testing_error:  0.230624
+training_error_tied: 0.142131
+testing_error_tied:  0.230624
+training_E_vanilla: 0.558630
+training_E_modi:    0.670758
+
+computing the submission for boosting round: # 37
+training_error: 0.135853
+testing_error:  0.236295
+training_error_tied: 0.135673
+testing_error_tied:  0.236295
+training_E_vanilla: 0.548903
+training_E_modi:    0.667063
+
+computing the submission for boosting round: # 38
+training_error: 0.139560
+testing_error:  0.234405
+training_error_tied: 0.139381
+testing_error_tied:  0.234405
+training_E_vanilla: 0.544827
+training_E_modi:    0.665356
+
+computing the submission for boosting round: # 39
+training_error: 0.137646
+testing_error:  0.228733
+training_error_tied: 0.137467
+testing_error_tied:  0.228733
+training_E_vanilla: 0.540182
+training_E_modi:    0.663519
+
+computing the submission for boosting round: # 40
+training_error: 0.135972
+testing_error:  0.226843
+training_error_tied: 0.135912
+testing_error_tied:  0.226843
+training_E_vanilla: 0.535864
+training_E_modi:    0.661821
+Finished task.
+Task finished.
+Submitting result...
+Result submitted!
+Getting task...
+Starting task...
+Starting task ..
+2017/5/24 9:2
+Ranker name:  rankboost_modiVI
+Dataset Category: MovieLen
+User id:     0
+fold index:  2
+Training...
+iter: 0, weak ranker: 1
+iter: 1, weak ranker: 2
+iter: 2, weak ranker: 3
+iter: 3, weak ranker: 4
+iter: 4, weak ranker: 5
+iter: 5, weak ranker: 6
+iter: 6, weak ranker: 7
+iter: 7, weak ranker: 8
+iter: 8, weak ranker: 9
+iter: 9, weak ranker: 10
+iter: 10, weak ranker: 11
+iter: 11, weak ranker: 12
+iter: 12, weak ranker: 13
+iter: 13, weak ranker: 14
+iter: 14, weak ranker: 15
+iter: 15, weak ranker: 16
+iter: 16, weak ranker: 17
+iter: 17, weak ranker: 18
+iter: 18, weak ranker: 18
+iter: 19, weak ranker: 18
+iter: 20, weak ranker: 19
+iter: 21, weak ranker: 20
+iter: 22, weak ranker: 21
+iter: 23, weak ranker: 22
+iter: 24, weak ranker: 23
+iter: 25, weak ranker: 24
+iter: 26, weak ranker: 25
+iter: 27, weak ranker: 26
+iter: 28, weak ranker: 27
+iter: 29, weak ranker: 28
+iter: 30, weak ranker: 29
+iter: 31, weak ranker: 29
+iter: 32, weak ranker: 29
+iter: 33, weak ranker: 30
+iter: 34, weak ranker: 31
+iter: 35, weak ranker: 32
+iter: 36, weak ranker: 32
+iter: 37, weak ranker: 32
+iter: 38, weak ranker: 33
+iter: 39, weak ranker: 34
+
+computing the submission for boosting round: # 1
+training_error: 0.571987
+testing_error:  0.673828
+training_error_tied: 0.338310
+testing_error_tied:  0.434570
+training_E_vanilla: 0.909234
+training_E_modi:    0.946269
+
+computing the submission for boosting round: # 2
+training_error: 0.398388
+testing_error:  0.496094
+training_error_tied: 0.277817
+testing_error_tied:  0.379883
+training_E_vanilla: 0.833598
+training_E_modi:    0.913336
+
+computing the submission for boosting round: # 3
+training_error: 0.323261
+testing_error:  0.445312
+training_error_tied: 0.249496
+testing_error_tied:  0.373047
+training_E_vanilla: 0.812265
+training_E_modi:    0.885473
+
+computing the submission for boosting round: # 4
+training_error: 0.290556
+testing_error:  0.451172
+training_error_tied: 0.233440
+testing_error_tied:  0.394531
+training_E_vanilla: 0.754794
+training_E_modi:    0.865225
+
+computing the submission for boosting round: # 5
+training_error: 0.243749
+testing_error:  0.406250
+training_error_tied: 0.214658
+testing_error_tied:  0.375977
+training_E_vanilla: 0.713864
+training_E_modi:    0.848887
+
+computing the submission for boosting round: # 6
+training_error: 0.223486
+testing_error:  0.353516
+training_error_tied: 0.204704
+testing_error_tied:  0.336914
+training_E_vanilla: 1.150832
+training_E_modi:    0.830039
+
+computing the submission for boosting round: # 7
+training_error: 0.199313
+testing_error:  0.324219
+training_error_tied: 0.187581
+testing_error_tied:  0.313477
+training_E_vanilla: 16123.028828
+training_E_modi:    0.818220
+
+computing the submission for boosting round: # 8
+training_error: 0.192914
+testing_error:  0.322266
+training_error_tied: 0.182368
+testing_error_tied:  0.313477
+training_E_vanilla: 1.009719
+training_E_modi:    0.806074
+
+computing the submission for boosting round: # 9
+training_error: 0.187937
+testing_error:  0.304688
+training_error_tied: 0.180590
+testing_error_tied:  0.298828
+training_E_vanilla: 0.673061
+training_E_modi:    0.795483
+
+computing the submission for boosting round: # 10
+training_error: 0.179405
+testing_error:  0.296875
+training_error_tied: 0.175317
+testing_error_tied:  0.291992
+training_E_vanilla: 0.623021
+training_E_modi:    0.785904
+
+computing the submission for boosting round: # 11
+training_error: 0.169925
+testing_error:  0.283203
+training_error_tied: 0.167259
+testing_error_tied:  0.280273
+training_E_vanilla: 0.620791
+training_E_modi:    0.779258
+
+computing the submission for boosting round: # 12
+training_error: 0.170518
+testing_error:  0.289062
+training_error_tied: 0.168385
+testing_error_tied:  0.286133
+training_E_vanilla: 0.635606
+training_E_modi:    0.771951
+
+computing the submission for boosting round: # 13
+training_error: 0.163526
+testing_error:  0.279297
+training_error_tied: 0.162342
+testing_error_tied:  0.277344
+training_E_vanilla: 0.648264
+training_E_modi:    0.765951
+
+computing the submission for boosting round: # 14
+training_error: 0.162342
+testing_error:  0.283203
+training_error_tied: 0.161216
+testing_error_tied:  0.281250
+training_E_vanilla: 0.616691
+training_E_modi:    0.759688
+
+computing the submission for boosting round: # 15
+training_error: 0.161986
+testing_error:  0.279297
+training_error_tied: 0.160979
+testing_error_tied:  0.278320
+training_E_vanilla: 0.590613
+training_E_modi:    0.754016
+
+computing the submission for boosting round: # 16
+training_error: 0.159142
+testing_error:  0.271484
+training_error_tied: 0.158135
+testing_error_tied:  0.270508
+training_E_vanilla: 0.599782
+training_E_modi:    0.748818
+
+computing the submission for boosting round: # 17
+training_error: 0.152625
+testing_error:  0.285156
+training_error_tied: 0.151795
+testing_error_tied:  0.284180
+training_E_vanilla: 0.569446
+training_E_modi:    0.742279
+
+computing the submission for boosting round: # 18
+training_error: 0.151558
+testing_error:  0.281250
+training_error_tied: 0.150729
+testing_error_tied:  0.281250
+training_E_vanilla: 0.559444
+training_E_modi:    0.737861
+
+computing the submission for boosting round: # 19
+training_error: 0.159735
+testing_error:  0.273438
+training_error_tied: 0.158905
+testing_error_tied:  0.273438
+training_E_vanilla: 11.277201
+training_E_modi:    0.733544
+
+computing the submission for boosting round: # 20
+training_error: 0.149662
+testing_error:  0.277344
+training_error_tied: 0.148833
+testing_error_tied:  0.277344
+training_E_vanilla: 0.567132
+training_E_modi:    0.721915
+
+computing the submission for boosting round: # 21
+training_error: 0.149070
+testing_error:  0.279297
+training_error_tied: 0.148359
+testing_error_tied:  0.279297
+training_E_vanilla: 0.668034
+training_E_modi:    0.718031
+
+computing the submission for boosting round: # 22
+training_error: 0.148596
+testing_error:  0.283203
+training_error_tied: 0.147885
+testing_error_tied:  0.283203
+training_E_vanilla: 0.554787
+training_E_modi:    0.714230
+
+computing the submission for boosting round: # 23
+training_error: 0.144567
+testing_error:  0.277344
+training_error_tied: 0.144093
+testing_error_tied:  0.277344
+training_E_vanilla: 0.636873
+training_E_modi:    0.710850
+
+computing the submission for boosting round: # 24
+training_error: 0.142671
+testing_error:  0.271484
+training_error_tied: 0.142315
+testing_error_tied:  0.271484
+training_E_vanilla: 1.121939
+training_E_modi:    0.707475
+
+computing the submission for boosting round: # 25
+training_error: 0.143974
+testing_error:  0.267578
+training_error_tied: 0.143619
+testing_error_tied:  0.267578
+training_E_vanilla: 0.661100
+training_E_modi:    0.704335
+
+computing the submission for boosting round: # 26
+training_error: 0.139827
+testing_error:  0.271484
+training_error_tied: 0.139590
+testing_error_tied:  0.271484
+training_E_vanilla: 0.533481
+training_E_modi:    0.701686
+
+computing the submission for boosting round: # 27
+training_error: 0.141130
+testing_error:  0.267578
+training_error_tied: 0.140893
+testing_error_tied:  0.267578
+training_E_vanilla: 0.523618
+training_E_modi:    0.698694
+
+computing the submission for boosting round: # 28
+training_error: 0.137576
+testing_error:  0.281250
+training_error_tied: 0.137339
+testing_error_tied:  0.281250
+training_E_vanilla: 0.518605
+training_E_modi:    0.696063
+
+computing the submission for boosting round: # 29
+training_error: 0.137813
+testing_error:  0.292969
+training_error_tied: 0.137576
+testing_error_tied:  0.292969
+training_E_vanilla: 0.520263
+training_E_modi:    0.693748
+
+computing the submission for boosting round: # 30
+training_error: 0.134376
+testing_error:  0.296875
+training_error_tied: 0.134139
+testing_error_tied:  0.296875
+training_E_vanilla: 0.511743
+training_E_modi:    0.691550
+
+computing the submission for boosting round: # 31
+training_error: 0.135561
+testing_error:  0.300781
+training_error_tied: 0.135324
+testing_error_tied:  0.300781
+training_E_vanilla: 0.521888
+training_E_modi:    0.689242
+
+computing the submission for boosting round: # 32
+training_error: 0.134376
+testing_error:  0.302734
+training_error_tied: 0.134139
+testing_error_tied:  0.302734
+training_E_vanilla: 0.596171
+training_E_modi:    0.687060
+
+computing the submission for boosting round: # 33
+training_error: 0.133902
+testing_error:  0.296875
+training_error_tied: 0.133665
+testing_error_tied:  0.296875
+training_E_vanilla: 0.538133
+training_E_modi:    0.681875
+
+computing the submission for boosting round: # 34
+training_error: 0.131769
+testing_error:  0.291016
+training_error_tied: 0.131532
+testing_error_tied:  0.291016
+training_E_vanilla: 0.521915
+training_E_modi:    0.679373
+
+computing the submission for boosting round: # 35
+training_error: 0.133665
+testing_error:  0.298828
+training_error_tied: 0.133487
+testing_error_tied:  0.298828
+training_E_vanilla: 0.512561
+training_E_modi:    0.677351
+
+computing the submission for boosting round: # 36
+training_error: 0.131651
+testing_error:  0.304688
+training_error_tied: 0.131591
+testing_error_tied:  0.304688
+training_E_vanilla: 0.505726
+training_E_modi:    0.674854
+
+computing the submission for boosting round: # 37
+training_error: 0.137694
+testing_error:  0.345703
+training_error_tied: 0.137635
+testing_error_tied:  0.345703
+training_E_vanilla: 7.296135
+training_E_modi:    0.672786
+
+computing the submission for boosting round: # 38
+training_error: 0.132243
+testing_error:  0.314453
+training_error_tied: 0.132184
+testing_error_tied:  0.314453
+training_E_vanilla: 0.545312
+training_E_modi:    0.664956
+
+computing the submission for boosting round: # 39
+training_error: 0.129399
+testing_error:  0.322266
+training_error_tied: 0.129340
+testing_error_tied:  0.322266
+training_E_vanilla: 0.659696
+training_E_modi:    0.662938
+
+computing the submission for boosting round: # 40
+training_error: 0.129281
+testing_error:  0.322266
+training_error_tied: 0.129221
+testing_error_tied:  0.322266
+training_E_vanilla: 0.541051
+training_E_modi:    0.661065
+Finished task.
+Task finished.
+Submitting result...
+Result submitted!
+Getting task...
+Starting task...
+Starting task ..
+2017/5/24 9:3
+Ranker name:  rankboost_modiVI
+Dataset Category: MovieLen
+User id:     0
+fold index:  3
+Training...
+iter: 0, weak ranker: 1
+iter: 1, weak ranker: 2
+iter: 2, weak ranker: 3
+iter: 3, weak ranker: 4
+iter: 4, weak ranker: 5
+iter: 5, weak ranker: 6
+iter: 6, weak ranker: 7
+iter: 7, weak ranker: 8
+iter: 8, weak ranker: 9
+iter: 9, weak ranker: 10
+iter: 10, weak ranker: 11
+iter: 11, weak ranker: 12
+iter: 12, weak ranker: 13
+iter: 13, weak ranker: 14
+iter: 14, weak ranker: 14
+iter: 15, weak ranker: 14
+iter: 16, weak ranker: 15
+iter: 17, weak ranker: 16
+iter: 18, weak ranker: 17
+iter: 19, weak ranker: 18
+iter: 20, weak ranker: 19
+iter: 21, weak ranker: 20
+iter: 22, weak ranker: 21
+iter: 23, weak ranker: 22
+iter: 24, weak ranker: 23
+iter: 25, weak ranker: 24
+iter: 26, weak ranker: 25
+iter: 27, weak ranker: 26
+iter: 28, weak ranker: 27
+iter: 29, weak ranker: 28
+iter: 30, weak ranker: 29
+iter: 31, weak ranker: 30
+iter: 32, weak ranker: 31
+iter: 33, weak ranker: 31
+iter: 34, weak ranker: 31
+iter: 35, weak ranker: 32
+iter: 36, weak ranker: 32
+iter: 37, weak ranker: 33
+iter: 38, weak ranker: 34
+iter: 39, weak ranker: 34
+
+computing the submission for boosting round: # 1
+training_error: 0.586822
+testing_error:  0.786127
+training_error_tied: 0.344672
+testing_error_tied:  0.470135
+training_E_vanilla: 0.914982
+training_E_modi:    0.950522
+
+computing the submission for boosting round: # 2
+training_error: 0.407231
+testing_error:  0.504817
+training_error_tied: 0.286572
+testing_error_tied:  0.351638
+training_E_vanilla: 0.838913
+training_E_modi:    0.915464
+
+computing the submission for boosting round: # 3
+training_error: 0.341698
+testing_error:  0.470135
+training_error_tied: 0.258563
+testing_error_tied:  0.362235
+training_E_vanilla: 0.817528
+training_E_modi:    0.891986
+
+computing the submission for boosting round: # 4
+training_error: 0.272003
+testing_error:  0.456647
+training_error_tied: 0.228830
+testing_error_tied:  0.388247
+training_E_vanilla: 0.813894
+training_E_modi:    0.873239
+
+computing the submission for boosting round: # 5
+training_error: 0.245243
+testing_error:  0.391137
+training_error_tied: 0.220445
+testing_error_tied:  0.354528
+training_E_vanilla: 0.756242
+training_E_modi:    0.853222
+
+computing the submission for boosting round: # 6
+training_error: 0.237512
+testing_error:  0.356455
+training_error_tied: 0.219196
+testing_error_tied:  0.336224
+training_E_vanilla: 0.763519
+training_E_modi:    0.843103
+
+computing the submission for boosting round: # 7
+training_error: 0.206351
+testing_error:  0.329480
+training_error_tied: 0.195469
+testing_error_tied:  0.316956
+training_E_vanilla: 0.769081
+training_E_modi:    0.829374
+
+computing the submission for boosting round: # 8
+training_error: 0.202902
+testing_error:  0.333333
+training_error_tied: 0.196717
+testing_error_tied:  0.326590
+training_E_vanilla: 0.773915
+training_E_modi:    0.819492
+
+computing the submission for boosting round: # 9
+training_error: 0.197074
+testing_error:  0.300578
+training_error_tied: 0.192317
+testing_error_tied:  0.295761
+training_E_vanilla: 0.776932
+training_E_modi:    0.809545
+
+computing the submission for boosting round: # 10
+training_error: 0.184943
+testing_error:  0.265896
+training_error_tied: 0.182624
+testing_error_tied:  0.263006
+training_E_vanilla: 0.784271
+training_E_modi:    0.798884
+
+computing the submission for boosting round: # 11
+training_error: 0.183754
+testing_error:  0.244701
+training_error_tied: 0.182088
+testing_error_tied:  0.242775
+training_E_vanilla: 0.786802
+training_E_modi:    0.790951
+
+computing the submission for boosting round: # 12
+training_error: 0.181613
+testing_error:  0.231214
+training_error_tied: 0.180007
+testing_error_tied:  0.229287
+training_E_vanilla: 0.788289
+training_E_modi:    0.783561
+
+computing the submission for boosting round: # 13
+training_error: 0.172693
+testing_error:  0.225434
+training_error_tied: 0.171444
+testing_error_tied:  0.223507
+training_E_vanilla: 0.772478
+training_E_modi:    0.777917
+
+computing the submission for boosting round: # 14
+training_error: 0.175190
+testing_error:  0.235067
+training_error_tied: 0.174001
+testing_error_tied:  0.233141
+training_E_vanilla: 0.751974
+training_E_modi:    0.772009
+
+computing the submission for boosting round: # 15
+training_error: 0.175904
+testing_error:  0.246628
+training_error_tied: 0.174715
+testing_error_tied:  0.244701
+training_E_vanilla: 0.743227
+training_E_modi:    0.767457
+
+computing the submission for boosting round: # 16
+training_error: 0.169006
+testing_error:  0.229287
+training_error_tied: 0.167816
+testing_error_tied:  0.227360
+training_E_vanilla: 0.747482
+training_E_modi:    0.759311
+
+computing the submission for boosting round: # 17
+training_error: 0.163416
+testing_error:  0.227360
+training_error_tied: 0.162702
+testing_error_tied:  0.225434
+training_E_vanilla: 0.732018
+training_E_modi:    0.755272
+
+computing the submission for boosting round: # 18
+training_error: 0.159729
+testing_error:  0.225434
+training_error_tied: 0.159134
+testing_error_tied:  0.223507
+training_E_vanilla: 0.739510
+training_E_modi:    0.751111
+
+computing the submission for boosting round: # 19
+training_error: 0.158539
+testing_error:  0.227360
+training_error_tied: 0.158004
+testing_error_tied:  0.225434
+training_E_vanilla: 0.721245
+training_E_modi:    0.747265
+
+computing the submission for boosting round: # 20
+training_error: 0.158064
+testing_error:  0.248555
+training_error_tied: 0.157588
+testing_error_tied:  0.246628
+training_E_vanilla: 0.702659
+training_E_modi:    0.743323
+
+computing the submission for boosting round: # 21
+training_error: 0.159848
+testing_error:  0.233141
+training_error_tied: 0.159372
+testing_error_tied:  0.231214
+training_E_vanilla: 0.684408
+training_E_modi:    0.740313
+
+computing the submission for boosting round: # 22
+training_error: 0.155685
+testing_error:  0.242775
+training_error_tied: 0.155269
+testing_error_tied:  0.240848
+training_E_vanilla: 0.694923
+training_E_modi:    0.737089
+
+computing the submission for boosting round: # 23
+training_error: 0.156042
+testing_error:  0.238921
+training_error_tied: 0.155626
+testing_error_tied:  0.236994
+training_E_vanilla: 0.676337
+training_E_modi:    0.734099
+
+computing the submission for boosting round: # 24
+training_error: 0.148311
+testing_error:  0.240848
+training_error_tied: 0.148133
+testing_error_tied:  0.239884
+training_E_vanilla: 0.660191
+training_E_modi:    0.731051
+
+computing the submission for boosting round: # 25
+training_error: 0.149500
+testing_error:  0.248555
+training_error_tied: 0.149322
+testing_error_tied:  0.247592
+training_E_vanilla: 0.637728
+training_E_modi:    0.727388
+
+computing the submission for boosting round: # 26
+training_error: 0.145576
+testing_error:  0.250482
+training_error_tied: 0.145397
+testing_error_tied:  0.250482
+training_E_vanilla: 0.652562
+training_E_modi:    0.724345
+
+computing the submission for boosting round: # 27
+training_error: 0.142602
+testing_error:  0.233141
+training_error_tied: 0.142424
+testing_error_tied:  0.233141
+training_E_vanilla: 0.631718
+training_E_modi:    0.721292
+
+computing the submission for boosting round: # 28
+training_error: 0.138796
+testing_error:  0.238921
+training_error_tied: 0.138677
+testing_error_tied:  0.238921
+training_E_vanilla: 0.610760
+training_E_modi:    0.718436
+
+computing the submission for boosting round: # 29
+training_error: 0.137250
+testing_error:  0.229287
+training_error_tied: 0.137131
+testing_error_tied:  0.229287
+training_E_vanilla: 0.623696
+training_E_modi:    0.715366
+
+computing the submission for boosting round: # 30
+training_error: 0.137250
+testing_error:  0.225434
+training_error_tied: 0.137131
+testing_error_tied:  0.225434
+training_E_vanilla: 0.635160
+training_E_modi:    0.712549
+
+computing the submission for boosting round: # 31
+training_error: 0.137131
+testing_error:  0.223507
+training_error_tied: 0.137191
+testing_error_tied:  0.223507
+training_E_vanilla: 0.645475
+training_E_modi:    0.710096
+
+computing the submission for boosting round: # 32
+training_error: 0.134515
+testing_error:  0.231214
+training_error_tied: 0.134396
+testing_error_tied:  0.231214
+training_E_vanilla: 0.656430
+training_E_modi:    0.707609
+
+computing the submission for boosting round: # 33
+training_error: 0.135109
+testing_error:  0.238921
+training_error_tied: 0.134990
+testing_error_tied:  0.238921
+training_E_vanilla: 0.663693
+training_E_modi:    0.705563
+
+computing the submission for boosting round: # 34
+training_error: 0.147241
+testing_error:  0.210019
+training_error_tied: 0.147122
+testing_error_tied:  0.210019
+training_E_vanilla: 0.643055
+training_E_modi:    0.703200
+
+computing the submission for boosting round: # 35
+training_error: 0.133920
+testing_error:  0.213873
+training_error_tied: 0.133801
+testing_error_tied:  0.213873
+training_E_vanilla: 0.654122
+training_E_modi:    0.692091
+
+computing the submission for boosting round: # 36
+training_error: 0.132969
+testing_error:  0.221580
+training_error_tied: 0.132969
+testing_error_tied:  0.221580
+training_E_vanilla: 0.637305
+training_E_modi:    0.689460
+
+computing the submission for boosting round: # 37
+training_error: 0.131660
+testing_error:  0.231214
+training_error_tied: 0.131660
+testing_error_tied:  0.231214
+training_E_vanilla: 0.613573
+training_E_modi:    0.687571
+
+computing the submission for boosting round: # 38
+training_error: 0.132136
+testing_error:  0.229287
+training_error_tied: 0.132136
+testing_error_tied:  0.229287
+training_E_vanilla: 0.624844
+training_E_modi:    0.685434
+
+computing the submission for boosting round: # 39
+training_error: 0.132612
+testing_error:  0.233141
+training_error_tied: 0.132612
+testing_error_tied:  0.233141
+training_E_vanilla: 0.638447
+training_E_modi:    0.683331
+
+computing the submission for boosting round: # 40
+training_error: 0.130233
+testing_error:  0.231214
+training_error_tied: 0.130233
+testing_error_tied:  0.231214
+training_E_vanilla: 0.650715
+training_E_modi:    0.681623
+Finished task.
+Task finished.
+Submitting result...
+Result submitted!
+Getting task...
+Starting task...
+Starting task ..
+2017/5/24 9:4
+Ranker name:  rankboost_modiVI
+Dataset Category: MovieLen
+User id:     0
+fold index:  4
+Training...
+iter: 0, weak ranker: 1
+iter: 1, weak ranker: 2
+iter: 2, weak ranker: 3
+iter: 3, weak ranker: 4
+iter: 4, weak ranker: 5
+iter: 5, weak ranker: 6
+iter: 6, weak ranker: 7
+iter: 7, weak ranker: 8
+iter: 8, weak ranker: 9
+iter: 9, weak ranker: 10
+iter: 10, weak ranker: 11
+iter: 11, weak ranker: 12
+iter: 12, weak ranker: 13
+iter: 13, weak ranker: 14
+iter: 14, weak ranker: 15
+iter: 15, weak ranker: 16
+iter: 16, weak ranker: 17
+iter: 17, weak ranker: 18
+iter: 18, weak ranker: 19
+iter: 19, weak ranker: 20
+iter: 20, weak ranker: 21
+iter: 21, weak ranker: 22
+iter: 22, weak ranker: 23
+iter: 23, weak ranker: 23
+iter: 24, weak ranker: 23
+iter: 25, weak ranker: 24
+iter: 26, weak ranker: 25
+iter: 27, weak ranker: 26
+iter: 28, weak ranker: 27
+iter: 29, weak ranker: 28
+iter: 30, weak ranker: 29
+iter: 31, weak ranker: 30
+iter: 32, weak ranker: 31
+iter: 33, weak ranker: 32
+iter: 34, weak ranker: 33
+iter: 35, weak ranker: 34
+iter: 36, weak ranker: 35
+iter: 37, weak ranker: 36
+iter: 38, weak ranker: 37
+iter: 39, weak ranker: 38
+
+computing the submission for boosting round: # 1
+training_error: 0.592796
+testing_error:  0.751412
+training_error_tied: 0.342408
+testing_error_tied:  0.447269
+training_E_vanilla: 0.900712
+training_E_modi:    0.949030
+
+computing the submission for boosting round: # 2
+training_error: 0.406845
+testing_error:  0.555556
+training_error_tied: 0.283954
+testing_error_tied:  0.373823
+training_E_vanilla: 0.837367
+training_E_modi:    0.914512
+
+computing the submission for boosting round: # 3
+training_error: 0.337920
+testing_error:  0.506591
+training_error_tied: 0.261517
+testing_error_tied:  0.363465
+training_E_vanilla: 0.822385
+training_E_modi:    0.893407
+
+computing the submission for boosting round: # 4
+training_error: 0.281321
+testing_error:  0.395480
+training_error_tied: 0.239799
+testing_error_tied:  0.322976
+training_E_vanilla: 0.813762
+training_E_modi:    0.872842
+
+computing the submission for boosting round: # 5
+training_error: 0.237645
+testing_error:  0.357815
+training_error_tied: 0.215687
+testing_error_tied:  0.324859
+training_E_vanilla: 0.747324
+training_E_modi:    0.849037
+
+computing the submission for boosting round: # 6
+training_error: 0.216585
+testing_error:  0.312618
+training_error_tied: 0.201029
+testing_error_tied:  0.294727
+training_E_vanilla: 0.695929
+training_E_modi:    0.832678
+
+computing the submission for boosting round: # 7
+training_error: 0.205815
+testing_error:  0.310734
+training_error_tied: 0.193012
+testing_error_tied:  0.293785
+training_E_vanilla: 0.678871
+training_E_modi:    0.821460
+
+computing the submission for boosting round: # 8
+training_error: 0.199713
+testing_error:  0.301318
+training_error_tied: 0.188704
+testing_error_tied:  0.287194
+training_E_vanilla: 0.658701
+training_E_modi:    0.811117
+
+computing the submission for boosting round: # 9
+training_error: 0.183080
+testing_error:  0.291902
+training_error_tied: 0.177217
+testing_error_tied:  0.281544
+training_E_vanilla: 0.662340
+training_E_modi:    0.800299
+
+computing the submission for boosting round: # 10
+training_error: 0.176738
+testing_error:  0.284369
+training_error_tied: 0.172251
+testing_error_tied:  0.274011
+training_E_vanilla: 0.678157
+training_E_modi:    0.789109
+
+computing the submission for boosting round: # 11
+training_error: 0.177456
+testing_error:  0.286252
+training_error_tied: 0.173388
+testing_error_tied:  0.275895
+training_E_vanilla: 0.690033
+training_E_modi:    0.780930
+
+computing the submission for boosting round: # 12
+training_error: 0.166447
+testing_error:  0.286252
+training_error_tied: 0.163456
+testing_error_tied:  0.281544
+training_E_vanilla: 0.652810
+training_E_modi:    0.772021
+
+computing the submission for boosting round: # 13
+training_error: 0.164772
+testing_error:  0.276836
+training_error_tied: 0.162798
+testing_error_tied:  0.273070
+training_E_vanilla: 0.617243
+training_E_modi:    0.763979
+
+computing the submission for boosting round: # 14
+training_error: 0.159986
+testing_error:  0.250471
+training_error_tied: 0.158669
+testing_error_tied:  0.248588
+training_E_vanilla: 0.631050
+training_E_modi:    0.757873
+
+computing the submission for boosting round: # 15
+training_error: 0.150652
+testing_error:  0.258004
+training_error_tied: 0.150054
+testing_error_tied:  0.257062
+training_E_vanilla: 0.645517
+training_E_modi:    0.751509
+
+computing the submission for boosting round: # 16
+training_error: 0.151849
+testing_error:  0.259887
+training_error_tied: 0.151310
+testing_error_tied:  0.258945
+training_E_vanilla: 0.611848
+training_E_modi:    0.744581
+
+computing the submission for boosting round: # 17
+training_error: 0.143712
+testing_error:  0.265537
+training_error_tied: 0.143353
+testing_error_tied:  0.264595
+training_E_vanilla: 0.626018
+training_E_modi:    0.740145
+
+computing the submission for boosting round: # 18
+training_error: 0.143712
+testing_error:  0.263653
+training_error_tied: 0.143353
+testing_error_tied:  0.262712
+training_E_vanilla: 0.598530
+training_E_modi:    0.735333
+
+computing the submission for boosting round: # 19
+training_error: 0.140122
+testing_error:  0.263653
+training_error_tied: 0.139823
+testing_error_tied:  0.262712
+training_E_vanilla: 0.572311
+training_E_modi:    0.730855
+
+computing the submission for boosting round: # 20
+training_error: 0.138806
+testing_error:  0.261770
+training_error_tied: 0.138507
+testing_error_tied:  0.260829
+training_E_vanilla: 0.549733
+training_E_modi:    0.726617
+
+computing the submission for boosting round: # 21
+training_error: 0.139165
+testing_error:  0.259887
+training_error_tied: 0.138866
+testing_error_tied:  0.258945
+training_E_vanilla: 0.561622
+training_E_modi:    0.723373
+
+computing the submission for boosting round: # 22
+training_error: 0.132464
+testing_error:  0.263653
+training_error_tied: 0.132165
+testing_error_tied:  0.262712
+training_E_vanilla: 0.572583
+training_E_modi:    0.719185
+
+computing the submission for boosting round: # 23
+training_error: 0.133900
+testing_error:  0.265537
+training_error_tied: 0.133601
+testing_error_tied:  0.264595
+training_E_vanilla: 0.587442
+training_E_modi:    0.715801
+
+computing the submission for boosting round: # 24
+training_error: 0.145626
+testing_error:  0.248588
+training_error_tied: 0.145327
+testing_error_tied:  0.247646
+training_E_vanilla: 0.556540
+training_E_modi:    0.712360
+
+computing the submission for boosting round: # 25
+training_error: 0.131267
+testing_error:  0.263653
+training_error_tied: 0.130968
+testing_error_tied:  0.262712
+training_E_vanilla: 0.568763
+training_E_modi:    0.700162
+
+computing the submission for boosting round: # 26
+training_error: 0.126840
+testing_error:  0.269303
+training_error_tied: 0.126720
+testing_error_tied:  0.268362
+training_E_vanilla: 0.543576
+training_E_modi:    0.696966
+
+computing the submission for boosting round: # 27
+training_error: 0.125045
+testing_error:  0.271186
+training_error_tied: 0.124925
+testing_error_tied:  0.271186
+training_E_vanilla: 0.523611
+training_E_modi:    0.694158
+
+computing the submission for boosting round: # 28
+training_error: 0.126840
+testing_error:  0.267420
+training_error_tied: 0.126720
+testing_error_tied:  0.267420
+training_E_vanilla: 0.508938
+training_E_modi:    0.690880
+
+computing the submission for boosting round: # 29
+training_error: 0.127199
+testing_error:  0.256121
+training_error_tied: 0.127139
+testing_error_tied:  0.256121
+training_E_vanilla: 0.517037
+training_E_modi:    0.688285
+
+computing the submission for boosting round: # 30
+training_error: 0.121455
+testing_error:  0.261770
+training_error_tied: 0.121395
+testing_error_tied:  0.261770
+training_E_vanilla: 0.494230
+training_E_modi:    0.685642
+
+computing the submission for boosting round: # 31
+training_error: 0.121335
+testing_error:  0.265537
+training_error_tied: 0.121276
+testing_error_tied:  0.265537
+training_E_vanilla: 0.503774
+training_E_modi:    0.683133
+
+computing the submission for boosting round: # 32
+training_error: 0.117387
+testing_error:  0.265537
+training_error_tied: 0.117387
+testing_error_tied:  0.265537
+training_E_vanilla: 0.485141
+training_E_modi:    0.680210
+
+computing the submission for boosting round: # 33
+training_error: 0.119182
+testing_error:  0.269303
+training_error_tied: 0.119182
+testing_error_tied:  0.269303
+training_E_vanilla: 0.496177
+training_E_modi:    0.677277
+
+computing the submission for boosting round: # 34
+training_error: 0.117387
+testing_error:  0.267420
+training_error_tied: 0.117387
+testing_error_tied:  0.267420
+training_E_vanilla: 0.509798
+training_E_modi:    0.674801
+
+computing the submission for boosting round: # 35
+training_error: 0.117028
+testing_error:  0.269303
+training_error_tied: 0.117028
+testing_error_tied:  0.269303
+training_E_vanilla: 0.492147
+training_E_modi:    0.672616
+
+computing the submission for boosting round: # 36
+training_error: 0.116429
+testing_error:  0.267420
+training_error_tied: 0.116429
+testing_error_tied:  0.267420
+training_E_vanilla: 0.478361
+training_E_modi:    0.670656
+
+computing the submission for boosting round: # 37
+training_error: 0.112840
+testing_error:  0.271186
+training_error_tied: 0.112840
+testing_error_tied:  0.271186
+training_E_vanilla: 0.483818
+training_E_modi:    0.668739
+
+computing the submission for boosting round: # 38
+training_error: 0.115472
+testing_error:  0.269303
+training_error_tied: 0.115472
+testing_error_tied:  0.269303
+training_E_vanilla: 0.475169
+training_E_modi:    0.666725
+
+computing the submission for boosting round: # 39
+training_error: 0.112481
+testing_error:  0.267420
+training_error_tied: 0.112481
+testing_error_tied:  0.267420
+training_E_vanilla: 0.468078
+training_E_modi:    0.664957
+
+computing the submission for boosting round: # 40
+training_error: 0.115352
+testing_error:  0.265537
+training_error_tied: 0.115352
+testing_error_tied:  0.265537
+training_E_vanilla: 0.491434
+training_E_modi:    0.663092
+Finished task.
+Task finished.
+Submitting result...
+Result submitted!
+Getting task...
+Starting task...
+Starting task ..
+2017/5/24 9:4
+Ranker name:  rankboost_modiVI
+Dataset Category: MovieLen
+User id:     1
+fold index:  0
+Training...
+iter: 0, weak ranker: 1
+iter: 1, weak ranker: 2
+iter: 2, weak ranker: 3
+iter: 3, weak ranker: 4
+iter: 4, weak ranker: 5
+iter: 5, weak ranker: 6
+iter: 6, weak ranker: 7
+iter: 7, weak ranker: 8
+iter: 8, weak ranker: 9
+iter: 9, weak ranker: 10
+iter: 10, weak ranker: 10
+iter: 11, weak ranker: 10
+iter: 12, weak ranker: 11
+iter: 13, weak ranker: 12
+iter: 14, weak ranker: 13
+iter: 15, weak ranker: 14
+iter: 16, weak ranker: 14
+iter: 17, weak ranker: 14
+iter: 18, weak ranker: 15
+iter: 19, weak ranker: 15
+iter: 20, weak ranker: 15
+iter: 21, weak ranker: 16
+iter: 22, weak ranker: 17
+iter: 23, weak ranker: 18
+iter: 24, weak ranker: 18
+iter: 25, weak ranker: 18
+iter: 26, weak ranker: 19
+iter: 27, weak ranker: 20
+iter: 28, weak ranker: 21
+iter: 29, weak ranker: 21
+iter: 30, weak ranker: 21
+iter: 31, weak ranker: 22
+iter: 32, weak ranker: 23
+iter: 33, weak ranker: 23
+iter: 34, weak ranker: 23
+iter: 35, weak ranker: 24
+iter: 36, weak ranker: 25
+iter: 37, weak ranker: 26
+iter: 38, weak ranker: 27
+iter: 39, weak ranker: 28
+
+computing the submission for boosting round: # 1
+training_error: 0.503096
+testing_error:  0.567039
+training_error_tied: 0.284782
+testing_error_tied:  0.304469
+training_E_vanilla: 0.800109
+training_E_modi:    0.902622
+
+computing the submission for boosting round: # 2
+training_error: 0.349352
+testing_error:  0.472067
+training_error_tied: 0.232020
+testing_error_tied:  0.275140
+training_E_vanilla: 2.461244
+training_E_modi:    0.865696
+
+computing the submission for boosting round: # 3
+training_error: 0.284287
+testing_error:  0.325419
+training_error_tied: 0.202626
+testing_error_tied:  0.203212
+training_E_vanilla: 0.683471
+training_E_modi:    0.835706
+
+computing the submission for boosting round: # 4
+training_error: 0.245975
+testing_error:  0.272346
+training_error_tied: 0.191809
+testing_error_tied:  0.180866
+training_E_vanilla: 0.679202
+training_E_modi:    0.815083
+
+computing the submission for boosting round: # 5
+training_error: 0.225663
+testing_error:  0.252793
+training_error_tied: 0.179548
+testing_error_tied:  0.171788
+training_E_vanilla: 0.670708
+training_E_modi:    0.798510
+
+computing the submission for boosting round: # 6
+training_error: 0.201883
+testing_error:  0.206704
+training_error_tied: 0.173933
+testing_error_tied:  0.163408
+training_E_vanilla: 1.159046
+training_E_modi:    0.786101
+
+computing the submission for boosting round: # 7
+training_error: 0.187928
+testing_error:  0.182961
+training_error_tied: 0.166997
+testing_error_tied:  0.155028
+training_E_vanilla: 219.455647
+training_E_modi:    0.775296
+
+computing the submission for boosting round: # 8
+training_error: 0.175625
+testing_error:  0.157821
+training_error_tied: 0.162538
+testing_error_tied:  0.141061
+training_E_vanilla: 44110750720842.554688
+training_E_modi:    0.766517
+
+computing the submission for boosting round: # 9
+training_error: 0.169763
+testing_error:  0.155028
+training_error_tied: 0.159112
+testing_error_tied:  0.143855
+training_E_vanilla: 408.644336
+training_E_modi:    0.758056
+
+computing the submission for boosting round: # 10
+training_error: 0.164809
+testing_error:  0.145251
+training_error_tied: 0.155520
+testing_error_tied:  0.134777
+training_E_vanilla: 2.598929
+training_E_modi:    0.752421
+
+computing the submission for boosting round: # 11
+training_error: 0.210965
+testing_error:  0.156425
+training_error_tied: 0.201676
+testing_error_tied:  0.145950
+training_E_vanilla: 0.755602
+training_E_modi:    0.746143
+
+computing the submission for boosting round: # 12
+training_error: 0.165387
+testing_error:  0.136872
+training_error_tied: 0.156098
+testing_error_tied:  0.126397
+training_E_vanilla: 347741403003545632899072.000000
+training_E_modi:    0.723647
+
+computing the submission for boosting round: # 13
+training_error: 0.161423
+testing_error:  0.153631
+training_error_tied: 0.156387
+testing_error_tied:  0.148045
+training_E_vanilla: 539.678425
+training_E_modi:    0.717995
+
+computing the submission for boosting round: # 14
+training_error: 0.153414
+testing_error:  0.132682
+training_error_tied: 0.150978
+testing_error_tied:  0.130587
+training_E_vanilla: 13286481715464007681617809283477165576765893215551761216102191980583102169419624102100650180553560348540238960244777360729859462919619349598734014411910953750264203950832579465179289132380440524026352163872712450247318202782793546273587023441216421271136587058305102102900678732177519673344.000000
+training_E_modi:    0.713998
+
+computing the submission for boosting round: # 15
+training_error: 0.153745
+testing_error:  0.135475
+training_error_tied: 0.151598
+testing_error_tied:  0.133380
+training_E_vanilla: 1352.609104
+training_E_modi:    0.710634
+
+computing the submission for boosting round: # 16
+training_error: 0.152011
+testing_error:  0.128492
+training_error_tied: 0.149864
+testing_error_tied:  0.127095
+training_E_vanilla: 16348657934186681686383827153194736958728892863130475725544444308049182156307764023918592.000000
+training_E_modi:    0.707633
+
+computing the submission for boosting round: # 17
+training_error: 0.161754
+testing_error:  0.135475
+training_error_tied: 0.159607
+testing_error_tied:  0.134078
+training_E_vanilla: 0.628451
+training_E_modi:    0.704714
+
+computing the submission for boosting round: # 18
+training_error: 0.148873
+testing_error:  0.121508
+training_error_tied: 0.146726
+testing_error_tied:  0.120112
+training_E_vanilla: 14.566226
+training_E_modi:    0.695855
+
+computing the submission for boosting round: # 19
+training_error: 0.147882
+testing_error:  0.124302
+training_error_tied: 0.145777
+testing_error_tied:  0.122905
+training_E_vanilla: 1.488085
+training_E_modi:    0.693187
+
+computing the submission for boosting round: # 20
+training_error: 0.177690
+testing_error:  0.141061
+training_error_tied: 0.175584
+testing_error_tied:  0.139665
+training_E_vanilla: 28.333013
+training_E_modi:    0.690437
+
+computing the submission for boosting round: # 21
+training_error: 0.152754
+testing_error:  0.121508
+training_error_tied: 0.150648
+testing_error_tied:  0.120112
+training_E_vanilla: 54.854266
+training_E_modi:    0.683896
+
+computing the submission for boosting round: # 22
+training_error: 0.147882
+testing_error:  0.111732
+training_error_tied: 0.146396
+testing_error_tied:  0.110335
+training_E_vanilla: 1.281195
+training_E_modi:    0.681230
+
+computing the submission for boosting round: # 23
+training_error: 0.148790
+testing_error:  0.115922
+training_error_tied: 0.147387
+testing_error_tied:  0.114525
+training_E_vanilla: 29.766021
+training_E_modi:    0.678622
+
+computing the submission for boosting round: # 24
+training_error: 0.148708
+testing_error:  0.124302
+training_error_tied: 0.147593
+testing_error_tied:  0.122905
+training_E_vanilla: 1.699227
+training_E_modi:    0.676290
+
+computing the submission for boosting round: # 25
+training_error: 0.162414
+testing_error:  0.168994
+training_error_tied: 0.161300
+testing_error_tied:  0.167598
+training_E_vanilla: 6.028024
+training_E_modi:    0.674016
+
+computing the submission for boosting round: # 26
+training_error: 0.149616
+testing_error:  0.128492
+training_error_tied: 0.148501
+testing_error_tied:  0.127095
+training_E_vanilla: 9.787934
+training_E_modi:    0.659755
+
+computing the submission for boosting round: # 27
+training_error: 0.145735
+testing_error:  0.141061
+training_error_tied: 0.144951
+testing_error_tied:  0.139665
+training_E_vanilla: 2517351.370236
+training_E_modi:    0.657452
+
+computing the submission for boosting round: # 28
+training_error: 0.143010
+testing_error:  0.141061
+training_error_tied: 0.142226
+testing_error_tied:  0.139665
+training_E_vanilla: 7.598121
+training_E_modi:    0.655108
+
+computing the submission for boosting round: # 29
+training_error: 0.139955
+testing_error:  0.142458
+training_error_tied: 0.139584
+testing_error_tied:  0.141760
+training_E_vanilla: 1.027351
+training_E_modi:    0.652815
+
+computing the submission for boosting round: # 30
+training_error: 0.154405
+testing_error:  0.157821
+training_error_tied: 0.154034
+testing_error_tied:  0.157123
+training_E_vanilla: 491.785352
+training_E_modi:    0.650901
+
+computing the submission for boosting round: # 31
+training_error: 0.140286
+testing_error:  0.136872
+training_error_tied: 0.139914
+testing_error_tied:  0.136173
+training_E_vanilla: 10.888336
+training_E_modi:    0.646041
+
+computing the submission for boosting round: # 32
+training_error: 0.134754
+testing_error:  0.134078
+training_error_tied: 0.134423
+testing_error_tied:  0.133380
+training_E_vanilla: 1.082738
+training_E_modi:    0.644485
+
+computing the submission for boosting round: # 33
+training_error: 0.136405
+testing_error:  0.131285
+training_error_tied: 0.136157
+testing_error_tied:  0.130587
+training_E_vanilla: 0.685131
+training_E_modi:    0.642902
+
+computing the submission for boosting round: # 34
+training_error: 0.137561
+testing_error:  0.134078
+training_error_tied: 0.137313
+testing_error_tied:  0.133380
+training_E_vanilla: 0.572215
+training_E_modi:    0.641471
+
+computing the submission for boosting round: # 35
+training_error: 0.135414
+testing_error:  0.132682
+training_error_tied: 0.135166
+testing_error_tied:  0.131983
+training_E_vanilla: 0.578631
+training_E_modi:    0.634119
+
+computing the submission for boosting round: # 36
+training_error: 0.135992
+testing_error:  0.134078
+training_error_tied: 0.135786
+testing_error_tied:  0.133380
+training_E_vanilla: 0.687140
+training_E_modi:    0.632474
+
+computing the submission for boosting round: # 37
+training_error: 0.135744
+testing_error:  0.135475
+training_error_tied: 0.135621
+testing_error_tied:  0.134777
+training_E_vanilla: 0.569266
+training_E_modi:    0.631144
+
+computing the submission for boosting round: # 38
+training_error: 0.130955
+testing_error:  0.127095
+training_error_tied: 0.130831
+testing_error_tied:  0.126397
+training_E_vanilla: 0.670045
+training_E_modi:    0.629910
+
+computing the submission for boosting round: # 39
+training_error: 0.129799
+testing_error:  0.134078
+training_error_tied: 0.129676
+testing_error_tied:  0.133380
+training_E_vanilla: 1.713544
+training_E_modi:    0.628316
+
+computing the submission for boosting round: # 40
+training_error: 0.132689
+testing_error:  0.139665
+training_error_tied: 0.132648
+testing_error_tied:  0.138966
+training_E_vanilla: 0.807131
+training_E_modi:    0.627186
+Finished task.
+Task finished.
+Submitting result...
+Result submitted!
+Getting task...
+Starting task...
+Starting task ..
+2017/5/24 9:5
+Ranker name:  rankboost_modiVI
+Dataset Category: MovieLen
+User id:     1
+fold index:  1
+Training...
+iter: 0, weak ranker: 1
+iter: 1, weak ranker: 2
+iter: 2, weak ranker: 3
+iter: 3, weak ranker: 4
+iter: 4, weak ranker: 5
+iter: 5, weak ranker: 6
+iter: 6, weak ranker: 7
+iter: 7, weak ranker: 8
+iter: 8, weak ranker: 8
+iter: 9, weak ranker: 8
+iter: 10, weak ranker: 9
+iter: 11, weak ranker: 10
+iter: 12, weak ranker: 11
+iter: 13, weak ranker: 12
+iter: 14, weak ranker: 13
+iter: 15, weak ranker: 14
+iter: 16, weak ranker: 14
+iter: 17, weak ranker: 14
+iter: 18, weak ranker: 15
+iter: 19, weak ranker: 16
+iter: 20, weak ranker: 17
+iter: 21, weak ranker: 17
+iter: 22, weak ranker: 17
+iter: 23, weak ranker: 18
+iter: 24, weak ranker: 19
+iter: 25, weak ranker: 20
+iter: 26, weak ranker: 21
+iter: 27, weak ranker: 22
+iter: 28, weak ranker: 23
+iter: 29, weak ranker: 24
+iter: 30, weak ranker: 25
+iter: 31, weak ranker: 25
+iter: 32, weak ranker: 25
+iter: 33, weak ranker: 26
+iter: 34, weak ranker: 27
+iter: 35, weak ranker: 27
+iter: 36, weak ranker: 27
+iter: 37, weak ranker: 27
+iter: 38, weak ranker: 27
+iter: 39, weak ranker: 27
+
+computing the submission for boosting round: # 1
+training_error: 0.513478
+testing_error:  0.507483
+training_error_tied: 0.287271
+testing_error_tied:  0.300680
+training_E_vanilla: 0.797386
+training_E_modi:    0.904978
+
+computing the submission for boosting round: # 2
+training_error: 0.361647
+testing_error:  0.409524
+training_error_tied: 0.234692
+testing_error_tied:  0.282993
+training_E_vanilla: 3.500791
+training_E_modi:    0.864208
+
+computing the submission for boosting round: # 3
+training_error: 0.271215
+testing_error:  0.351020
+training_error_tied: 0.199043
+testing_error_tied:  0.269388
+training_E_vanilla: 0.713535
+training_E_modi:    0.827924
+
+computing the submission for boosting round: # 4
+training_error: 0.238852
+testing_error:  0.262585
+training_error_tied: 0.180283
+testing_error_tied:  0.218367
+training_E_vanilla: 0.662971
+training_E_modi:    0.807332
+
+computing the submission for boosting round: # 5
+training_error: 0.213311
+testing_error:  0.250340
+training_error_tied: 0.171506
+testing_error_tied:  0.221088
+training_E_vanilla: 0.670544
+training_E_modi:    0.789590
+
+computing the submission for boosting round: # 6
+training_error: 0.188020
+testing_error:  0.235374
+training_error_tied: 0.163602
+testing_error_tied:  0.213605
+training_E_vanilla: 0.679754
+training_E_modi:    0.775548
+
+computing the submission for boosting round: # 7
+training_error: 0.167388
+testing_error:  0.239456
+training_error_tied: 0.154534
+testing_error_tied:  0.223810
+training_E_vanilla: 0.692842
+training_E_modi:    0.766338
+
+computing the submission for boosting round: # 8
+training_error: 0.168220
+testing_error:  0.246259
+training_error_tied: 0.157280
+testing_error_tied:  0.231973
+training_E_vanilla: 0.698465
+training_E_modi:    0.758015
+
+computing the submission for boosting round: # 9
+training_error: 0.198835
+testing_error:  0.277551
+training_error_tied: 0.187895
+testing_error_tied:  0.263265
+training_E_vanilla: 0.703768
+training_E_modi:    0.749464
+
+computing the submission for boosting round: # 10
+training_error: 0.165141
+testing_error:  0.244898
+training_error_tied: 0.154201
+testing_error_tied:  0.230612
+training_E_vanilla: 0.693817
+training_E_modi:    0.725720
+
+computing the submission for boosting round: # 11
+training_error: 0.163810
+testing_error:  0.221769
+training_error_tied: 0.153785
+testing_error_tied:  0.212245
+training_E_vanilla: 0.663600
+training_E_modi:    0.719597
+
+computing the submission for boosting round: # 12
+training_error: 0.156822
+testing_error:  0.210884
+training_error_tied: 0.148794
+testing_error_tied:  0.202721
+training_E_vanilla: 0.675072
+training_E_modi:    0.714231
+
+computing the submission for boosting round: # 13
+training_error: 0.151830
+testing_error:  0.205442
+training_error_tied: 0.144384
+testing_error_tied:  0.197959
+training_E_vanilla: 0.645002
+training_E_modi:    0.708799
+
+computing the submission for boosting round: # 14
+training_error: 0.142596
+testing_error:  0.209524
+training_error_tied: 0.136980
+testing_error_tied:  0.202721
+training_E_vanilla: 0.664479
+training_E_modi:    0.704121
+
+computing the submission for boosting round: # 15
+training_error: 0.139933
+testing_error:  0.206803
+training_error_tied: 0.134900
+testing_error_tied:  0.202041
+training_E_vanilla: 0.635376
+training_E_modi:    0.699213
+
+computing the submission for boosting round: # 16
+training_error: 0.139933
+testing_error:  0.191837
+training_error_tied: 0.136398
+testing_error_tied:  0.188435
+training_E_vanilla: 0.606268
+training_E_modi:    0.694922
+
+computing the submission for boosting round: # 17
+training_error: 0.147754
+testing_error:  0.202721
+training_error_tied: 0.144218
+testing_error_tied:  0.199320
+training_E_vanilla: 0.566434
+training_E_modi:    0.690925
+
+computing the submission for boosting round: # 18
+training_error: 0.137687
+testing_error:  0.197279
+training_error_tied: 0.134151
+testing_error_tied:  0.193878
+training_E_vanilla: 0.588459
+training_E_modi:    0.681558
+
+computing the submission for boosting round: # 19
+training_error: 0.132363
+testing_error:  0.201361
+training_error_tied: 0.129409
+testing_error_tied:  0.197959
+training_E_vanilla: 0.605472
+training_E_modi:    0.677913
+
+computing the submission for boosting round: # 20
+training_error: 0.132363
+testing_error:  0.186395
+training_error_tied: 0.130075
+testing_error_tied:  0.185034
+training_E_vanilla: 0.581820
+training_E_modi:    0.674827
+
+computing the submission for boosting round: # 21
+training_error: 0.130116
+testing_error:  0.190476
+training_error_tied: 0.128037
+testing_error_tied:  0.189116
+training_E_vanilla: 0.595128
+training_E_modi:    0.671709
+
+computing the submission for boosting round: # 22
+training_error: 0.150083
+testing_error:  0.208163
+training_error_tied: 0.148003
+testing_error_tied:  0.206803
+training_E_vanilla: 0.584397
+training_E_modi:    0.668528
+
+computing the submission for boosting round: # 23
+training_error: 0.132612
+testing_error:  0.190476
+training_error_tied: 0.130532
+testing_error_tied:  0.189116
+training_E_vanilla: 0.586211
+training_E_modi:    0.661523
+
+computing the submission for boosting round: # 24
+training_error: 0.130200
+testing_error:  0.200000
+training_error_tied: 0.128161
+testing_error_tied:  0.198639
+training_E_vanilla: 0.564521
+training_E_modi:    0.658330
+
+computing the submission for boosting round: # 25
+training_error: 0.129035
+testing_error:  0.195918
+training_error_tied: 0.127038
+testing_error_tied:  0.194558
+training_E_vanilla: 0.540581
+training_E_modi:    0.655510
+
+computing the submission for boosting round: # 26
+training_error: 0.123794
+testing_error:  0.202721
+training_error_tied: 0.122712
+testing_error_tied:  0.201361
+training_E_vanilla: 0.554782
+training_E_modi:    0.653326
+
+computing the submission for boosting round: # 27
+training_error: 0.124043
+testing_error:  0.185034
+training_error_tied: 0.122962
+testing_error_tied:  0.183673
+training_E_vanilla: 0.532361
+training_E_modi:    0.651225
+
+computing the submission for boosting round: # 28
+training_error: 0.122712
+testing_error:  0.187755
+training_error_tied: 0.121631
+testing_error_tied:  0.186395
+training_E_vanilla: 0.512270
+training_E_modi:    0.649499
+
+computing the submission for boosting round: # 29
+training_error: 0.122629
+testing_error:  0.191837
+training_error_tied: 0.121963
+testing_error_tied:  0.191156
+training_E_vanilla: 0.508969
+training_E_modi:    0.647834
+
+computing the submission for boosting round: # 30
+training_error: 0.120549
+testing_error:  0.190476
+training_error_tied: 0.120092
+testing_error_tied:  0.190476
+training_E_vanilla: 0.505923
+training_E_modi:    0.645938
+
+computing the submission for boosting round: # 31
+training_error: 0.122712
+testing_error:  0.180952
+training_error_tied: 0.122255
+testing_error_tied:  0.180952
+training_E_vanilla: 0.502952
+training_E_modi:    0.644122
+
+computing the submission for boosting round: # 32
+training_error: 0.141265
+testing_error:  0.187755
+training_error_tied: 0.140807
+testing_error_tied:  0.187755
+training_E_vanilla: 0.626404
+training_E_modi:    0.642465
+
+computing the submission for boosting round: # 33
+training_error: 0.122379
+testing_error:  0.176871
+training_error_tied: 0.121922
+testing_error_tied:  0.176871
+training_E_vanilla: 0.524175
+training_E_modi:    0.632906
+
+computing the submission for boosting round: # 34
+training_error: 0.123960
+testing_error:  0.187755
+training_error_tied: 0.123502
+testing_error_tied:  0.187755
+training_E_vanilla: 0.511399
+training_E_modi:    0.631278
+
+computing the submission for boosting round: # 35
+training_error: 0.122712
+testing_error:  0.179592
+training_error_tied: 0.122255
+testing_error_tied:  0.179592
+training_E_vanilla: 0.520833
+training_E_modi:    0.629736
+
+computing the submission for boosting round: # 36
+training_error: 0.129700
+testing_error:  0.174150
+training_error_tied: 0.129243
+testing_error_tied:  0.174150
+training_E_vanilla: 0.525029
+training_E_modi:    0.628208
+
+computing the submission for boosting round: # 37
+training_error: 0.122879
+testing_error:  0.175510
+training_error_tied: 0.122421
+testing_error_tied:  0.175510
+training_E_vanilla: 0.510368
+training_E_modi:    0.625399
+
+computing the submission for boosting round: # 38
+training_error: 0.132945
+testing_error:  0.180952
+training_error_tied: 0.132488
+testing_error_tied:  0.180952
+training_E_vanilla: 0.556722
+training_E_modi:    0.624037
+
+computing the submission for boosting round: # 39
+training_error: 0.121714
+testing_error:  0.172789
+training_error_tied: 0.121256
+testing_error_tied:  0.172789
+training_E_vanilla: 0.505421
+training_E_modi:    0.622005
+
+computing the submission for boosting round: # 40
+training_error: 0.143095
+testing_error:  0.193197
+training_error_tied: 0.142637
+testing_error_tied:  0.193197
+training_E_vanilla: 0.723004
+training_E_modi:    0.620685
+Finished task.
+Task finished.
+Submitting result...
+Result submitted!
+Getting task...
+Starting task...
+Starting task ..
+2017/5/24 9:6
+Ranker name:  rankboost_modiVI
+Dataset Category: MovieLen
+User id:     1
+fold index:  2
+Training...
+iter: 0, weak ranker: 1
+iter: 1, weak ranker: 2
+iter: 2, weak ranker: 3
+iter: 3, weak ranker: 4
+iter: 4, weak ranker: 5
+iter: 5, weak ranker: 6
+iter: 6, weak ranker: 7
+iter: 7, weak ranker: 8
+iter: 8, weak ranker: 9
+iter: 9, weak ranker: 10
+iter: 10, weak ranker: 11
+iter: 11, weak ranker: 12
+iter: 12, weak ranker: 12
+iter: 13, weak ranker: 12
+iter: 14, weak ranker: 13
+iter: 15, weak ranker: 14
+iter: 16, weak ranker: 15
+iter: 17, weak ranker: 16
+iter: 18, weak ranker: 16
+iter: 19, weak ranker: 16
+iter: 20, weak ranker: 16
+iter: 21, weak ranker: 16
+iter: 22, weak ranker: 17
+iter: 23, weak ranker: 18
+iter: 24, weak ranker: 19
+iter: 25, weak ranker: 20
+iter: 26, weak ranker: 21
+iter: 27, weak ranker: 21
+iter: 28, weak ranker: 21
+iter: 29, weak ranker: 22
+iter: 30, weak ranker: 23
+iter: 31, weak ranker: 24
+iter: 32, weak ranker: 25
+iter: 33, weak ranker: 25
+iter: 34, weak ranker: 25
+iter: 35, weak ranker: 26
+iter: 36, weak ranker: 27
+iter: 37, weak ranker: 27
+iter: 38, weak ranker: 27
+iter: 39, weak ranker: 28
+
+computing the submission for boosting round: # 1
+training_error: 0.518796
+testing_error:  0.496523
+training_error_tied: 0.294765
+testing_error_tied:  0.274687
+training_E_vanilla: 0.817362
+training_E_modi:    0.911874
+
+computing the submission for boosting round: # 2
+training_error: 0.379472
+testing_error:  0.426982
+training_error_tied: 0.229637
+testing_error_tied:  0.247566
+training_E_vanilla: 0.753362
+training_E_modi:    0.862397
+
+computing the submission for boosting round: # 3
+training_error: 0.291756
+testing_error:  0.347705
+training_error_tied: 0.199423
+testing_error_tied:  0.234353
+training_E_vanilla: 0.754303
+training_E_modi:    0.834977
+
+computing the submission for boosting round: # 4
+training_error: 0.234213
+testing_error:  0.254520
+training_error_tied: 0.181863
+testing_error_tied:  0.194019
+training_E_vanilla: 0.686537
+training_E_modi:    0.812075
+
+computing the submission for boosting round: # 5
+training_error: 0.203627
+testing_error:  0.254520
+training_error_tied: 0.170940
+testing_error_tied:  0.212796
+training_E_vanilla: 0.693605
+training_E_modi:    0.794096
+
+computing the submission for boosting round: # 6
+training_error: 0.182935
+testing_error:  0.237830
+training_error_tied: 0.161129
+testing_error_tied:  0.202364
+training_E_vanilla: 0.645083
+training_E_modi:    0.780046
+
+computing the submission for boosting round: # 7
+training_error: 0.171476
+testing_error:  0.236439
+training_error_tied: 0.156183
+testing_error_tied:  0.210014
+training_E_vanilla: 0.617684
+training_E_modi:    0.768489
+
+computing the submission for boosting round: # 8
+training_error: 0.154823
+testing_error:  0.212796
+training_error_tied: 0.145919
+testing_error_tied:  0.201669
+training_E_vanilla: 0.612562
+training_E_modi:    0.758944
+
+computing the submission for boosting round: # 9
+training_error: 0.150866
+testing_error:  0.214186
+training_error_tied: 0.142951
+testing_error_tied:  0.203060
+training_E_vanilla: 0.580400
+training_E_modi:    0.750147
+
+computing the submission for boosting round: # 10
+training_error: 0.141220
+testing_error:  0.216968
+training_error_tied: 0.135326
+testing_error_tied:  0.205841
+training_E_vanilla: 0.584885
+training_E_modi:    0.741953
+
+computing the submission for boosting round: # 11
+training_error: 0.140890
+testing_error:  0.212796
+training_error_tied: 0.136315
+testing_error_tied:  0.207232
+training_E_vanilla: 0.562977
+training_E_modi:    0.734755
+
+computing the submission for boosting round: # 12
+training_error: 0.140808
+testing_error:  0.197497
+training_error_tied: 0.137181
+testing_error_tied:  0.193324
+training_E_vanilla: 0.571711
+training_E_modi:    0.728821
+
+computing the submission for boosting round: # 13
+training_error: 0.176834
+testing_error:  0.275382
+training_error_tied: 0.173207
+testing_error_tied:  0.271210
+training_E_vanilla: 1.541650
+training_E_modi:    0.722825
+
+computing the submission for boosting round: # 14
+training_error: 0.140643
+testing_error:  0.214186
+training_error_tied: 0.136974
+testing_error_tied:  0.210014
+training_E_vanilla: 0.558304
+training_E_modi:    0.702988
+
+computing the submission for boosting round: # 15
+training_error: 0.137345
+testing_error:  0.211405
+training_error_tied: 0.134048
+testing_error_tied:  0.207232
+training_E_vanilla: 0.562007
+training_E_modi:    0.697629
+
+computing the submission for boosting round: # 16
+training_error: 0.136191
+testing_error:  0.212796
+training_error_tied: 0.133759
+testing_error_tied:  0.210709
+training_E_vanilla: 0.579141
+training_E_modi:    0.692746
+
+computing the submission for boosting round: # 17
+training_error: 0.132317
+testing_error:  0.204451
+training_error_tied: 0.130750
+testing_error_tied:  0.202364
+training_E_vanilla: 0.551060
+training_E_modi:    0.688440
+
+computing the submission for boosting round: # 18
+training_error: 0.134872
+testing_error:  0.215577
+training_error_tied: 0.133347
+testing_error_tied:  0.214882
+training_E_vanilla: 0.536219
+training_E_modi:    0.684310
+
+computing the submission for boosting round: # 19
+training_error: 0.153421
+testing_error:  0.221140
+training_error_tied: 0.151896
+testing_error_tied:  0.220445
+training_E_vanilla: 8.299313
+training_E_modi:    0.679762
+
+computing the submission for boosting round: # 20
+training_error: 0.135284
+testing_error:  0.214186
+training_error_tied: 0.133759
+testing_error_tied:  0.213491
+training_E_vanilla: 0.539506
+training_E_modi:    0.658871
+
+computing the submission for boosting round: # 21
+training_error: 0.134295
+testing_error:  0.223922
+training_error_tied: 0.132770
+testing_error_tied:  0.223227
+training_E_vanilla: 7.834769
+training_E_modi:    0.654671
+
+computing the submission for boosting round: # 22
+training_error: 0.130338
+testing_error:  0.214186
+training_error_tied: 0.128813
+testing_error_tied:  0.213491
+training_E_vanilla: 0.552576
+training_E_modi:    0.648335
+
+computing the submission for boosting round: # 23
+training_error: 0.126216
+testing_error:  0.210014
+training_error_tied: 0.125185
+testing_error_tied:  0.209318
+training_E_vanilla: 0.708117
+training_E_modi:    0.645482
+
+computing the submission for boosting round: # 24
+training_error: 0.122836
+testing_error:  0.214186
+training_error_tied: 0.122094
+testing_error_tied:  0.213491
+training_E_vanilla: 0.530016
+training_E_modi:    0.642622
+
+computing the submission for boosting round: # 25
+training_error: 0.123743
+testing_error:  0.221140
+training_error_tied: 0.123042
+testing_error_tied:  0.220445
+training_E_vanilla: 0.655813
+training_E_modi:    0.640073
+
+computing the submission for boosting round: # 26
+training_error: 0.118961
+testing_error:  0.222531
+training_error_tied: 0.118549
+testing_error_tied:  0.221836
+training_E_vanilla: 0.521633
+training_E_modi:    0.637203
+
+computing the submission for boosting round: # 27
+training_error: 0.118054
+testing_error:  0.226704
+training_error_tied: 0.117642
+testing_error_tied:  0.226008
+training_E_vanilla: 0.505007
+training_E_modi:    0.634712
+
+computing the submission for boosting round: # 28
+training_error: 0.132481
+testing_error:  0.236439
+training_error_tied: 0.132069
+testing_error_tied:  0.235744
+training_E_vanilla: 6.861933
+training_E_modi:    0.631917
+
+computing the submission for boosting round: # 29
+training_error: 0.119209
+testing_error:  0.230876
+training_error_tied: 0.118796
+testing_error_tied:  0.230181
+training_E_vanilla: 0.513755
+training_E_modi:    0.620536
+
+computing the submission for boosting round: # 30
+training_error: 0.116570
+testing_error:  0.235049
+training_error_tied: 0.116241
+testing_error_tied:  0.234353
+training_E_vanilla: 0.498357
+training_E_modi:    0.618335
+
+computing the submission for boosting round: # 31
+training_error: 0.113932
+testing_error:  0.229485
+training_error_tied: 0.113685
+testing_error_tied:  0.228790
+training_E_vanilla: 0.507379
+training_E_modi:    0.615876
+
+computing the submission for boosting round: # 32
+training_error: 0.111212
+testing_error:  0.233658
+training_error_tied: 0.111006
+testing_error_tied:  0.232962
+training_E_vanilla: 0.487692
+training_E_modi:    0.613610
+
+computing the submission for boosting round: # 33
+training_error: 0.110387
+testing_error:  0.226704
+training_error_tied: 0.110181
+testing_error_tied:  0.226008
+training_E_vanilla: 0.483217
+training_E_modi:    0.611304
+
+computing the submission for boosting round: # 34
+training_error: 0.130750
+testing_error:  0.267038
+training_error_tied: 0.130544
+testing_error_tied:  0.266342
+training_E_vanilla: 20.171372
+training_E_modi:    0.609615
+
+computing the submission for boosting round: # 35
+training_error: 0.113603
+testing_error:  0.235049
+training_error_tied: 0.113397
+testing_error_tied:  0.234353
+training_E_vanilla: 0.534521
+training_E_modi:    0.604370
+
+computing the submission for boosting round: # 36
+training_error: 0.109151
+testing_error:  0.233658
+training_error_tied: 0.109027
+testing_error_tied:  0.233658
+training_E_vanilla: 0.684624
+training_E_modi:    0.602639
+
+computing the submission for boosting round: # 37
+training_error: 0.109975
+testing_error:  0.247566
+training_error_tied: 0.109852
+testing_error_tied:  0.247566
+training_E_vanilla: 2.591529
+training_E_modi:    0.600911
+
+computing the submission for boosting round: # 38
+training_error: 0.115746
+testing_error:  0.214186
+training_error_tied: 0.115622
+testing_error_tied:  0.214186
+training_E_vanilla: 33.451955
+training_E_modi:    0.599239
+
+computing the submission for boosting round: # 39
+training_error: 0.108162
+testing_error:  0.236439
+training_error_tied: 0.108038
+testing_error_tied:  0.236439
+training_E_vanilla: 699.859260
+training_E_modi:    0.594804
+
+computing the submission for boosting round: # 40
+training_error: 0.109233
+testing_error:  0.242003
+training_error_tied: 0.109151
+testing_error_tied:  0.242003
+training_E_vanilla: 2.933476
+training_E_modi:    0.593235
+Finished task.
+Task finished.
+Submitting result...
+Result submitted!
+Getting task...
+Starting task...
+Starting task ..
+2017/5/24 9:7
+Ranker name:  rankboost_modiVI
+Dataset Category: MovieLen
+User id:     1
+fold index:  3
+Training...
+iter: 0, weak ranker: 1
+iter: 1, weak ranker: 2
+iter: 2, weak ranker: 3
+iter: 3, weak ranker: 4
+iter: 4, weak ranker: 5
+iter: 5, weak ranker: 6
+iter: 6, weak ranker: 7
+iter: 7, weak ranker: 8
+iter: 8, weak ranker: 9
+iter: 9, weak ranker: 10
+iter: 10, weak ranker: 11
+iter: 11, weak ranker: 12
+iter: 12, weak ranker: 12
+iter: 13, weak ranker: 12
+iter: 14, weak ranker: 13
+iter: 15, weak ranker: 14
+iter: 16, weak ranker: 15
+iter: 17, weak ranker: 16
+iter: 18, weak ranker: 17
+iter: 19, weak ranker: 17
+iter: 20, weak ranker: 17
+iter: 21, weak ranker: 18
+iter: 22, weak ranker: 19
+iter: 23, weak ranker: 19
+iter: 24, weak ranker: 19
+iter: 25, weak ranker: 19
+iter: 26, weak ranker: 19
+iter: 27, weak ranker: 20
+iter: 28, weak ranker: 21
+iter: 29, weak ranker: 22
+iter: 30, weak ranker: 23
+iter: 31, weak ranker: 23
+iter: 32, weak ranker: 23
+iter: 33, weak ranker: 24
+iter: 34, weak ranker: 25
+iter: 35, weak ranker: 25
+iter: 36, weak ranker: 25
+iter: 37, weak ranker: 25
+iter: 38, weak ranker: 25
+iter: 39, weak ranker: 26
+
+computing the submission for boosting round: # 1
+training_error: 0.531731
+testing_error:  0.469780
+training_error_tied: 0.302919
+testing_error_tied:  0.254121
+training_E_vanilla: 0.831336
+training_E_modi:    0.919041
+
+computing the submission for boosting round: # 2
+training_error: 0.395575
+testing_error:  0.362637
+training_error_tied: 0.239624
+testing_error_tied:  0.208791
+training_E_vanilla: 0.768106
+training_E_modi:    0.876862
+
+computing the submission for boosting round: # 3
+training_error: 0.275555
+testing_error:  0.282967
+training_error_tied: 0.189179
+testing_error_tied:  0.183379
+training_E_vanilla: 0.653153
+training_E_modi:    0.841723
+
+computing the submission for boosting round: # 4
+training_error: 0.246278
+testing_error:  0.250000
+training_error_tied: 0.184230
+testing_error_tied:  0.192995
+training_E_vanilla: 0.672144
+training_E_modi:    0.819862
+
+computing the submission for boosting round: # 5
+training_error: 0.216419
+testing_error:  0.218407
+training_error_tied: 0.176453
+testing_error_tied:  0.177885
+training_E_vanilla: 0.685113
+training_E_modi:    0.802388
+
+computing the submission for boosting round: # 6
+training_error: 0.209432
+testing_error:  0.212912
+training_error_tied: 0.172087
+testing_error_tied:  0.177198
+training_E_vanilla: 0.642783
+training_E_modi:    0.790377
+
+computing the submission for boosting round: # 7
+training_error: 0.189637
+testing_error:  0.218407
+training_error_tied: 0.168302
+testing_error_tied:  0.195055
+training_E_vanilla: 0.651235
+training_E_modi:    0.780280
+
+computing the submission for boosting round: # 8
+training_error: 0.178491
+testing_error:  0.218407
+training_error_tied: 0.164144
+testing_error_tied:  0.197115
+training_E_vanilla: 0.627537
+training_E_modi:    0.772351
+
+computing the submission for boosting round: # 9
+training_error: 0.164185
+testing_error:  0.219780
+training_error_tied: 0.156949
+testing_error_tied:  0.210852
+training_E_vanilla: 0.628793
+training_E_modi:    0.764596
+
+computing the submission for boosting round: # 10
+training_error: 0.157615
+testing_error:  0.201923
+training_error_tied: 0.152167
+testing_error_tied:  0.194368
+training_E_vanilla: 0.600255
+training_E_modi:    0.755514
+
+computing the submission for boosting round: # 11
+training_error: 0.153040
+testing_error:  0.193681
+training_error_tied: 0.149048
+testing_error_tied:  0.187500
+training_E_vanilla: 0.603700
+training_E_modi:    0.748665
+
+computing the submission for boosting round: # 12
+training_error: 0.147218
+testing_error:  0.182692
+training_error_tied: 0.144099
+testing_error_tied:  0.176511
+training_E_vanilla: 0.584294
+training_E_modi:    0.742326
+
+computing the submission for boosting round: # 13
+training_error: 0.182567
+testing_error:  0.245879
+training_error_tied: 0.179448
+testing_error_tied:  0.239698
+training_E_vanilla: 5.673123
+training_E_modi:    0.735846
+
+computing the submission for boosting round: # 14
+training_error: 0.148549
+testing_error:  0.188187
+training_error_tied: 0.145430
+testing_error_tied:  0.182005
+training_E_vanilla: 0.583997
+training_E_modi:    0.717125
+
+computing the submission for boosting round: # 15
+training_error: 0.142061
+testing_error:  0.201923
+training_error_tied: 0.139150
+testing_error_tied:  0.197115
+training_E_vanilla: 0.569527
+training_E_modi:    0.712521
+
+computing the submission for boosting round: # 16
+training_error: 0.141978
+testing_error:  0.193681
+training_error_tied: 0.139399
+testing_error_tied:  0.188874
+training_E_vanilla: 0.579397
+training_E_modi:    0.707977
+
+computing the submission for boosting round: # 17
+training_error: 0.142061
+testing_error:  0.185440
+training_error_tied: 0.139857
+testing_error_tied:  0.181319
+training_E_vanilla: 0.590767
+training_E_modi:    0.704608
+
+computing the submission for boosting round: # 18
+training_error: 0.137986
+testing_error:  0.186813
+training_error_tied: 0.136405
+testing_error_tied:  0.184753
+training_E_vanilla: 0.601584
+training_E_modi:    0.701442
+
+computing the submission for boosting round: # 19
+training_error: 0.139483
+testing_error:  0.182692
+training_error_tied: 0.138069
+testing_error_tied:  0.181319
+training_E_vanilla: 0.580751
+training_E_modi:    0.698010
+
+computing the submission for boosting round: # 20
+training_error: 0.148133
+testing_error:  0.171703
+training_error_tied: 0.146719
+testing_error_tied:  0.170330
+training_E_vanilla: 0.680817
+training_E_modi:    0.694742
+
+computing the submission for boosting round: # 21
+training_error: 0.138235
+testing_error:  0.175824
+training_error_tied: 0.136821
+testing_error_tied:  0.174451
+training_E_vanilla: 0.606947
+training_E_modi:    0.684836
+
+computing the submission for boosting round: # 22
+training_error: 0.135074
+testing_error:  0.181319
+training_error_tied: 0.133910
+testing_error_tied:  0.180632
+training_E_vanilla: 0.622154
+training_E_modi:    0.681585
+
+computing the submission for boosting round: # 23
+training_error: 0.134575
+testing_error:  0.181319
+training_error_tied: 0.133536
+testing_error_tied:  0.180632
+training_E_vanilla: 0.601265
+training_E_modi:    0.678966
+
+computing the submission for boosting round: # 24
+training_error: 0.129585
+testing_error:  0.200549
+training_error_tied: 0.128545
+testing_error_tied:  0.199863
+training_E_vanilla: 0.560279
+training_E_modi:    0.676155
+
+computing the submission for boosting round: # 25
+training_error: 0.129086
+testing_error:  0.186813
+training_error_tied: 0.128046
+testing_error_tied:  0.186126
+training_E_vanilla: 0.587053
+training_E_modi:    0.671968
+
+computing the submission for boosting round: # 26
+training_error: 0.149464
+testing_error:  0.215659
+training_error_tied: 0.148424
+testing_error_tied:  0.214973
+training_E_vanilla: 0.585793
+training_E_modi:    0.669338
+
+computing the submission for boosting round: # 27
+training_error: 0.130334
+testing_error:  0.190934
+training_error_tied: 0.129294
+testing_error_tied:  0.190247
+training_E_vanilla: 0.579499
+training_E_modi:    0.651114
+
+computing the submission for boosting round: # 28
+training_error: 0.127422
+testing_error:  0.179945
+training_error_tied: 0.126757
+testing_error_tied:  0.179258
+training_E_vanilla: 0.599650
+training_E_modi:    0.648599
+
+computing the submission for boosting round: # 29
+training_error: 0.126923
+testing_error:  0.182692
+training_error_tied: 0.126424
+testing_error_tied:  0.182692
+training_E_vanilla: 0.614495
+training_E_modi:    0.646742
+
+computing the submission for boosting round: # 30
+training_error: 0.125842
+testing_error:  0.182692
+training_error_tied: 0.125343
+testing_error_tied:  0.182692
+training_E_vanilla: 0.590484
+training_E_modi:    0.644576
+
+computing the submission for boosting round: # 31
+training_error: 0.124095
+testing_error:  0.182692
+training_error_tied: 0.123638
+testing_error_tied:  0.182692
+training_E_vanilla: 0.602583
+training_E_modi:    0.642676
+
+computing the submission for boosting round: # 32
+training_error: 0.140231
+testing_error:  0.203297
+training_error_tied: 0.139774
+testing_error_tied:  0.203297
+training_E_vanilla: 0.578148
+training_E_modi:    0.640932
+
+computing the submission for boosting round: # 33
+training_error: 0.125177
+testing_error:  0.185440
+training_error_tied: 0.124719
+testing_error_tied:  0.185440
+training_E_vanilla: 0.597424
+training_E_modi:    0.630122
+
+computing the submission for boosting round: # 34
+training_error: 0.121600
+testing_error:  0.186813
+training_error_tied: 0.121351
+testing_error_tied:  0.186813
+training_E_vanilla: 0.580897
+training_E_modi:    0.628198
+
+computing the submission for boosting round: # 35
+training_error: 0.119604
+testing_error:  0.186813
+training_error_tied: 0.119355
+testing_error_tied:  0.186813
+training_E_vanilla: 0.590464
+training_E_modi:    0.626459
+
+computing the submission for boosting round: # 36
+training_error: 0.138401
+testing_error:  0.218407
+training_error_tied: 0.138152
+testing_error_tied:  0.218407
+training_E_vanilla: 0.569648
+training_E_modi:    0.624608
+
+computing the submission for boosting round: # 37
+training_error: 0.121268
+testing_error:  0.189560
+training_error_tied: 0.121018
+testing_error_tied:  0.189560
+training_E_vanilla: 0.580221
+training_E_modi:    0.619579
+
+computing the submission for boosting round: # 38
+training_error: 0.138984
+testing_error:  0.188187
+training_error_tied: 0.138734
+testing_error_tied:  0.188187
+training_E_vanilla: 0.554240
+training_E_modi:    0.617658
+
+computing the submission for boosting round: # 39
+training_error: 0.121268
+testing_error:  0.188187
+training_error_tied: 0.121018
+testing_error_tied:  0.188187
+training_E_vanilla: 0.566515
+training_E_modi:    0.612091
+
+computing the submission for boosting round: # 40
+training_error: 0.119854
+testing_error:  0.186813
+training_error_tied: 0.119646
+testing_error_tied:  0.186813
+training_E_vanilla: 0.589439
+training_E_modi:    0.610248
+Finished task.
+Task finished.
+Submitting result...
+Result submitted!
+Getting task...
+Starting task...
+Starting task ..
+2017/5/24 9:8
+Ranker name:  rankboost_modiVI
+Dataset Category: MovieLen
+User id:     1
+fold index:  4
+Training...
+iter: 0, weak ranker: 1
+iter: 1, weak ranker: 2
+iter: 2, weak ranker: 3
+iter: 3, weak ranker: 4
+iter: 4, weak ranker: 5
+iter: 5, weak ranker: 6
+iter: 6, weak ranker: 7
+iter: 7, weak ranker: 8
+iter: 8, weak ranker: 9
+iter: 9, weak ranker: 9
+iter: 10, weak ranker: 9
+iter: 11, weak ranker: 10
+iter: 12, weak ranker: 11
+iter: 13, weak ranker: 12
+iter: 14, weak ranker: 13
+iter: 15, weak ranker: 13
+iter: 16, weak ranker: 13
+iter: 17, weak ranker: 13
+iter: 18, weak ranker: 13
+iter: 19, weak ranker: 14
+iter: 20, weak ranker: 15
+iter: 21, weak ranker: 16
+iter: 22, weak ranker: 17
+iter: 23, weak ranker: 18
+iter: 24, weak ranker: 19
+iter: 25, weak ranker: 19
+iter: 26, weak ranker: 19
+iter: 27, weak ranker: 19
+iter: 28, weak ranker: 19
+iter: 29, weak ranker: 20
+iter: 30, weak ranker: 21
+iter: 31, weak ranker: 21
+iter: 32, weak ranker: 21
+iter: 33, weak ranker: 22
+iter: 34, weak ranker: 23
+iter: 35, weak ranker: 24
+iter: 36, weak ranker: 25
+iter: 37, weak ranker: 26
+iter: 38, weak ranker: 27
+iter: 39, weak ranker: 28
+
+computing the submission for boosting round: # 1
+training_error: 0.509902
+testing_error:  0.526761
+training_error_tied: 0.287111
+testing_error_tied:  0.304930
+training_E_vanilla: 0.800719
+training_E_modi:    0.904828
+
+computing the submission for boosting round: # 2
+training_error: 0.339740
+testing_error:  0.409859
+training_error_tied: 0.221418
+testing_error_tied:  0.274648
+training_E_vanilla: 3.752130
+training_E_modi:    0.860255
+
+computing the submission for boosting round: # 3
+training_error: 0.273423
+testing_error:  0.345070
+training_error_tied: 0.192170
+testing_error_tied:  0.259155
+training_E_vanilla: 0.674746
+training_E_modi:    0.826395
+
+computing the submission for boosting round: # 4
+training_error: 0.233899
+testing_error:  0.305634
+training_error_tied: 0.168788
+testing_error_tied:  0.230282
+training_E_vanilla: 0.640220
+training_E_modi:    0.799986
+
+computing the submission for boosting round: # 5
+training_error: 0.196705
+testing_error:  0.261972
+training_error_tied: 0.154310
+testing_error_tied:  0.221831
+training_E_vanilla: 0.628734
+training_E_modi:    0.776469
+
+computing the submission for boosting round: # 6
+training_error: 0.181228
+testing_error:  0.257746
+training_error_tied: 0.146863
+testing_error_tied:  0.224648
+training_E_vanilla: 0.590706
+training_E_modi:    0.760288
+
+computing the submission for boosting round: # 7
+training_error: 0.167665
+testing_error:  0.246479
+training_error_tied: 0.145490
+testing_error_tied:  0.223944
+training_E_vanilla: 0.619374
+training_E_modi:    0.747673
+
+computing the submission for boosting round: # 8
+training_error: 0.158013
+testing_error:  0.230986
+training_error_tied: 0.145116
+testing_error_tied:  0.216901
+training_E_vanilla: 1.221598
+training_E_modi:    0.737449
+
+computing the submission for boosting round: # 9
+training_error: 0.155600
+testing_error:  0.229577
+training_error_tied: 0.144949
+testing_error_tied:  0.218310
+training_E_vanilla: 0.659820
+training_E_modi:    0.728121
+
+computing the submission for boosting round: # 10
+training_error: 0.185638
+testing_error:  0.316901
+training_error_tied: 0.174988
+testing_error_tied:  0.305634
+training_E_vanilla: 4.044211
+training_E_modi:    0.718933
+
+computing the submission for boosting round: # 11
+training_error: 0.154102
+testing_error:  0.249296
+training_error_tied: 0.143451
+testing_error_tied:  0.238028
+training_E_vanilla: 1.518458
+training_E_modi:    0.696451
+
+computing the submission for boosting round: # 12
+training_error: 0.146780
+testing_error:  0.230986
+training_error_tied: 0.137544
+testing_error_tied:  0.223239
+training_E_vanilla: 0.645430
+training_E_modi:    0.689540
+
+computing the submission for boosting round: # 13
+training_error: 0.144367
+testing_error:  0.235211
+training_error_tied: 0.135255
+testing_error_tied:  0.227465
+training_E_vanilla: 1.289496
+training_E_modi:    0.684008
+
+computing the submission for boosting round: # 14
+training_error: 0.132302
+testing_error:  0.238028
+training_error_tied: 0.127600
+testing_error_tied:  0.232394
+training_E_vanilla: 59.829670
+training_E_modi:    0.679011
+
+computing the submission for boosting round: # 15
+training_error: 0.131137
+testing_error:  0.236620
+training_error_tied: 0.126519
+testing_error_tied:  0.230986
+training_E_vanilla: 1863514852654628329284960256.000000
+training_E_modi:    0.674561
+
+computing the submission for boosting round: # 16
+training_error: 0.144616
+testing_error:  0.242254
+training_error_tied: 0.139998
+testing_error_tied:  0.236620
+training_E_vanilla: 0.607853
+training_E_modi:    0.670167
+
+computing the submission for boosting round: # 17
+training_error: 0.132135
+testing_error:  0.235211
+training_error_tied: 0.127517
+testing_error_tied:  0.229577
+training_E_vanilla: 256590.209974
+training_E_modi:    0.658813
+
+computing the submission for boosting round: # 18
+training_error: 0.148610
+testing_error:  0.288732
+training_error_tied: 0.143992
+testing_error_tied:  0.283099
+training_E_vanilla: 0.566449
+training_E_modi:    0.654197
+
+computing the submission for boosting round: # 19
+training_error: 0.132967
+testing_error:  0.245070
+training_error_tied: 0.128349
+testing_error_tied:  0.239437
+training_E_vanilla: 3.905939
+training_E_modi:    0.647592
+
+computing the submission for boosting round: # 20
+training_error: 0.132634
+testing_error:  0.247887
+training_error_tied: 0.128848
+testing_error_tied:  0.242254
+training_E_vanilla: 0.813103
+training_E_modi:    0.643821
+
+computing the submission for boosting round: # 21
+training_error: 0.124480
+testing_error:  0.230986
+training_error_tied: 0.121152
+testing_error_tied:  0.228873
+training_E_vanilla: 2.892630
+training_E_modi:    0.640448
+
+computing the submission for boosting round: # 22
+training_error: 0.122483
+testing_error:  0.239437
+training_error_tied: 0.119487
+testing_error_tied:  0.237324
+training_E_vanilla: 0.754443
+training_E_modi:    0.637421
+
+computing the submission for boosting round: # 23
+training_error: 0.116575
+testing_error:  0.232394
+training_error_tied: 0.115036
+testing_error_tied:  0.230986
+training_E_vanilla: 2.141885
+training_E_modi:    0.634890
+
+computing the submission for boosting round: # 24
+training_error: 0.115909
+testing_error:  0.235211
+training_error_tied: 0.114370
+testing_error_tied:  0.233803
+training_E_vanilla: 176.086627
+training_E_modi:    0.632578
+
+computing the submission for boosting round: # 25
+training_error: 0.118655
+testing_error:  0.235211
+training_error_tied: 0.117366
+testing_error_tied:  0.233803
+training_E_vanilla: 2.807759
+training_E_modi:    0.630616
+
+computing the submission for boosting round: # 26
+training_error: 0.122483
+testing_error:  0.222535
+training_error_tied: 0.121193
+testing_error_tied:  0.221127
+training_E_vanilla: 0.494944
+training_E_modi:    0.628410
+
+computing the submission for boosting round: # 27
+training_error: 0.117324
+testing_error:  0.230986
+training_error_tied: 0.116034
+testing_error_tied:  0.229577
+training_E_vanilla: 0.755264
+training_E_modi:    0.623111
+
+computing the submission for boosting round: # 28
+training_error: 0.125728
+testing_error:  0.235211
+training_error_tied: 0.124438
+testing_error_tied:  0.233803
+training_E_vanilla: 0.515626
+training_E_modi:    0.620867
+
+computing the submission for boosting round: # 29
+training_error: 0.118073
+testing_error:  0.229577
+training_error_tied: 0.116783
+testing_error_tied:  0.228169
+training_E_vanilla: 0.546890
+training_E_modi:    0.616288
+
+computing the submission for boosting round: # 30
+training_error: 0.115327
+testing_error:  0.214085
+training_error_tied: 0.114412
+testing_error_tied:  0.213380
+training_E_vanilla: 0.478021
+training_E_modi:    0.614339
+
+computing the submission for boosting round: # 31
+training_error: 0.114994
+testing_error:  0.218310
+training_error_tied: 0.114453
+testing_error_tied:  0.217606
+training_E_vanilla: 0.478034
+training_E_modi:    0.612212
+
+computing the submission for boosting round: # 32
+training_error: 0.129223
+testing_error:  0.249296
+training_error_tied: 0.128682
+testing_error_tied:  0.248592
+training_E_vanilla: 0.586846
+training_E_modi:    0.610709
+
+computing the submission for boosting round: # 33
+training_error: 0.116575
+testing_error:  0.222535
+training_error_tied: 0.116034
+testing_error_tied:  0.221831
+training_E_vanilla: 0.490980
+training_E_modi:    0.599675
+
+computing the submission for boosting round: # 34
+training_error: 0.113496
+testing_error:  0.218310
+training_error_tied: 0.112956
+testing_error_tied:  0.217606
+training_E_vanilla: 0.507362
+training_E_modi:    0.598102
+
+computing the submission for boosting round: # 35
+training_error: 0.113413
+testing_error:  0.214085
+training_error_tied: 0.113039
+testing_error_tied:  0.213380
+training_E_vanilla: 0.521781
+training_E_modi:    0.596552
+
+computing the submission for boosting round: # 36
+training_error: 0.109752
+testing_error:  0.215493
+training_error_tied: 0.109419
+testing_error_tied:  0.214789
+training_E_vanilla: 0.536545
+training_E_modi:    0.595289
+
+computing the submission for boosting round: # 37
+training_error: 0.113247
+testing_error:  0.211268
+training_error_tied: 0.112956
+testing_error_tied:  0.210563
+training_E_vanilla: 0.517326
+training_E_modi:    0.593811
+
+computing the submission for boosting round: # 38
+training_error: 0.110584
+testing_error:  0.215493
+training_error_tied: 0.110293
+testing_error_tied:  0.214789
+training_E_vanilla: 0.532584
+training_E_modi:    0.592581
+
+computing the submission for boosting round: # 39
+training_error: 0.112748
+testing_error:  0.212676
+training_error_tied: 0.112456
+testing_error_tied:  0.211972
+training_E_vanilla: 0.546113
+training_E_modi:    0.591067
+
+computing the submission for boosting round: # 40
+training_error: 0.115743
+testing_error:  0.215493
+training_error_tied: 0.115493
+testing_error_tied:  0.214789
+training_E_vanilla: 0.558073
+training_E_modi:    0.589838
+Finished task.
+Task finished.
+Submitting result...
+Result submitted!
+Getting task...
+Starting task...
+Starting task ..
+2017/5/24 9:9
+Ranker name:  rankboost_modiVI
+Dataset Category: MovieLen
+User id:     2
+fold index:  0
+Training...
+iter: 0, weak ranker: 1
+iter: 1, weak ranker: 2
+iter: 2, weak ranker: 3
+iter: 3, weak ranker: 4
+iter: 4, weak ranker: 5
+iter: 5, weak ranker: 6
+iter: 6, weak ranker: 7
+iter: 7, weak ranker: 7
+iter: 8, weak ranker: 7
+iter: 9, weak ranker: 7
+iter: 10, weak ranker: 7
+iter: 11, weak ranker: 8
+iter: 12, weak ranker: 9
+iter: 13, weak ranker: 10
+iter: 14, weak ranker: 11
+iter: 15, weak ranker: 12
+iter: 16, weak ranker: 13
+iter: 17, weak ranker: 14
+iter: 18, weak ranker: 15
+iter: 19, weak ranker: 16
+iter: 20, weak ranker: 17
+iter: 21, weak ranker: 17
+iter: 22, weak ranker: 17
+iter: 23, weak ranker: 18
+iter: 24, weak ranker: 19
+iter: 25, weak ranker: 20
+iter: 26, weak ranker: 20
+iter: 27, weak ranker: 20
+iter: 28, weak ranker: 21
+iter: 29, weak ranker: 22
+iter: 30, weak ranker: 23
+iter: 31, weak ranker: 24
+iter: 32, weak ranker: 25
+iter: 33, weak ranker: 26
+iter: 34, weak ranker: 27
+iter: 35, weak ranker: 28
+iter: 36, weak ranker: 29
+iter: 37, weak ranker: 30
+iter: 38, weak ranker: 31
+iter: 39, weak ranker: 32
+
+computing the submission for boosting round: # 1
+training_error: 0.571666
+testing_error:  0.550285
+training_error_tied: 0.331635
+testing_error_tied:  0.318786
+training_E_vanilla: 0.886643
+training_E_modi:    0.941601
+
+computing the submission for boosting round: # 2
+training_error: 0.411830
+testing_error:  0.421252
+training_error_tied: 0.276695
+testing_error_tied:  0.305503
+training_E_vanilla: 0.821729
+training_E_modi:    0.901690
+
+computing the submission for boosting round: # 3
+training_error: 0.333518
+testing_error:  0.377609
+training_error_tied: 0.250665
+testing_error_tied:  0.310247
+training_E_vanilla: 0.800618
+training_E_modi:    0.872606
+
+computing the submission for boosting round: # 4
+training_error: 0.275919
+testing_error:  0.324478
+training_error_tied: 0.227957
+testing_error_tied:  0.293169
+training_E_vanilla: 0.789711
+training_E_modi:    0.848493
+
+computing the submission for boosting round: # 5
+training_error: 0.243908
+testing_error:  0.316888
+training_error_tied: 0.214665
+testing_error_tied:  0.294118
+training_E_vanilla: 0.786281
+training_E_modi:    0.831557
+
+computing the submission for boosting round: # 6
+training_error: 0.233828
+testing_error:  0.309298
+training_error_tied: 0.211453
+testing_error_tied:  0.292220
+training_E_vanilla: 0.749610
+training_E_modi:    0.819010
+
+computing the submission for boosting round: # 7
+training_error: 0.226961
+testing_error:  0.290323
+training_error_tied: 0.206856
+testing_error_tied:  0.274194
+training_E_vanilla: 0.752022
+training_E_modi:    0.812104
+
+computing the submission for boosting round: # 8
+training_error: 0.250000
+testing_error:  0.352941
+training_error_tied: 0.229896
+testing_error_tied:  0.336812
+training_E_vanilla: 0.766178
+training_E_modi:    0.805539
+
+computing the submission for boosting round: # 9
+training_error: 0.229951
+testing_error:  0.309298
+training_error_tied: 0.209847
+testing_error_tied:  0.293169
+training_E_vanilla: 0.749682
+training_E_modi:    0.790459
+
+computing the submission for boosting round: # 10
+training_error: 0.240031
+testing_error:  0.294118
+training_error_tied: 0.219927
+testing_error_tied:  0.277989
+training_E_vanilla: 0.746159
+training_E_modi:    0.784284
+
+computing the submission for boosting round: # 11
+training_error: 0.227625
+testing_error:  0.311195
+training_error_tied: 0.207521
+testing_error_tied:  0.295066
+training_E_vanilla: 0.744242
+training_E_modi:    0.774055
+
+computing the submission for boosting round: # 12
+training_error: 0.222308
+testing_error:  0.294118
+training_error_tied: 0.203700
+testing_error_tied:  0.279886
+training_E_vanilla: 0.718592
+training_E_modi:    0.769254
+
+computing the submission for boosting round: # 13
+training_error: 0.211675
+testing_error:  0.288425
+training_error_tied: 0.198217
+testing_error_tied:  0.276091
+training_E_vanilla: 0.696089
+training_E_modi:    0.763627
+
+computing the submission for boosting round: # 14
+training_error: 0.198937
+testing_error:  0.282732
+training_error_tied: 0.191848
+testing_error_tied:  0.276091
+training_E_vanilla: 0.678104
+training_E_modi:    0.759738
+
+computing the submission for boosting round: # 15
+training_error: 0.188968
+testing_error:  0.275142
+training_error_tied: 0.184648
+testing_error_tied:  0.272296
+training_E_vanilla: 0.658413
+training_E_modi:    0.755949
+
+computing the submission for boosting round: # 16
+training_error: 0.188968
+testing_error:  0.258065
+training_error_tied: 0.185534
+testing_error_tied:  0.257116
+training_E_vanilla: 0.662060
+training_E_modi:    0.752272
+
+computing the submission for boosting round: # 17
+training_error: 0.185202
+testing_error:  0.252372
+training_error_tied: 0.182045
+testing_error_tied:  0.252372
+training_E_vanilla: 0.644052
+training_E_modi:    0.748330
+
+computing the submission for boosting round: # 18
+training_error: 0.183319
+testing_error:  0.267552
+training_error_tied: 0.180328
+testing_error_tied:  0.267552
+training_E_vanilla: 0.644537
+training_E_modi:    0.744834
+
+computing the submission for boosting round: # 19
+training_error: 0.182211
+testing_error:  0.269450
+training_error_tied: 0.180272
+testing_error_tied:  0.269450
+training_E_vanilla: 0.709269
+training_E_modi:    0.741737
+
+computing the submission for boosting round: # 20
+training_error: 0.176340
+testing_error:  0.259962
+training_error_tied: 0.174457
+testing_error_tied:  0.259962
+training_E_vanilla: 0.626452
+training_E_modi:    0.738328
+
+computing the submission for boosting round: # 21
+training_error: 0.173682
+testing_error:  0.259962
+training_error_tied: 0.172076
+testing_error_tied:  0.259962
+training_E_vanilla: 0.618476
+training_E_modi:    0.735207
+
+computing the submission for boosting round: # 22
+training_error: 0.185423
+testing_error:  0.297913
+training_error_tied: 0.183817
+testing_error_tied:  0.297913
+training_E_vanilla: 0.777959
+training_E_modi:    0.732423
+
+computing the submission for boosting round: # 23
+training_error: 0.172574
+testing_error:  0.263757
+training_error_tied: 0.170968
+testing_error_tied:  0.263757
+training_E_vanilla: 0.617926
+training_E_modi:    0.728070
+
+computing the submission for boosting round: # 24
+training_error: 0.171356
+testing_error:  0.269450
+training_error_tied: 0.169750
+testing_error_tied:  0.269450
+training_E_vanilla: 0.636471
+training_E_modi:    0.725402
+
+computing the submission for boosting round: # 25
+training_error: 0.165707
+testing_error:  0.278937
+training_error_tied: 0.165042
+testing_error_tied:  0.278937
+training_E_vanilla: 0.687088
+training_E_modi:    0.722741
+
+computing the submission for boosting round: # 26
+training_error: 0.168254
+testing_error:  0.280835
+training_error_tied: 0.167645
+testing_error_tied:  0.280835
+training_E_vanilla: 1.245839
+training_E_modi:    0.719853
+
+computing the submission for boosting round: # 27
+training_error: 0.175011
+testing_error:  0.261860
+training_error_tied: 0.174402
+testing_error_tied:  0.261860
+training_E_vanilla: 8.415175
+training_E_modi:    0.717144
+
+computing the submission for boosting round: # 28
+training_error: 0.163381
+testing_error:  0.271347
+training_error_tied: 0.162771
+testing_error_tied:  0.271347
+training_E_vanilla: 22.299594
+training_E_modi:    0.709810
+
+computing the submission for boosting round: # 29
+training_error: 0.154298
+testing_error:  0.273245
+training_error_tied: 0.153799
+testing_error_tied:  0.273245
+training_E_vanilla: 0.990369
+training_E_modi:    0.706458
+
+computing the submission for boosting round: # 30
+training_error: 0.153633
+testing_error:  0.275142
+training_error_tied: 0.153301
+testing_error_tied:  0.275142
+training_E_vanilla: 0.663694
+training_E_modi:    0.703551
+
+computing the submission for boosting round: # 31
+training_error: 0.147984
+testing_error:  0.277040
+training_error_tied: 0.147707
+testing_error_tied:  0.277040
+training_E_vanilla: 0.964634
+training_E_modi:    0.700513
+
+computing the submission for boosting round: # 32
+training_error: 0.152747
+testing_error:  0.275142
+training_error_tied: 0.152470
+testing_error_tied:  0.275142
+training_E_vanilla: 0.659907
+training_E_modi:    0.697803
+
+computing the submission for boosting round: # 33
+training_error: 0.146987
+testing_error:  0.271347
+training_error_tied: 0.146710
+testing_error_tied:  0.271347
+training_E_vanilla: 0.560835
+training_E_modi:    0.695462
+
+computing the submission for boosting round: # 34
+training_error: 0.147430
+testing_error:  0.286528
+training_error_tied: 0.147319
+testing_error_tied:  0.286528
+training_E_vanilla: 0.625835
+training_E_modi:    0.693037
+
+computing the submission for boosting round: # 35
+training_error: 0.144883
+testing_error:  0.278937
+training_error_tied: 0.144772
+testing_error_tied:  0.278937
+training_E_vanilla: 0.560373
+training_E_modi:    0.690779
+
+computing the submission for boosting round: # 36
+training_error: 0.143221
+testing_error:  0.278937
+training_error_tied: 0.143110
+testing_error_tied:  0.278937
+training_E_vanilla: 0.544577
+training_E_modi:    0.688713
+
+computing the submission for boosting round: # 37
+training_error: 0.145769
+testing_error:  0.275142
+training_error_tied: 0.145658
+testing_error_tied:  0.275142
+training_E_vanilla: 0.556185
+training_E_modi:    0.686532
+
+computing the submission for boosting round: # 38
+training_error: 0.144993
+testing_error:  0.294118
+training_error_tied: 0.144883
+testing_error_tied:  0.294118
+training_E_vanilla: 0.570717
+training_E_modi:    0.684323
+
+computing the submission for boosting round: # 39
+training_error: 0.145436
+testing_error:  0.303605
+training_error_tied: 0.145381
+testing_error_tied:  0.303605
+training_E_vanilla: 0.583763
+training_E_modi:    0.682245
+
+computing the submission for boosting round: # 40
+training_error: 0.142889
+testing_error:  0.301708
+training_error_tied: 0.142833
+testing_error_tied:  0.301708
+training_E_vanilla: 0.599938
+training_E_modi:    0.680323
+Finished task.
+Task finished.
+Submitting result...
+Result submitted!
+Getting task...
+Starting task...
+Starting task ..
+2017/5/24 9:10
+Ranker name:  rankboost_modiVI
+Dataset Category: LETOR
+User id:     0
+fold index:  0
+Training...
+iter: 0, weak ranker: 1
+iter: 1, weak ranker: 2
+iter: 2, weak ranker: 3
+iter: 3, weak ranker: 4
+iter: 4, weak ranker: 5
+iter: 5, weak ranker: 6
+iter: 6, weak ranker: 7
+iter: 7, weak ranker: 8
+iter: 8, weak ranker: 9
+iter: 9, weak ranker: 10
+iter: 10, weak ranker: 11
+iter: 11, weak ranker: 12
+iter: 12, weak ranker: 13
+iter: 13, weak ranker: 14
+iter: 14, weak ranker: 15
+iter: 15, weak ranker: 16
+iter: 16, weak ranker: 17
+iter: 17, weak ranker: 18
+iter: 18, weak ranker: 19
+iter: 19, weak ranker: 20

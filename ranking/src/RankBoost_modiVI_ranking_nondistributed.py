@@ -86,7 +86,7 @@ class RankBoost_modiVI_ranking(RankBoost_base_ranking):
                 else:
                       new_alpha = 0.5*np.log( float(numerator)/denominator )
                 self.alphas_dict[instance_classifier] = new_alpha #i.e. the total alpha for any instance so far            
-   
+                print("iter: %d, weak ranker: %d"%( index_Boosting, len(self.alphas_dict) ))   
                 ad_alpha = new_alpha - pre_alpha
                 self.alphas.append(ad_alpha)
              
@@ -107,7 +107,7 @@ class RankBoost_modiVI_ranking(RankBoost_base_ranking):
  
                      weights_pair[pair] = (weights_pair[pair]/cur_Z)*0.5*(first_part + float(second_part_numerator)/second_part_denominator)
 
-                #import pdb;pdb.set_trace()
+                import pdb;pdb.set_trace()
       
             self.actual_rounds_of_boosting = len(self.alphas)
 
