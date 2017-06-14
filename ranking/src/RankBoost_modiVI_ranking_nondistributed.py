@@ -118,7 +118,7 @@ class RankBoost_modiVI_ranking(RankBoost_base_ranking):
             """
             if ordering == 1:
                return np.exp(-self.new_alphas[iteration])
-            elif orderig == -1:
+            elif ordering == -1:
                return np.exp(self.new_alphas[iteration])
             else:
                return np.cosh(self.new_alphas[iteration]) 
