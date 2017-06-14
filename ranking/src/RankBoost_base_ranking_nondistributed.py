@@ -255,7 +255,7 @@ class RankBoost_base_ranking(object):
                                   = 1             if pair i is tied
                 Note: iter starts from 1
                 """
-                if iter = None or iter > len(self.alphas):
+                if iter is None or iter > len(self.alphas):
                       iter = len(self.alphas)
                 res_pair = {}
                 
