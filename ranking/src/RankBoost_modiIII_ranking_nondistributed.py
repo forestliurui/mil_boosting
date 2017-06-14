@@ -91,6 +91,15 @@ class RankBoost_modiIII_ranking(RankBoost_base_ranking):
 
 	        self.actual_rounds_of_boosting = len(self.alphas)
 		#import pdb;pdb.set_trace()
+
+        def scale(self, iteration, ordering = 0):
+                if ordering == 1:
+                   return np.exp(-self.alphas[iteration])
+                elif ordering == -1:
+                   return np.exp(self.alphas[iteration])
+                else:
+                   return 1
+
 	def compute_epsilon(self, predictions, y, weights_pair):
 		epsilon0= 0
 		epsilon_pos = 0

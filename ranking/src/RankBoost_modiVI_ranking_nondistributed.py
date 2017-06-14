@@ -29,7 +29,7 @@ class RankBoost_modiVI_ranking(RankBoost_base_ranking):
 
             self.Z = []
             super(RankBoost_modiVI_ranking, self).__init__(**parameters)
-      
+            self.new_alphas = []
       def fit(self, X, y):
             '''
 	    X is a hashtable with key being instance ID, value being the one-dimensional array containing its features
@@ -89,7 +89,8 @@ class RankBoost_modiVI_ranking(RankBoost_base_ranking):
                 print("iter: %d, weak ranker: %d"%( index_Boosting, len(self.alphas_dict) ))   
                 ad_alpha = new_alpha - pre_alpha
                 self.alphas.append(ad_alpha)
-             
+                self.new_alphas.append(new_alpha)
+
                 if numerator == 0 or denominator == 0:
                      break
                 
@@ -111,6 +112,16 @@ class RankBoost_modiVI_ranking(RankBoost_base_ranking):
       
             self.actual_rounds_of_boosting = len(self.alphas)
 
+      def scale(self, iteration, ordering = 0):
+            """
+            iteration starts from 0
+            """
+            if ordering == 1:
+               return np.exp(-self.new_alphas[iteration])
+            elif orderig == -1:
+               return np.exp(self.new_alphas[iteration])
+            else:
+               return np.cosh(self.new_alphas[iteration]) 
 
 class TestRankBoost_ModiVI(unittest.TestCase):
     def no_test1(self):

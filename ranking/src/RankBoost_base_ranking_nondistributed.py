@@ -42,13 +42,11 @@ class RankBoost_base_ranking(object):
 		self.X_train = None
 		self.y_train = None
 		
-
 		self.instance_labels_generated_from_bag_labels = None
 
 		self.epsilon_pair = {}
 		self.epsilon_pair["positive"] = []
 		self.epsilon_pair["negative"] = []
-
 
 		self.epsilon_pair_fast = {}
 		self.epsilon_pair_fast["positive"] = []
@@ -231,7 +229,7 @@ class RankBoost_base_ranking(object):
                 return np.mean(res)
 
 
-	def getE(self, iter = None):
+	def getE_Z(self, iter = None):
                 """
                 return E, which is the upper bound for 0-1 loss, based on the assumption that E( \sum_{s=1}^{t} alpha_s*h_s ) = \prod_{s=1}^{t} Z_s
                 Note that for vanilla rankboost, E is actually exponential function. However, E might take another form for other variants of rankboost algorithms.
@@ -243,8 +241,49 @@ class RankBoost_base_ranking(object):
 
                 E = reduce(lambda x, y: x*y, self.Z[:iter])
                 return E
+        def getE(self, iter = None):
+                """
+                return E, based on the formula, (1/m)*\sum_{i=1}^m \prod_{s=1}^t scale_s(i)
+                where scale_s(i) is defined as:
+                   (1) for crankboost:
+                       scale_s(i) = e**(-alpha_s) if pair i is correctly ranked
+                                  = e**(alpha_s)  if pair i is reverse ranked
+                                  = cosh(alpha_s) if pair i is tied
+                   (2) for rankboost vanilla:
+                       scale_s(i) = e**(-alpha_s) if pair i is correctly ranked
+                                  = e**(alpha_s)  if pair i is reverse ranked
+                                  = 1             if pair i is tied
+                Note: iter starts from 1
+                """
+                if iter = None or iter > len(self.alphas):
+                      iter = len(self.alphas)
+                res_pair = {}
+                
+                for iteration in range(iter):
+                     predictions = self.predict_train_weak_ranker(iteration)
+                     for pair in self.y_train:
+                         if pair not in res_pair:
+                             res_pair[pair] = 1
+                         ordering = self.comparePairPredictions( predictions[pair[0]], predictions[pair[1]] )
+                         res_pair[pair] *= self.scale(iteration, ordering = ordering)
+                return np.mean(res_pair.values())
+        
+        def comparePairPredictions(self, prediction1, prediction2  ):
+                """
+                return 1  if prediction1 is considered greater than prediction2
+                return -1 if reverse
+                return 0  if prediction1 is equal to prediction2
+                """     
 
-	
+                bound = 10**(-8)
+
+                if abs(prediction1 -  prediction2) < bound:
+                    return 0
+                elif prediction1 > prediction2:
+                    return 1
+                else:
+                    return -1
+	 
 	def getEpsilonPair(self, predictions, labels, weights):
 		"""
 		return pairwise epsilons defined in Eq. (9.11) from Foundations of Machine Learning
@@ -280,7 +319,13 @@ class RankBoost_base_ranking(object):
 		"""
 
 		return epsilon_pair["positive"], epsilon_pair["negative"]
-					
+		
+        def predict_train_weak_ranker(self, iter = None):
+               """
+               return a dictionary which is the predicted scores of all training instance for the weake ranker obtained at round iter
+               """
+               return self.predictions_list_train[iter]
+			
 	def predict_train(self, iter = None):
 
 

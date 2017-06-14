@@ -416,6 +416,8 @@ def draw_plot_averaged(directory, outputfile_name):
         #statistics_name = ['test_error', 'train_error']
         statistics_name = ['test_error', 'train_error', 'train_E_modi', 'train_E_vanilla']
 
+        num_iter = 40
+
 	results = {}
 	dataset_names = []
 	for statistic in statistics_name:
@@ -425,7 +427,7 @@ def draw_plot_averaged(directory, outputfile_name):
 	data_plot = {}
 
         #import pdb;pdb.set_trace()
-
+        max_iter = 0
 	index_dataset = -1
 	#matplotlib.rc('legend', fontsize=0.5, linewidth=2)
 	#plt.tick_params(labelsize=50)
@@ -446,7 +448,16 @@ def draw_plot_averaged(directory, outputfile_name):
 				if method_name not in data_plot[stat_name]:
 					data_plot[stat_name][method_name] = []
 				data_plot[stat_name][method_name].append([float(x) for x in results[stat_name][dataset_name][method_name]])
-	
+                                if max_iter < len( data_plot[stat_name][method_name][-1] ):
+                                        max_iter = len( data_plot[stat_name][method_name][-1] )	
+
+        for stat_name in data_plot:
+              for method_name in data_plot[stat_name]:
+                   for index_dataset in range(len(data_plot[stat_name][method_name])):
+                       temp_len = len(data_plot[stat_name][method_name][index_dataset])
+                       if temp_len < max_iter:
+                           data_plot[stat_name][method_name][index_dataset] += [0]*(max_iter - temp_len)
+
 	data_plot_average = {}
 	for stat_name in statistics_name:
 		if stat_name not in data_plot_average:
