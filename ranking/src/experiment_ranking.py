@@ -178,11 +178,17 @@ def construct_submissions(ranker, train, test, boosting_round, timer):
     error_tied = ranker.getHalfTiedRankingError(predictions, train.critical_pairs)
     submission['statistics_boosting']["train_error_tied"] = error_tied
 
+    E_vanilla_exp = ranker.getE_vanilla_exp(iter = j)
     E_vanilla = ranker.getE_vanilla(iter = j)
     E_modi = ranker.getE(iter = j)
+    E_Z = ranker.getE_Z(iter = j)
+    E_Z_vanilla = ranker.getE_Z_vanilla(iter = j)
 
+    submission['statistics_boosting']['train_E_vanilla_exp'] = E_vanilla_exp
     submission['statistics_boosting']['train_E_vanilla'] = E_vanilla
     submission['statistics_boosting']['train_E_modi'] = E_modi
+    submission['statistics_boosting']['train_E_Z'] = E_Z   
+    submission['statistics_boosting']['train_E_Z_vanilla'] = E_Z_vanilla
 
     if j == 1:
 	predictions = ranker.predict(test.instances, iter = j)
@@ -199,8 +205,13 @@ def construct_submissions(ranker, train, test, boosting_round, timer):
     print 'training_error_tied: %f' % submission['statistics_boosting']["train_error_tied"] 
     print 'testing_error_tied:  %f' % submission['statistics_boosting']["test_error_tied"]
 
+    print 'training_E_vanilla_exp: %f' % submission['statistics_boosting']['train_E_vanilla_exp']
     print 'training_E_vanilla: %f' % submission['statistics_boosting']['train_E_vanilla']
+    print 'training_E_Z_vanilla: %f' % submission['statistics_boosting']['train_E_Z_vanilla']
     print 'training_E_modi:    %f' % submission['statistics_boosting']['train_E_modi']
+    print 'training_E_Z:       %f' % submission['statistics_boosting']['train_E_Z']
+
+    #import pdb;pdb.set_trace()
 
     return submission
     #import pdb;pdb.set_trace()

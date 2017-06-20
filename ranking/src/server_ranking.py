@@ -502,6 +502,9 @@ def load_config(results_directory, ranker_name, dataset_category):
 		user_id_set = range(51) #to make sure the amount of users is same as LETOR
 		fold_index_set = range(5) #movies associated for each user ID is partitioned into 5 folds for cross validation
 
+                #user_id_set = [0]
+                #fold_index_set = [2]
+
 	elif dataset_category == "UCI": 
 		fold_index_set= range(10) #each dataset is partitioned into 10 folds for cross validation
 	

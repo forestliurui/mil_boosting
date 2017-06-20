@@ -28,8 +28,11 @@ class RankBoost_modiVI_ranking(RankBoost_base_ranking):
       def __init__(self, **parameters):
 
             self.Z = []
+            self.Z_vanilla = []
             super(RankBoost_modiVI_ranking, self).__init__(**parameters)
-            self.new_alphas = []
+            self.pre_alphas = []           
+
+ 
       def fit(self, X, y):
             '''
 	    X is a hashtable with key being instance ID, value being the one-dimensional array containing its features
@@ -85,18 +88,20 @@ class RankBoost_modiVI_ranking(RankBoost_base_ranking):
                       new_alpha = sys.maxint
                 else:
                       new_alpha = 0.5*np.log( float(numerator)/denominator )
-                self.alphas_dict[instance_classifier] = new_alpha #i.e. the total alpha for any instance so far            
+                self.alphas_dict[instance_classifier] = new_alpha + pre_alpha #i.e. the total alpha for any instance so far            
                 print("iter: %d, weak ranker: %d"%( index_Boosting, len(self.alphas_dict) ))   
-                ad_alpha = new_alpha - pre_alpha
-                self.alphas.append(ad_alpha)
-                self.new_alphas.append(new_alpha)
+                #ad_alpha = new_alpha - pre_alpha
+                self.alphas.append(new_alpha)
+                self.pre_alphas.append( pre_alpha )
+                #self.new_alphas.append(new_alpha)
 
                 if numerator == 0 or denominator == 0:
                      break
                 
                 cur_Z = epsilon_pos*np.exp(-new_alpha) + epsilon_neg*np.exp(new_alpha) + epsilon0*(np.cosh(new_alpha+pre_alpha))/np.cosh(pre_alpha)
-
+                cur_Z_vanilla = epsilon_pos*np.exp(-new_alpha) + epsilon_neg*np.exp(new_alpha) + epsilon0
                 self.Z.append(cur_Z)  
+                self.Z_vanilla.append(cur_Z_vanilla)
 
                 for pair in y:
                      r0 = 2*predictions[pair[0]] - 1
@@ -112,16 +117,19 @@ class RankBoost_modiVI_ranking(RankBoost_base_ranking):
       
             self.actual_rounds_of_boosting = len(self.alphas)
 
-      def scale(self, iteration, ordering = 0):
+      def scale(self, iteration, ordering = 0, isVanilla = False):
             """
             iteration starts from 0
             """
             if ordering == 1:
-               return np.exp(-self.new_alphas[iteration])
+               return np.exp(-self.alphas[iteration])
             elif ordering == -1:
-               return np.exp(self.new_alphas[iteration])
+               return np.exp(self.alphas[iteration])
             else:
-               return np.cosh(self.new_alphas[iteration]) 
+               if isVanilla is False:
+                  return np.cosh(self.alphas[iteration]+self.pre_alphas[iteration])/np.cosh( self.pre_alphas[iteration] ) 
+               else:
+                  return 1.0
 
 class TestRankBoost_ModiVI(unittest.TestCase):
     def no_test1(self):

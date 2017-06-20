@@ -109,7 +109,7 @@ class RankBoost_modiV_ranking(RankBoost_base_ranking):
                         #import pdb;pdb.set_trace()
 
 		self.actual_rounds_of_boosting = len(self.alphas)
-                print(self.Z)
+                #print(self.Z)
 
 class TestRankBoost_ModiV(unittest.TestCase):
     def no_test1(self):
