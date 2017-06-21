@@ -53,7 +53,7 @@ def compute_statistics(method_name, dataset_category, database_path, outputfile_
 
 
 	#statistics_name = statistics_name + statistics_error
-	statistics_name = ['test_error', 'train_error', 'test_error_tied', 'train_error_tied','train_E_vanilla', 'train_E_modi']
+	statistics_name = ['test_error', 'train_error', 'test_error_tied', 'train_error_tied','train_E_vanilla_exp','train_E_vanilla','train_E_Z_vanilla', 'train_E_modi', 'train_E_Z']
   
     	#num_dataset = None
 	dataset_map = {}
