@@ -183,12 +183,17 @@ def construct_submissions(ranker, train, test, boosting_round, timer):
     E_modi = ranker.getE(iter = j)
     E_Z = ranker.getE_Z(iter = j)
     E_Z_vanilla = ranker.getE_Z_vanilla(iter = j)
+    epsilon_0, epsilon_pos, epsilon_neg = ranker.getEpsilons(iter = j)
+
 
     submission['statistics_boosting']['train_E_vanilla_exp'] = E_vanilla_exp
     submission['statistics_boosting']['train_E_vanilla'] = E_vanilla
     submission['statistics_boosting']['train_E_modi'] = E_modi
     submission['statistics_boosting']['train_E_Z'] = E_Z   
     submission['statistics_boosting']['train_E_Z_vanilla'] = E_Z_vanilla
+    submission['statistics_boosting']['train_epsilon_0'] = epsilon_0
+    submission['statistics_boosting']['train_epsilon_pos'] = epsilon_pos
+    submission['statistics_boosting']['train_epsilon_neg'] = epsilon_neg 
 
     if j == 1:
 	predictions = ranker.predict(test.instances, iter = j)
@@ -211,6 +216,9 @@ def construct_submissions(ranker, train, test, boosting_round, timer):
     print 'training_E_modi:    %f' % submission['statistics_boosting']['train_E_modi']
     print 'training_E_Z:       %f' % submission['statistics_boosting']['train_E_Z']
 
+    print 'training_epsilon_0:   %f' % submission['statistics_boosting']['train_epsilon_0']
+    print 'training_epsilon_pos: %f' % submission['statistics_boosting']['train_epsilon_pos']
+    print 'training_epsilon_neg: %f' % submission['statistics_boosting']['train_epsilon_neg']
     #import pdb;pdb.set_trace()
 
     return submission

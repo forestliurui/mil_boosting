@@ -135,6 +135,12 @@ class RankBoost_base_ranking(object):
 				epsilon_neg += weights_pair[pair]
 		return epsilon0, epsilon_pos, epsilon_neg
 
+        def getEpsilons(self, iter):
+                """
+                iter starts from 1
+                """
+                return self.epsilon["zero"][iter - 1], self.epsilon["positive"][iter - 1], self.epsilon["negative"][iter - 1]
+
 	def getRankingErrorOneClassifier(self, iter = None):
 		"""
 		get the training ranking error
