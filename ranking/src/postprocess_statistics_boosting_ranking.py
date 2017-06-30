@@ -16,7 +16,11 @@ def get_results(directory, statistic_name):
 
 	#statistics_names = ['test_error', 'train_error', 'test_error_tied','train_error_tied']
 
-        statistics_names = ['test_error', 'train_error', 'test_error_tied','train_error_tied', 'train_E_vanilla', 'train_E_modi']
+        #statistics_names = ['test_error', 'train_error', 'test_error_tied','train_error_tied', 'train_E_vanilla', 'train_E_modi']
+
+        statistics_names = ['test_error', 'train_error', 'test_error_tied', 'train_error_tied','train_E_vanilla_exp','train_E_vanilla','train_E_Z_vanilla', 'train_E_modi', 'train_E_Z']
+
+        statistics_names += ['train_epsilon_pos', 'train_epsilon_neg', 'train_epsilon_0' ]
 
 	#for modified rankboost
 		
@@ -294,9 +298,9 @@ def draw_plot(directory, outputfile_name):
 
         colors={'rankboost':'b', 'rankboost_modiV':'r','rankboost_modiVI':'k', 'rankboost_modiIII': 'c'}
         #linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
-        linestyles = {'rankboost_modiVI':'-', 'rankboost':(0,[10,10]),'rankboost_modiV':(0,[40,10]), 'rankboost_modiIII': (0, [40,10,10,10]) }
+        #linestyles = {'rankboost_modiVI':'-', 'rankboost':(0,[10,10]),'rankboost_modiV':(0,[40,10]), 'rankboost_modiIII': (0, [40,10,10,10]) }
         #linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiII':'dashed' }
-
+        linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiV':'dashed', 'rankboost_modiVI':'-' }
 
         #statistics_name = ['test_error', 'train_error']
         statistics_name = ['test_error', 'train_error', 'train_E_modi', 'train_E_vanilla']
@@ -409,8 +413,8 @@ def draw_plot_averaged(directory, outputfile_name):
  
         colors={'rankboost':'b', 'rankboost_modiV':'r','rankboost_modiVI':'k', 'rankboost_modiIII': 'c'}
         #linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
-        linestyles = {'rankboost_modiVI':'-', 'rankboost':(0,[10,10]),'rankboost_modiV':(0,[40,10]), 'rankboost_modiIII': (0, [40,10,10,10]) }
-        #linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiII':'dashed' }
+        #linestyles = {'rankboost_modiVI':'-', 'rankboost':(0,[10,10]),'rankboost_modiV':(0,[40,10]), 'rankboost_modiIII': (0, [40,10,10,10]) }
+        linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiV':'dashed', 'rankboost_modiVI':'-' }
 
 
         #statistics_name = ['test_error', 'train_error']
@@ -457,13 +461,23 @@ def draw_plot_averaged(directory, outputfile_name):
                        temp_len = len(data_plot[stat_name][method_name][index_dataset])
                        if temp_len < max_iter:
                            data_plot[stat_name][method_name][index_dataset] += [0]*(max_iter - temp_len)
-
+        #import pdb;pdb.set_trace()
 	data_plot_average = {}
 	for stat_name in statistics_name:
 		if stat_name not in data_plot_average:
 			data_plot_average[stat_name] = {}
 		for method_name in method_names:
-			data_plot_average[stat_name][method_name] = np.average(np.array(data_plot[stat_name][method_name]), axis=0)
+                        data_plot_average[stat_name][method_name] = []
+                        num_valid = 0
+                        sum_valid = 0
+                        for iter_index in range(max_iter):
+                            for alg_index in range(len(data_plot[stat_name][method_name])):
+                                  if data_plot[stat_name][method_name][alg_index][iter_index] != 0:
+                                        num_valid += 1
+                                        sum_valid += data_plot[stat_name][method_name][alg_index][iter_index]
+                            data_plot_average[stat_name][method_name].append( sum_valid/float(num_valid)   )
+			data_plot_average[stat_name][method_name] = np.array( data_plot_average[stat_name][method_name]  )
+                        #data_plot_average[stat_name][method_name] = np.average(np.array(data_plot[stat_name][method_name]), axis=0)
 	#import pdb;pdb.set_trace()
 	subplot_handle = {}
 	output_name = 'ranking/' + outputfile_name
@@ -496,7 +510,7 @@ def draw_plot_averaged(directory, outputfile_name):
 			        plt.axis([0, 50, 0, 10], fontsize = 50)
                         else:
 				#plt.axis([0, 150, 0, 0.4], fontsize = 50)
-				plt.axis([0, 50, 0, 0.6], fontsize = 50)
+				plt.axis([0, 50, 0.3, 0.6], fontsize = 50)
 
                         #import pdb;pdb.set_trace()
 			method_names = results[stat_name][dataset_name].keys()

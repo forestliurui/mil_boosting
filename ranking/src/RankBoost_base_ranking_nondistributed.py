@@ -241,11 +241,6 @@ class RankBoost_base_ranking(object):
                 """
                 return E, based on the formula, (1/m)*\sum_{i=1}^m \prod_{s=1}^t scale_s(i)
                 where scale_s(i) is defined as:
-                   (1) for crankboost:
-                       scale_s(i) = e**(-alpha_s) if pair i is correctly ranked
-                                  = e**(alpha_s)  if pair i is reverse ranked
-                                  = cosh(alpha_s) if pair i is tied
-                   (2) for rankboost vanilla:
                        scale_s(i) = e**(-alpha_s) if pair i is correctly ranked
                                   = e**(alpha_s)  if pair i is reverse ranked
                                   = 1             if pair i is tied
@@ -299,14 +294,10 @@ class RankBoost_base_ranking(object):
                 """
                 return E, based on the formula, (1/m)*\sum_{i=1}^m \prod_{s=1}^t scale_s(i)
                 where scale_s(i) is defined as:
-                   (1) for crankboost:
                        scale_s(i) = e**(-alpha_s) if pair i is correctly ranked
                                   = e**(alpha_s)  if pair i is reverse ranked
-                                  = cosh(alpha_s) if pair i is tied
-                   (2) for rankboost vanilla:
-                       scale_s(i) = e**(-alpha_s) if pair i is correctly ranked
-                                  = e**(alpha_s)  if pair i is reverse ranked
-                                  = 1             if pair i is tied
+                                  = cosh(alpha_s+alpha_s')/cosh(alpha_s') if pair i is tied
+                                     , where alpha_s' is the total alplha for the same weak ranker from previous iterations
                 Note: iter starts from 1
                 """
                 self.E2_bound.setAll(rankers = self.weak_classifiers, alphas = self.alphas, epsilons = self.epsilon)
@@ -322,7 +313,15 @@ class RankBoost_base_ranking(object):
                          ordering = self.comparePairPredictions( predictions[pair[0]], predictions[pair[1]] )
                          res_pair[pair] *= self.E2_bound.getScale(iteration, ordering = ordering)
                 return np.mean(res_pair.values())
-        
+       
+        def getNumUniqueRankers(self, iter):
+                """
+                Note: iter starts from 1
+                """
+                self.E2_bound.setAll(rankers = self.weak_classifiers, alphas = self.alphas, epsilons = self.epsilon)
+
+                return self.E2_bound.getNumUniqueRankers( iter - 1) #for E2_bound, this function's iter starts from 0
+
         def comparePairPredictions(self, prediction1, prediction2  ):
                 """
                 return 1  if prediction1 is considered greater than prediction2
@@ -486,6 +485,7 @@ class E2(E_base):
          
          self.pre_alphas = [] #total alphas for previous identical rankers
          self.alpha_dict = {}
+         self.num_unique_rankers = []
 
      def update(self):     
          #import pdb;pdb.set_trace() 
@@ -506,9 +506,17 @@ class E2(E_base):
              cur_alpha = self.alphas[index]
              new_pre_alpha = pre_alpha + cur_alpha
              self.alpha_dict[ranker] = new_pre_alpha
+             self.num_unique_rankers.append( len(self.alpha_dict)  )
              self.pre_alphas.append(pre_alpha)
              z = self.epsilons["positive"][index]*np.exp(-cur_alpha) + self.epsilons["negative"][index]*np.exp(cur_alpha) + self.epsilons["zero"][index]*np.cosh(new_pre_alpha)/np.cosh(pre_alpha)
              self.Z.append(z)
+
+     def getNumUniqueRankers(self, iteration):
+            """
+            iteration starts from 0
+            """
+            self.update()
+            return self.num_unique_rankers[iteration]
 
      def getScale(self, iteration, ordering = 0):
             """

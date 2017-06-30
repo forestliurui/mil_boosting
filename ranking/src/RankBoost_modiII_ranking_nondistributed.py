@@ -14,47 +14,18 @@ import copy
 
 from weak_ranker import WeakRanker
 from stump_ranker import StumpRanker
+from RankBoost_base_ranking_nondistributed import RankBoost_base_ranking
 
 WEAK_CLASSIFIERS = {
         'weak_ranker': WeakRanker,
 	'stump_ranker': StumpRanker,
 }
 
-class RankBoost_modiII_ranking(object):
+class RankBoost_modiII_ranking(RankBoost_base_ranking):
 	def __init__(self, **parameters):
 
-		self.max_iter_boosting = parameters.pop("max_iter_boosting", 10)
-		self.weak_classifier_name = parameters.pop('weak_classifier', 'weak_ranker') 
-		if self.weak_classifier_name == 'dtree_stump':
-			parameters['max_depth'] = 1
-		parameters.pop('normalization', 0)
-		self.parameters = parameters
-		self.weak_classifiers = []
-		self.epsilon = {}
-		self.epsilon["positive"] = []
-		self.epsilon["negative"] = []
-		self.epsilon["zero"] = []
-		self.alphas = []
-		self.weights_pair=[]
-
-		self.predictions_list_train = []
-		self.X_test = None
-
-		self.X_train= None
-		self.y_train= None
-		
-
-		self.instance_labels_generated_from_bag_labels = None
-
-		self.epsilon_pair = {}
-		self.epsilon_pair["positive"] = []
-		self.epsilon_pair["negative"] = []
-
-
-		self.epsilon_pair_fast = {}
-		self.epsilon_pair_fast["positive"] = []
-		self.epsilon_pair_fast["negative"] = []
-		self.epsilon_pair_fast["zero"] = []
+                super(RankBoost_modiII_ranking, self).__init__(**parameters)
+                self.Z = []
 
 	def fit(self, X, y):
 		'''
@@ -109,7 +80,6 @@ class RankBoost_modiII_ranking(object):
 				break
 			else:
 				self.alphas.append(0.5*np.log(  (self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])  ))
-			self.Z=[]
 			
 			Z_cur = self.epsilon["positive"][-1]*sqrt((self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1]))+self.epsilon["negative"][-1]*sqrt((self.epsilon["positive"][-1]+0.5*self.epsilon["zero"][-1])/(self.epsilon["negative"][-1]+0.5*self.epsilon["zero"][-1]))+self.epsilon["zero"][-1]
 			self.Z.append(Z_cur)

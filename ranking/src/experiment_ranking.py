@@ -129,7 +129,7 @@ def client_target(task, callback):
     
     timer = Timer()
    
-    parameters = {"max_iter_boosting":40, 'weak_classifier': 'stump_ranker'}
+    parameters = {"max_iter_boosting":50, 'weak_classifier': 'stump_ranker'}
     #parameters = {"max_iter_boosting":200, 'weak_classifier': 'stump_ranker'}
 
     classifier_name = task['param'].pop('ranker')
@@ -184,7 +184,7 @@ def construct_submissions(ranker, train, test, boosting_round, timer):
     E_Z = ranker.getE_Z(iter = j)
     E_Z_vanilla = ranker.getE_Z_vanilla(iter = j)
     epsilon_0, epsilon_pos, epsilon_neg = ranker.getEpsilons(iter = j)
-
+    num_unique_rankers = ranker.getNumUniqueRankers(iter = j)
 
     submission['statistics_boosting']['train_E_vanilla_exp'] = E_vanilla_exp
     submission['statistics_boosting']['train_E_vanilla'] = E_vanilla
@@ -194,6 +194,7 @@ def construct_submissions(ranker, train, test, boosting_round, timer):
     submission['statistics_boosting']['train_epsilon_0'] = epsilon_0
     submission['statistics_boosting']['train_epsilon_pos'] = epsilon_pos
     submission['statistics_boosting']['train_epsilon_neg'] = epsilon_neg 
+    submission['statistics_boosting']['train_num_unique_rankers'] = num_unique_rankers
 
     if j == 1:
 	predictions = ranker.predict(test.instances, iter = j)
@@ -216,9 +217,11 @@ def construct_submissions(ranker, train, test, boosting_round, timer):
     print 'training_E_modi:    %f' % submission['statistics_boosting']['train_E_modi']
     print 'training_E_Z:       %f' % submission['statistics_boosting']['train_E_Z']
 
+    print 'training_num_unique_rankers: %d' % submission['statistics_boosting']['train_num_unique_rankers']
     print 'training_epsilon_0:   %f' % submission['statistics_boosting']['train_epsilon_0']
     print 'training_epsilon_pos: %f' % submission['statistics_boosting']['train_epsilon_pos']
     print 'training_epsilon_neg: %f' % submission['statistics_boosting']['train_epsilon_neg']
+
     #import pdb;pdb.set_trace()
 
     return submission
