@@ -411,16 +411,16 @@ def draw_plot_averaged(directory, outputfile_name):
 	# for modified rankboost
         """
  
-        colors={'rankboost':'b', 'rankboost_modiV':'r','rankboost_modiVI':'k', 'rankboost_modiIII': 'c'}
+        colors={'rankboost':'b', 'rankboost_modiV':'r','rankboost_modiVI':'k', 'rankboost_modiIII': 'c', 'rankboost_modiII': 'y'}
         #linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
         #linestyles = {'rankboost_modiVI':'-', 'rankboost':(0,[10,10]),'rankboost_modiV':(0,[40,10]), 'rankboost_modiIII': (0, [40,10,10,10]) }
-        linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiV':'dashed', 'rankboost_modiVI':'-' }
+        linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiV':'dashed', 'rankboost_modiVI':'-', 'rankboost_modiII': 'dashed' }
 
 
         #statistics_name = ['test_error', 'train_error']
         statistics_name = ['test_error', 'train_error', 'train_E_modi', 'train_E_vanilla']
 
-        num_iter = 40
+        num_iter = 50
 
 	results = {}
 	dataset_names = []
@@ -507,7 +507,11 @@ def draw_plot_averaged(directory, outputfile_name):
 			color_index = -1
 			if stat_name != "ranking_error" and stat_name != "ranking_error_bound" and stat_name != "train_error" and stat_name != "test_error" and stat_name != "test_error_tied" and stat_name != "train_error_tied":
 				#plt.axis([0, 150, 0.49, 1.1], fontsize = 50)
-			        plt.axis([0, 50, 0, 10], fontsize = 50)
+			        plt.axis([0, 50, 0, 2], fontsize = 50)
+                        elif stat_name == 'test_error':
+                                plt.axis([0, 50, 0.3, 0.4], fontsize = 50)
+                        elif stat_name == 'train_error':
+                                plt.axis([0, 50, 0.1, 0.3], fontsize = 50)
                         else:
 				#plt.axis([0, 150, 0, 0.4], fontsize = 50)
 				plt.axis([0, 50, 0.3, 0.6], fontsize = 50)
