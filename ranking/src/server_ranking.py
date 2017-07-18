@@ -247,6 +247,7 @@ class ExperimentServer(object):
         try:
             key = yaml.load(key_yaml, Loader=Loader)
             submission = yaml.load(sub_yaml, Loader=Loader)
+            import pdb;pdb.set_trace()
         except:
             import pdb;pdb.set_trace()
             raise HTTPError(400)

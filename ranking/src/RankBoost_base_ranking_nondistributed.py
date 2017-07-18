@@ -139,7 +139,7 @@ class RankBoost_base_ranking(object):
                 """
                 iter starts from 1
                 """
-                return self.epsilon["zero"][iter - 1], self.epsilon["positive"][iter - 1], self.epsilon["negative"][iter - 1]
+                return float(self.epsilon["zero"][iter - 1]), float(self.epsilon["positive"][iter - 1]), float(self.epsilon["negative"][iter - 1])
 
 	def getRankingErrorOneClassifier(self, iter = None):
 		"""
@@ -221,7 +221,7 @@ class RankBoost_base_ranking(object):
 		epsilon_neg = np.array( self.epsilon_pair["negative"][0:iter] )
 
 		bound = np.exp( -2*( np.sum( ((epsilon_pos - epsilon_neg)/2 )**2 ) )  )
-		return bound
+		return float( bound )
 
         def getE_vanilla_exp(self, iter = None):
                 """
@@ -235,7 +235,7 @@ class RankBoost_base_ranking(object):
                 for pair in self.y_train:
                     res.append( np.exp( -( predictions_train[pair[0]] - predictions_train[pair[1]] ) ) )
                 
-                return np.mean(res)
+                return float( np.mean(res) )
 
         def getE_vanilla(self, iter = None):
                 """
@@ -260,7 +260,7 @@ class RankBoost_base_ranking(object):
                              res_pair[pair] = 1
                          ordering = self.comparePairPredictions( predictions[pair[0]], predictions[pair[1]] )
                          res_pair[pair] *= self.E1_bound.getScale(iteration, ordering = ordering)
-                return np.mean(res_pair.values())
+                return float( np.mean(res_pair.values()) )
 
         def getE_Z_vanilla(self, iter = None):
                 """
@@ -274,7 +274,7 @@ class RankBoost_base_ranking(object):
 
                 Z = self.E1_bound.getZ()
                 E = reduce(lambda x, y: x*y, Z[:iter])
-                return E
+                return float(E)
 
 	def getE_Z(self, iter = None):
                 """
@@ -288,7 +288,7 @@ class RankBoost_base_ranking(object):
 
                 Z = self.E2_bound.getZ()
                 E = reduce(lambda x, y: x*y, Z[:iter])
-                return E
+                return float(E)
 
         def getE(self, iter = None):
                 """
@@ -312,7 +312,7 @@ class RankBoost_base_ranking(object):
                              res_pair[pair] = 1
                          ordering = self.comparePairPredictions( predictions[pair[0]], predictions[pair[1]] )
                          res_pair[pair] *= self.E2_bound.getScale(iteration, ordering = ordering)
-                return np.mean(res_pair.values())
+                return float(np.mean(res_pair.values()))
        
         def getNumUniqueRankers(self, iter):
                 """
