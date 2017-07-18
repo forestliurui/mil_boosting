@@ -247,9 +247,9 @@ class ExperimentServer(object):
         try:
             key = yaml.load(key_yaml, Loader=Loader)
             submission = yaml.load(sub_yaml, Loader=Loader)
-            import pdb;pdb.set_trace()
+            #import pdb;pdb.set_trace()
         except:
-            import pdb;pdb.set_trace()
+            #import pdb;pdb.set_trace()
             raise HTTPError(400)
         with self.status_lock:
             if not key in self.tasks:
