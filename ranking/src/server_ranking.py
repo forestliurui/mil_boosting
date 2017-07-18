@@ -495,8 +495,9 @@ def start_experiment(results_root_dir, ranker_name, dataset_category):
 
 def load_config(results_directory, ranker_name, dataset_category):
     #dataset_category = "LETOR"
+    dataset_categories = [dataset_category]
     tasks = {}
-    for dataset_category in ["LETOR"]:
+    for dataset_category in dataset_categories:
 	if dataset_category == "MovieLen":
 		#user_id_set = range(303) #respresent the user ID in MovieLen dataset. After preprocessing, there are 303 users left
 		user_id_set = range(51) #to make sure the amount of users is same as LETOR

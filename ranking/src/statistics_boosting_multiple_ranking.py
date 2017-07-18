@@ -179,19 +179,17 @@ def compute_statistics_for_fold(method_name, dataset_category, database_path, ou
 	#fold_index_set = range(5)
 
     	for index_dataset in dataset_map.keys():
-	   boosting_rounds_list=[]
-	   for index_fold_temp in dataset_map[index_dataset].keys():
-	     	string_to_be_exe = 'select boosting_rounds from statistics_boosting where test_set_id= %d' % (dataset_map[index_dataset][index_fold_temp]) 
-	     	for row in c.execute(string_to_be_exe):
-			boosting_rounds_list.append(row[0])
-	   if len(boosting_rounds_list) == 0:
-		continue
-	   iter_max_boosting=max(boosting_rounds_list)
-
 
            for index_fold in dataset_map[index_dataset].keys(): 
 	     if index_dataset>45:
 		continue
+             boosting_rounds_list = []
+             string_to_be_exe = 'select boosting_rounds from statistics_boosting where test_set_id= %d' % (dataset_map[index_dataset][index_fold])
+             for row in c.execute(string_to_be_exe):
+                        boosting_rounds_list.append(row[0])
+             if len(boosting_rounds_list) == 0:
+                continue
+             iter_max_boosting=max(boosting_rounds_list)
 
 	     dataset_name = str(index_dataset)
 	     
