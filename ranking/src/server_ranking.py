@@ -502,8 +502,9 @@ def load_config(results_directory, ranker_name, dataset_category):
     for dataset_category in dataset_categories:
 	if dataset_category == "MovieLen":
 		#user_id_set = range(303) #respresent the user ID in MovieLen dataset. After preprocessing, there are 303 users left
-		user_id_set = range(51) #to make sure the amount of users is same as LETOR
-		fold_index_set = range(5) #movies associated for each user ID is partitioned into 5 folds for cross validation
+		#user_id_set = range(51) #to make sure the amount of users is same as LETOR
+		user_id_set = range(100)
+                fold_index_set = range(5) #movies associated for each user ID is partitioned into 5 folds for cross validation
 
                 #user_id_set = [0]
                 #fold_index_set = [2]

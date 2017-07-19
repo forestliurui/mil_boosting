@@ -86,7 +86,7 @@ class RankBoost_ranking(RankBoost_base_ranking):
 
 			if self.epsilon["negative"][-1] == 0:
 				self.alphas.append(20000)
-				break
+				#break
 			else:
 				self.alphas.append(0.5*np.log(  (self.epsilon["positive"][-1])/(self.epsilon["negative"][-1])  ))
 			new_alpha = self.alphas[-1]
@@ -99,7 +99,8 @@ class RankBoost_ranking(RankBoost_base_ranking):
 			for pair in y:
 			
 				weights_pair[pair] = weights_pair[pair]*np.exp(-self.alphas[-1]*(predictions[pair[0]]-predictions[pair[1]]))/self.Z[-1]
-
+                        if self.epsilon["negative"][-1] == 0:
+                               break
 		self.actual_rounds_of_boosting = len(self.alphas)
 		#import pdb;pdb.set_trace()
 

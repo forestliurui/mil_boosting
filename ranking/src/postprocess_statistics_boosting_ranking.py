@@ -294,8 +294,6 @@ def draw_plot(directory, outputfile_name):
 	plot the error vs boosting round figures. Each figure corresponds to all methods on one dataset. Each method is one input file. 
 	(The input is the same with the above generateRank())
 	"""
-
-
         colors={'rankboost':'b', 'rankboost_modiV':'r','rankboost_modiVI':'k', 'rankboost_modiIII': 'c'}
         #linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
         #linestyles = {'rankboost_modiVI':'-', 'rankboost':(0,[10,10]),'rankboost_modiV':(0,[40,10]), 'rankboost_modiIII': (0, [40,10,10,10]) }
@@ -318,7 +316,6 @@ def draw_plot(directory, outputfile_name):
 	#statistics_name = earlyStop_name
 	# for modified rankboost
 
-	
 	results = {}
 	dataset_names = []
 	for statistic in statistics_name:
@@ -370,9 +367,6 @@ def draw_plot(directory, outputfile_name):
 				#plt.axis([0, 150, 0, 0.6], fontsize = 50)
                                 plt.axis([0, 50, 0, 0.6], fontsize = 50)
 
-                               
-
-
 			method_names = results[stat_name][dataset_name].keys()
 		
 			for method_name in method_names:
@@ -381,14 +375,12 @@ def draw_plot(directory, outputfile_name):
               			#subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name]+linestyles[method_name])
 				subplot_handle[method_name], = plt.plot(results[stat_name][dataset_name][method_name], colors[method_name], ls = linestyles[method_name], linewidth = 10)
 
-
 			#plt.legend(method_names, fontsize = 35)
 	     		#plt.title(dataset_name, fontsize = 30)
 		#plt.suptitle(dataset_name, fontsize = 50)
 		#plt.legend(method_names, fontsize = 35)
 		#plt.figlegend([subplot_handle[x] for x in method_names], convertMethodNames(method_names), loc = 'upper right',  fontsize = 50)
 		plt.savefig(output_name, orientation = 'landscape')
-
 		#break
 
 def draw_plot_averaged(directory, outputfile_name):
@@ -401,7 +393,6 @@ def draw_plot_averaged(directory, outputfile_name):
 	#linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
 	linestyles = {'rankboost_modiIII':'-', 'rankboost':(0,[10,10]),'rankboost_modiII':(0,[40,10]) }
 	#linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiII':'dashed' }
-
 
 	#statistics_name = ['test_error', 'train_error']
 	statistics_name = ['test_error', 'train_error', 'test_error_tied', 'train_error_tied']
@@ -460,7 +451,10 @@ def draw_plot_averaged(directory, outputfile_name):
                    for index_dataset in range(len(data_plot[stat_name][method_name])):
                        temp_len = len(data_plot[stat_name][method_name][index_dataset])
                        if temp_len < max_iter:
-                           data_plot[stat_name][method_name][index_dataset] += [0]*(max_iter - temp_len)
+                           padding_val = data_plot[stat_name][method_name][index_dataset][-1]
+                           #data_plot[stat_name][method_name][index_dataset] += [0]*(max_iter - temp_len)
+                           data_plot[stat_name][method_name][index_dataset] += [padding_val]*(max_iter - temp_len)
+
         #import pdb;pdb.set_trace()
 	data_plot_average = {}
 	for stat_name in statistics_name:
