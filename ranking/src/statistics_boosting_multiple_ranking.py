@@ -81,7 +81,7 @@ def compute_statistics(method_name, dataset_category, database_path, outputfile_
 
     	for index_dataset in dataset_map.keys():
 	     
-	     if index_dataset>45:
+	     if index_dataset>95:
 		continue
 
 	     dataset_name = str(index_dataset)
@@ -111,7 +111,7 @@ def compute_statistics(method_name, dataset_category, database_path, outputfile_
 	     if len(boosting_rounds_list) == 0:
 		continue
 	     iter_max_boosting=max(boosting_rounds_list)
-
+             lines = ""
 	     for boosting_round in range(1,iter_max_boosting+1):
 		line=('%d' % boosting_round)
 		for statistic_name in statistics_name:
@@ -132,9 +132,9 @@ def compute_statistics(method_name, dataset_category, database_path, outputfile_
 
 				line += (',%f' % np.average(statistic_value_list)  )
 		line +='\n'
-						
-		with open(outputfile, 'a+') as f:
-                	f.write(line)
+		lines += line				
+	     with open(outputfile, 'a+') as f:
+                   f.write(lines)
 
 
 def compute_statistics_for_fold(method_name, dataset_category, database_path, outputfile_name):
@@ -210,7 +210,7 @@ def compute_statistics_for_fold(method_name, dataset_category, database_path, ou
 	     #for row in c.execute('select * from statistic_names'):
 	     #print row  #row is of type tuple
 	
-	     
+	     lines = "" 
 	     for boosting_round in range(1,iter_max_boosting+1):
 		line=('%d' % boosting_round)
 		for statistic_name in statistics_name:
@@ -231,9 +231,9 @@ def compute_statistics_for_fold(method_name, dataset_category, database_path, ou
 
 				line += (',%f' % np.array(statistic_value_list)  )
 		line +='\n'
-						
-		with open(outputfile, 'a+') as f:
-                	f.write(line)
+		lines += line				
+	     with open(outputfile, 'a+') as f:
+                	f.write(lines)
 
 
 
@@ -244,5 +244,5 @@ if __name__ == '__main__':
     #import pdb;pdb.set_trace()
     options = dict(options.__dict__)
    
-    #compute_statistics(*args, **options)
-    compute_statistics_for_fold(*args, **options) 
+    compute_statistics(*args, **options)
+    #compute_statistics_for_fold(*args, **options) 
