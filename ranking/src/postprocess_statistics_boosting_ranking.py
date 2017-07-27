@@ -503,9 +503,11 @@ def draw_plot_averaged(directory, outputfile_name):
 				#plt.axis([0, 150, 0.49, 1.1], fontsize = 50)
 			        plt.axis([0, 50, 0, 2], fontsize = 50)
                         elif stat_name == 'test_error':
-                                plt.axis([0, 50, 0.3, 0.4], fontsize = 50)
+                                #plt.axis([0, 50, 0.3, 0.4], fontsize = 50)
+                                plt.axis([0, 50, 0.3, 0.6], fontsize = 50)
                         elif stat_name == 'train_error':
-                                plt.axis([0, 50, 0.1, 0.3], fontsize = 50)
+                                #plt.axis([0, 50, 0.1, 0.3], fontsize = 50)
+                                plt.axis([0, 50, 0.2, 0.4], fontsize = 50)
                         else:
 				#plt.axis([0, 150, 0, 0.4], fontsize = 50)
 				plt.axis([0, 50, 0.3, 0.6], fontsize = 50)

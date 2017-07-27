@@ -93,7 +93,7 @@ if __name__ == "__main__":
         		exit()		
 
 	input_directory = args[0] #this is a directory containing the raw files of LETOR dataset, i.e. directory containinig text.txt, train.txt and vali.txt
-	outputfile_name = args[1] #this is the directory where the resulting .pkl files will be stored. Such directory must exist before running the script.
+	output_directory = args[1] #this is the directory where the resulting .pkl files will be stored. Such directory must exist before running the script.
 
 	#generate 	
 	count = {} #map from query id to number of docs associated with this query
@@ -109,13 +109,13 @@ if __name__ == "__main__":
 	filename = input_directory+"/vali.txt"
 	check_file(filename, count)
 	#import pdb;pdb.set_trace()
-	doc_count_lowerbound = 400 #the min number of doc/URL for querys that are to be stored at .csv
+	doc_count_lowerbound = 350 #the min number of doc/URL for querys that are to be stored at .csv
 	doc_count_upperbound = 600
 
 	temp_filename = "LETOR_doc_upperbound_"+str(doc_count_upperbound)+"_lowerbound_"+str(doc_count_lowerbound)+".csv"
-	merge_file( "test.txt", temp_filename, count, doc_count_upperbound, doc_count_lowerbound )
-	merge_file( "train.txt", temp_filename, count, doc_count_upperbound, doc_count_lowerbound)
-	merge_file( "vali.txt", temp_filename, count, doc_count_upperbound, doc_count_lowerbound)
+	merge_file( input_directory+"/test.txt", temp_filename, count, doc_count_upperbound, doc_count_lowerbound )
+	merge_file( input_directory+"/train.txt", temp_filename, count, doc_count_upperbound, doc_count_lowerbound)
+	merge_file( input_directory+"/vali.txt", temp_filename, count, doc_count_upperbound, doc_count_lowerbound)
 	#import pdb;pdb.set_trace()
 	
 

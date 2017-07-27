@@ -46,11 +46,9 @@ def compute_statistics(method_name, dataset_category, database_path, outputfile_
         outputfile_name is the string to respresent the basic name of csv file to store the output. It will be expanded to 'ranking/'+method_name+'_'+outputfile_name
 	
 	"""
-	#method_name = "rankboost"
-	
+	#method_name = "rankboost"	
 	#outputfile_raw = method_name+'.csv'
 	outputfile_raw = method_name+'_'+outputfile_name
-
 
 	#statistics_name = statistics_name + statistics_error
 	statistics_name = ['test_error', 'train_error', 'test_error_tied', 'train_error_tied','train_E_vanilla_exp','train_E_vanilla','train_E_Z_vanilla', 'train_E_modi', 'train_E_Z']
@@ -76,7 +74,6 @@ def compute_statistics(method_name, dataset_category, database_path, outputfile_
 			
 	#num_dataset = len(dataset_map) 
  	#num_dataset = 303
-
 	#fold_index_set = range(5)
 
     	for index_dataset in dataset_map.keys():
@@ -98,7 +95,7 @@ def compute_statistics(method_name, dataset_category, database_path, outputfile_
 	     line+= (','.join(statistics_name) )
 	     line+= '\n'
  	     with open(outputfile, 'a+') as f:
-                		f.write(line)
+                 f.write(line)
 
 	     #for row in c.execute('select * from statistic_names'):
 	     #print row  #row is of type tuple

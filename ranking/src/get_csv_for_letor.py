@@ -18,7 +18,7 @@ import csv
 
 
 
-def check_file(fileanme, qid_count_doc):
+def check_file(filename, qid_count_doc):
 
 	#qid_count_doc = {}
 

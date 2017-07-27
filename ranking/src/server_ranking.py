@@ -530,8 +530,8 @@ def load_config(results_directory, ranker_name, dataset_category):
 	elif dataset_category == "LETOR":
 		#user_id_set = range(21) 
 		#user_id_set = range(40) 
-		user_id_set = range(51) #for LETOR, the user_id is actually query ID
-
+		#user_id_set = range(51) #for LETOR, the user_id is actually query ID
+                user_id_set = range(95)
 		fold_index_set = range(5) #URLs associated with each query is partitioned into 5 folds for cross-validation
 	else:
 		raise error("Do NOT support data category %s" %dataset_category)
