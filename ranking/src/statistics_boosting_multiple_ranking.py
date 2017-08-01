@@ -38,7 +38,8 @@ import sqlite3
 import yaml
 import numpy as np
 from multiprocessing import Process
-
+from Query_Engine_Database import QueryEngine
+ 
 def compute_statistics_para(method_name, dataset_category, database_path, outputfile_name):
 	"""
 	method_name is the string representing the method name, which appears as part of the name of the database file. E.g. method_name = 'rankboost_modiII'
@@ -99,6 +100,7 @@ def compute_statistics_para(method_name, dataset_category, database_path, output
 
 
 def parallelComputing(dataset_map, dataset_result_path, outputfile_raw, statistics_name, dataset_indices, parallel_index ):
+        query_engine = QueryEngine(dataset_result_path)
         conn=sqlite3.connect(dataset_result_path)
         c=conn.cursor()
     	for index_dataset in dataset_indices:
@@ -139,9 +141,10 @@ def parallelComputing(dataset_map, dataset_result_path, outputfile_raw, statisti
 		continue
 	     iter_max_boosting=max(boosting_rounds_list)
              lines = ""
+             stat_fold_record = {}
 	     for boosting_round in range(1,iter_max_boosting+1):
 		line=('%d' % boosting_round)
-                stat_fold_record = {}
+                #stat_fold_record = {}
 		for statistic_name in statistics_name:
 
 				#import pdb;pdb.set_trace()
@@ -152,18 +155,29 @@ def parallelComputing(dataset_map, dataset_result_path, outputfile_raw, statisti
 
 				statistic_value_list=[]
 				for index_fold in dataset_map[index_dataset].keys():
+                                        if isValidRecord(index_dataset, index_fold, boosting_round, dataset_map, query_engine):
+					     string_to_be_exe = 'select  statistic_value from statistics_boosting where statistic_name_id = %d and boosting_rounds = %d and test_set_id = %d' % (stat_id, boosting_round, dataset_map[index_dataset][index_fold])
 
-					string_to_be_exe = 'select  statistic_value from statistics_boosting where statistic_name_id = %d and boosting_rounds = %d and test_set_id = %d' % (stat_id, boosting_round, dataset_map[index_dataset][index_fold])
-
-					for row in c.execute(string_to_be_exe):
+					     for row in c.execute(string_to_be_exe):
 						statistic_value_list.append(row[0])
-                                        stat_fold_record[(statistic_name, index_fold)] = np.average(row[0])
+                                                stat_fold_record[(statistic_name, index_fold)] = np.average(row[0])
+                                        else:
+                                                statistic_value_list.append( stat_fold_record[(statistic_name, index_fold)] )
 				line += (',%f' % np.average(statistic_value_list)  )
 		line +='\n'
 		lines += line				
 	     with open(outputfile, 'a+') as f:
                    f.write(lines)
 
+def isValidRecord(index_dataset, index_fold, boosting_round, dataset_map, query_engine ):
+       stat_id_train_epsilon_0 = query_engine.querySingleTarget(target = "statistic_name_id", table =  "statistic_names", conditions = {"statistic_name": "train_epsilon_neg" })[0]
+       conditions = {"statistic_name_id": stat_id_train_epsilon_0, "boosting_rounds": boosting_round, "test_set_id": dataset_map[index_dataset][index_fold] }
+       val_train_epsilon_0_list = query_engine.querySingleTarget(target = "statistic_value", table = "statistics_boosting", conditions = conditions)
+       if len(val_train_epsilon_0_list) == 0 or val_train_epsilon_0_list[0] == 0:
+            return False
+       else:
+            return True
+       
 
 def compute_statistics(method_name, dataset_category, database_path, outputfile_name):
 	"""

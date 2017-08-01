@@ -77,5 +77,15 @@ class TestQueryEngine(unittest.TestCase):
          #conditions = None
          print(engine.querySingleTarget(targets, table, conditions))
 
+     def test5(self):
+         database_file = "ranking/results/LETOR_MovieLen/LETOR_lowerbound_400_upperbound_600_rankboost_modiII.db"
+         engine = QueryEngine(database_file)
+         targets = "statistic_name"
+         table = "statistic_names"
+         conditions = {"statistic_name_id": 400}
+         #conditions = None
+         print(engine.querySingleTarget(targets, table, conditions))
+         #should return empty list, i.e. []
+
 if __name__ == "__main__":
      unittest.main()
