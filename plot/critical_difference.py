@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-import pylab as pl
 import matplotlib
 matplotlib.use('Agg')
+import pylab as pl
+import pylab as pl
 from matplotlib.backends.backend_pdf import PdfPages
 matplotlib.rcParams['ps.useafm'] = True
 matplotlib.rcParams['pdf.use14corefonts'] = True

@@ -217,7 +217,7 @@ def generateRank(directory, outputfile_name):
 
 
 	#boosting_round = 150
-	boosting_round = 40
+	boosting_round = 50
 	#boosting_round = 15
 
 
