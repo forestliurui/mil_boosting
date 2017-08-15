@@ -8,6 +8,9 @@ import matplotlib
 from scipy.stats.mstats import rankdata
 import numpy as np
 
+plt.rc('text', usetex=True)
+#plt.rc('font', family='serif')
+
 def get_results(directory, statistic_name):
 	"""
 	read from files in directory about results for statistic_name for every available boosting round.
@@ -408,8 +411,10 @@ def draw_plot_averaged(directory, outputfile_name):
         linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiV':'dashed', 'rankboost_modiVI':'-', 'rankboost_modiII': 'dashed' }
 
 
+        statistics_name_nested_list = [['test_error', 'test_error_tied'], ['train_E_modi', 'train_E_vanilla'], ['train_error', 'train_error_tied']]
         #statistics_name = ['test_error', 'train_error']
-        statistics_name = ['test_error', 'train_error', 'train_E_modi', 'train_E_vanilla']
+        #statistics_name = ['test_error', 'train_error', 'train_E_modi', 'train_E_vanilla']
+        statistics_name = set(reduce(lambda x, y: x+y, statistics_name_nested_list))
 
         num_iter = 50
 
@@ -478,11 +483,11 @@ def draw_plot_averaged(directory, outputfile_name):
 	#plt.figure(figsize=(14*len(statistics_name), 10*len(statistics_name)))
 	plt.figure(figsize=(17*2, 20*2))
 	for stat_index in range(len(statistics_name)):
-			stat_name = statistics_name[stat_index]
+	                stat_name = statistics_name[stat_index]
 
-			#plt.subplot(4, math.ceil( len(statistics_name)/3), stat_index+1)
-			plt.subplot(2, 2, stat_index+1)
-			#plt.subplot(2, 1, stat_index+1)
+		        #plt.subplot(4, math.ceil( len(statistics_name)/3), stat_index+1)
+		        plt.subplot(2, 2, stat_index+1)
+		        #plt.subplot(2, 1, stat_index+1)
 			plt.yticks(fontsize = 50)
 			plt.xticks(fontsize = 50)
 			plt.xlabel('Boosting Round', fontsize = 60)
@@ -522,6 +527,173 @@ def draw_plot_averaged(directory, outputfile_name):
 			
 
 			#plt.legend(method_names, fontsize = 35)
+	     		#plt.title(dataset_name, fontsize = 30)
+	#plt.suptitle(dataset_name, fontsize = 50)
+	#plt.legend(method_names, fontsize = 35)
+	#plt.figlegend([subplot_handle[x] for x in method_names], convertMethodNames(method_names), loc = 'upper right',  fontsize = 50)
+	plt.savefig(output_name, orientation = 'landscape')
+
+	#break
+
+
+def draw_plot_averaged1(directory, outputfile_name):
+	"""
+	plot the error vs boosting round figures. Each figure corresponds to all methods on one dataset. Each method is one input file. 
+	(The input is the same with the above generateRank())
+	"""
+        """
+	colors={'rankboost':'b', 'rankboost_modiIII':'r','rankboost_modiII':'k' }
+	#linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
+	linestyles = {'rankboost_modiIII':'-', 'rankboost':(0,[10,10]),'rankboost_modiII':(0,[40,10]) }
+	#linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiII':'dashed' }
+
+	#statistics_name = ['test_error', 'train_error']
+	statistics_name = ['test_error', 'train_error', 'test_error_tied', 'train_error_tied']
+	# for modified rankboost
+	#earlyStop_name = ['test_instance_AUC', 'test_bag_AUC', 'train_instance_AUC', 'train_bag_AUC', 'ranking_error', 'ranking_error_bound']	
+	#statistics_name = earlyStop_name
+	# for modified rankboost
+        """
+
+        dataset_category = "MovieLen"
+ 
+        colors={'rankboost':'b', 'rankboost_modiV':'r','rankboost_modiVI':'k', 'rankboost_modiIII': 'c', 'rankboost_modiII': 'y'}
+        #linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
+        #linestyles = {'rankboost_modiVI':'-', 'rankboost':(0,[10,10]),'rankboost_modiV':(0,[40,10]), 'rankboost_modiIII': (0, [40,10,10,10]) }
+        #linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiV':'dashed', 'rankboost_modiVI':'-', 'rankboost_modiII': 'dashed' }
+        linestyles = {1:'-', 2:'dotted'}
+
+        statistics_name_nested_list = [['test_error', 'test_error_tied'], ['train_E_vanilla', 'train_E_modi'], ['train_error', 'train_error_tied']]
+        #statistics_name = ['test_error', 'train_error']
+        #statistics_name = ['test_error', 'train_error', 'train_E_modi', 'train_E_vanilla']
+        statistics_name = reduce(lambda x, y: x+y, statistics_name_nested_list)
+
+        num_iter = 50
+
+	results = {}
+	dataset_names = []
+	for statistic in statistics_name:
+		results[statistic] = get_results(directory, statistic)
+		dataset_names += results[statistic].keys()
+	dataset_names = set(dataset_names)
+	data_plot = {}
+
+        #import pdb;pdb.set_trace()
+        max_iter = 0
+	index_dataset = -1
+	#matplotlib.rc('legend', fontsize=0.5, linewidth=2)
+	#plt.tick_params(labelsize=50)
+	for dataset_name in dataset_names:
+	#for dataset_name in ['user_181']:
+	#for dataset_name in ['user_wine']:
+	#for dataset_name in ['user_Horse_colic']:
+
+		index_dataset += 1
+		
+		for stat_index in range(len(statistics_name)):
+			stat_name = statistics_name[stat_index]
+			if stat_name not in data_plot:
+				data_plot[stat_name] = {}
+                        #import pdb;pdb.set_trace()
+			method_names = results[stat_name][dataset_name].keys()
+			for method_name in method_names:
+				if method_name not in data_plot[stat_name]:
+					data_plot[stat_name][method_name] = []
+				data_plot[stat_name][method_name].append([float(x) for x in results[stat_name][dataset_name][method_name]])
+                                if max_iter < len( data_plot[stat_name][method_name][-1] ):
+                                        max_iter = len( data_plot[stat_name][method_name][-1] )	
+
+        for stat_name in data_plot:
+              for method_name in data_plot[stat_name]:
+                   for index_dataset in range(len(data_plot[stat_name][method_name])):
+                       temp_len = len(data_plot[stat_name][method_name][index_dataset])
+                       if temp_len < max_iter:
+                           padding_val = data_plot[stat_name][method_name][index_dataset][-1]
+                           #data_plot[stat_name][method_name][index_dataset] += [0]*(max_iter - temp_len)
+                           data_plot[stat_name][method_name][index_dataset] += [padding_val]*(max_iter - temp_len)
+
+        #import pdb;pdb.set_trace()
+	data_plot_average = {}
+	for stat_name in statistics_name:
+		if stat_name not in data_plot_average:
+			data_plot_average[stat_name] = {}
+		for method_name in method_names:
+                        data_plot_average[stat_name][method_name] = []
+                        num_valid = 0
+                        sum_valid = 0
+                        for iter_index in range(max_iter):
+                            for alg_index in range(len(data_plot[stat_name][method_name])):
+                                  if data_plot[stat_name][method_name][alg_index][iter_index] != 0:
+                                        num_valid += 1
+                                        sum_valid += data_plot[stat_name][method_name][alg_index][iter_index]
+                            data_plot_average[stat_name][method_name].append( sum_valid/float(num_valid)   )
+			data_plot_average[stat_name][method_name] = np.array( data_plot_average[stat_name][method_name]  )
+                        #data_plot_average[stat_name][method_name] = np.average(np.array(data_plot[stat_name][method_name]), axis=0)
+	#import pdb;pdb.set_trace()
+	subplot_handle = {}
+	output_name = 'ranking/' + outputfile_name
+	#plt.figure(figsize=(14*len(statistics_name), 10*len(statistics_name)))
+	plt.figure(figsize=(17*3, 20))
+        for stat_index in range(len(statistics_name_nested_list)):        
+               
+	         #stat_name = statistics_name[stat_index]
+
+		 #plt.subplot(4, math.ceil( len(statistics_name)/3), stat_index+1)
+		 plt.subplot(1, 3, stat_index+1)
+		 #plt.subplot(2, 1, stat_index+1)
+		 plt.yticks(fontsize = 50)
+		 plt.xticks(fontsize = 50)
+		 plt.xlabel('Boosting Round', fontsize = 60)
+                 stat_name = '_'.join( statistics_name_nested_list[stat_index])
+		 if stat_name.startswith( 'test_error'):
+				plt.ylabel('Test Error', fontsize = 60)
+		 elif stat_name.startswith( 'train_error'):
+				plt.ylabel('Train Error', fontsize = 60)
+		 elif stat_name.startswith( 'train_E'):
+				plt.ylabel('E', fontsize = 60)
+		 elif stat_name == 'train_error':
+				plt.ylabel('Train Error', fontsize = 60)	
+		 elif stat_name == 'test_error':
+				plt.ylabel('Test Error', fontsize = 60)		
+		 else:
+				plt.ylabel(stat_name, fontsize = 60)
+		 color_index = -1
+		 
+		 if stat_name.startswith( 'test_error'):
+                          if dataset_category == "MovieLen":
+                                #plt.axis([0, 50, 0.3, 0.4], fontsize = 50)
+                                plt.axis([0, 50, 0.25, 0.45], fontsize = 50)
+                          else:
+                                plt.axis([0, 50, 0.35, 0.5], fontsize = 50)
+                 elif stat_name.startswith( 'train_error'):
+                          if dataset_category == "MovieLen":
+                                plt.axis([0, 50, 0.1, 0.3], fontsize = 50)
+                                #plt.axis([0, 50, 0.2, 0.4], fontsize = 50)
+                          else:
+                                plt.axis([0, 50, 0.15, 0.4], fontsize = 50)
+                 elif stat_name.startswith('train_E'):
+                          if dataset_category == "MovieLen":
+                                #plt.axis([0, 150, 0.49, 1.1], fontsize = 50)
+                                plt.axis([0, 50, 0.4, 2], fontsize = 50)
+                          else:
+                                plt.axis([0, 50, 0.5, 2], fontsize = 50)
+                 else:
+				#plt.axis([0, 150, 0, 0.4], fontsize = 50)
+				plt.axis([0, 50, 0.3, 0.6], fontsize = 50)
+                 linestyle_index = 0
+                 legends_symbols = []
+                 for stat_name in statistics_name_nested_list[stat_index]:
+                        #import pdb;pdb.set_trace()
+                        linestyle_index += 1
+			method_names = results[stat_name][dataset_name].keys()
+		
+			for method_name in method_names:
+                                legends_symbols.append(convertMethodNames(method_name)+ " on " + convertStatNames(stat_name))
+				color_index +=1
+				subplot_handle[method_name], = plt.plot(data_plot_average[stat_name][method_name], colors[method_name], ls = linestyles[linestyle_index], linewidth = 10)
+			
+
+		 plt.legend(legends_symbols, fontsize = 30)
 	     		#plt.title(dataset_name, fontsize = 30)
 	#plt.suptitle(dataset_name, fontsize = 50)
 	#plt.legend(method_names, fontsize = 35)
@@ -727,23 +899,54 @@ def draw_plot_test_error(directory, outputfile_name):
 		#plt.figlegend([subplot_handle[x] for x in method_names], convertMethodNames(method_names), loc = 'upper right',  fontsize = 50)
 		plt.savefig(output_name, orientation = 'landscape')
 
+def convertStatNames(names_arg):
+        if type(names_arg) is list:
+            names = names_arg
+        else:
+            names = [names_arg]
+        result = []
+        for name in names:
+            if name == 'test_error' or name == 'train_error':
+                result.append('$R_1$')
+            elif name == 'test_error_tied' or name == 'train_error_tied':
+                result.append('$R_2$')
+            elif name == 'train_E_vanilla':
+                result.append('$E_1$')
+            elif name == 'train_E_modi':
+                result.append('$E_2$')
+            else:
+                result.append(name)
+        if type(names_arg) is list:
+            return result
+        else:
+            return result[0]
 
-
-def convertMethodNames(names):
+def convertMethodNames(names_arg):
+        if type(names_arg) is list:
+            names = names_arg
+        else:
+            names = [names_arg]
 	result = []
 	for name in names:
 		if name == 'rankboost_modiII':
 			#result.append('Rankboost+')
 			result.append('RB-C')
 		elif name == 'rankboost_modiIII':
-			#result.append('Crankboost')
-			result.append('RankBoost+')
+			result.append('Crankboost')
+			#result.append('RankBoost+')
 		elif name == 'rankboost':
 			#result.append('Rankboost')
 			result.append('RB-D')
+                elif name == 'rankboost_modiVI':
+                        result.append('RankBoost+')
 		else:
 			result.append(name)
-	return result
+	
+        if type(names_arg) is list:
+            return result
+        else:
+            return result[0]
+
 if __name__ == '__main__':
 	from optparse import OptionParser, OptionGroup
     	parser = OptionParser(usage="Usage: %resultsdir  statistic outputfile")
@@ -764,13 +967,18 @@ if __name__ == '__main__':
 	elif func_invoked == 'plotAvg':
 		draw_plot_averaged(directory, outputfile_name)
 
-	elif func_invoked == 'plotTest':
+        elif func_invoked == 'plotAvg1':
+                draw_plot_averaged1(directory, outputfile_name)
 
+	elif func_invoked == 'plotTest':
 		draw_plot_test_error(directory, outputfile_name)
+
 	elif func_invoked == 'rank':
 		generateRank(directory, outputfile_name)
+
 	elif func_invoked == 'table':
 		generateAppendixLikeTable(directory, outputfile_name)
+
 	elif func_invoked == 'plotAvgM':
 		draw_plot_averaged_MovieLen(directory, outputfile_name)
 
