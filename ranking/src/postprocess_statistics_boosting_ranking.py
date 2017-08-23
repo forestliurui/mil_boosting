@@ -557,13 +557,13 @@ def draw_plot_averaged1(directory, outputfile_name):
 
         dataset_category = "MovieLen"
  
-        colors={'rankboost':'b', 'rankboost_modiV':'r','rankboost_modiVI':'k', 'rankboost_modiIII': 'c', 'rankboost_modiII': 'y'}
+        colors={'rankboost':'b', 'rankboost_modiV':'y','rankboost_modiVI':'r', 'rankboost_modiIII': 'c', 'rankboost_modiII': 'k'}
         #linestyles: rankboost_modiIII solid line, rankboost dotted line, rankboost_modiII dashed line
         #linestyles = {'rankboost_modiVI':'-', 'rankboost':(0,[10,10]),'rankboost_modiV':(0,[40,10]), 'rankboost_modiIII': (0, [40,10,10,10]) }
         #linestyles = {'rankboost_modiIII':'-', 'rankboost':'dotted','rankboost_modiV':'dashed', 'rankboost_modiVI':'-', 'rankboost_modiII': 'dashed' }
         linestyles = {1:'-', 2:'dotted'}
 
-        statistics_name_nested_list = [['test_error', 'test_error_tied'], ['train_E_vanilla', 'train_E_modi'], ['train_error', 'train_error_tied']]
+        statistics_name_nested_list = [['test_error', 'test_error_tied'], ['train_error','train_error_tied'] ,['train_E_vanilla', 'train_E_modi']]
         #statistics_name = ['test_error', 'train_error']
         #statistics_name = ['test_error', 'train_error', 'train_E_modi', 'train_E_vanilla']
         statistics_name = reduce(lambda x, y: x+y, statistics_name_nested_list)
@@ -630,10 +630,11 @@ def draw_plot_averaged1(directory, outputfile_name):
 			data_plot_average[stat_name][method_name] = np.array( data_plot_average[stat_name][method_name]  )
                         #data_plot_average[stat_name][method_name] = np.average(np.array(data_plot[stat_name][method_name]), axis=0)
 	#import pdb;pdb.set_trace()
-	subplot_handle = {}
+	#subplot_handle = {}
+        subplot_handle = []
 	output_name = 'ranking/' + outputfile_name
 	#plt.figure(figsize=(14*len(statistics_name), 10*len(statistics_name)))
-	plt.figure(figsize=(17*3, 20))
+	plt.figure(figsize=(17*3, 14))
         for stat_index in range(len(statistics_name_nested_list)):        
                
 	         #stat_name = statistics_name[stat_index]
@@ -646,11 +647,11 @@ def draw_plot_averaged1(directory, outputfile_name):
 		 plt.xlabel('Boosting Round', fontsize = 60)
                  stat_name = '_'.join( statistics_name_nested_list[stat_index])
 		 if stat_name.startswith( 'test_error'):
-				plt.ylabel('Test Error', fontsize = 60)
+				plt.ylabel('Test $\hat{R}_1$/$\hat{R}_2$', fontsize = 60)
 		 elif stat_name.startswith( 'train_error'):
-				plt.ylabel('Train Error', fontsize = 60)
+				plt.ylabel('Train $\hat{R}_1$/$\hat{R}_2$', fontsize = 60)
 		 elif stat_name.startswith( 'train_E'):
-				plt.ylabel('E', fontsize = 60)
+				plt.ylabel('Train $\hat{E}_1$/$\hat{E}_2$', fontsize = 60)
 		 elif stat_name == 'train_error':
 				plt.ylabel('Train Error', fontsize = 60)	
 		 elif stat_name == 'test_error':
@@ -662,12 +663,12 @@ def draw_plot_averaged1(directory, outputfile_name):
 		 if stat_name.startswith( 'test_error'):
                           if dataset_category == "MovieLen":
                                 #plt.axis([0, 50, 0.3, 0.4], fontsize = 50)
-                                plt.axis([0, 50, 0.25, 0.45], fontsize = 50)
+                                plt.axis([0, 50, 0.28, 0.45], fontsize = 50)
                           else:
                                 plt.axis([0, 50, 0.35, 0.5], fontsize = 50)
                  elif stat_name.startswith( 'train_error'):
                           if dataset_category == "MovieLen":
-                                plt.axis([0, 50, 0.1, 0.3], fontsize = 50)
+                                plt.axis([0, 50, 0.13, 0.3], fontsize = 50)
                                 #plt.axis([0, 50, 0.2, 0.4], fontsize = 50)
                           else:
                                 plt.axis([0, 50, 0.15, 0.4], fontsize = 50)
@@ -688,12 +689,12 @@ def draw_plot_averaged1(directory, outputfile_name):
 			method_names = results[stat_name][dataset_name].keys()
 		
 			for method_name in method_names:
-                                legends_symbols.append(convertMethodNames(method_name)+ " on " + convertStatNames(stat_name))
+                                legends_symbols.append(convertMethodNames(method_name)+ " " + convertStatNames(stat_name))
 				color_index +=1
-				subplot_handle[method_name], = plt.plot(data_plot_average[stat_name][method_name], colors[method_name], ls = linestyles[linestyle_index], linewidth = 10)
-			
+				#subplot_handle[method_name], = plt.plot(data_plot_average[stat_name][method_name], colors[method_name], ls = linestyles[linestyle_index], linewidth = 10)
+			        subplot_handle.append( plt.plot(data_plot_average[stat_name][method_name], colors[method_name], ls = linestyles[linestyle_index], linewidth = 10) )
 
-		 plt.legend(legends_symbols, fontsize = 30)
+		 plt.legend( legends_symbols, fontsize = 30)
 	     		#plt.title(dataset_name, fontsize = 30)
 	#plt.suptitle(dataset_name, fontsize = 50)
 	#plt.legend(method_names, fontsize = 35)
@@ -907,13 +908,13 @@ def convertStatNames(names_arg):
         result = []
         for name in names:
             if name == 'test_error' or name == 'train_error':
-                result.append('$R_1$')
+                result.append('$\hat{R}_1$')
             elif name == 'test_error_tied' or name == 'train_error_tied':
-                result.append('$R_2$')
+                result.append('$\hat{R}_2$')
             elif name == 'train_E_vanilla':
-                result.append('$E_1$')
+                result.append('$\hat{E}_1$')
             elif name == 'train_E_modi':
-                result.append('$E_2$')
+                result.append('$\hat{E}_2$')
             else:
                 result.append(name)
         if type(names_arg) is list:
