@@ -220,7 +220,7 @@ def generateRank(directory, outputfile_name):
 
 
 	#boosting_round = 150
-	boosting_round = 50
+	boosting_round = 100
 	#boosting_round = 15
 
 
@@ -568,7 +568,7 @@ def draw_plot_averaged1(directory, outputfile_name):
         #statistics_name = ['test_error', 'train_error', 'train_E_modi', 'train_E_vanilla']
         statistics_name = reduce(lambda x, y: x+y, statistics_name_nested_list)
 
-        num_iter = 50
+        num_iter = 100
 
 	results = {}
 	dataset_names = []
@@ -663,24 +663,24 @@ def draw_plot_averaged1(directory, outputfile_name):
 		 if stat_name.startswith( 'test_error'):
                           if dataset_category == "MovieLen":
                                 #plt.axis([0, 50, 0.3, 0.4], fontsize = 50)
-                                plt.axis([0, 50, 0.28, 0.45], fontsize = 50)
+                                plt.axis([0, num_iter, 0.28, 0.42], fontsize = 50)
                           else:
-                                plt.axis([0, 50, 0.35, 0.5], fontsize = 50)
+                                plt.axis([0, num_iter, 0.35, 0.5], fontsize = 50)
                  elif stat_name.startswith( 'train_error'):
                           if dataset_category == "MovieLen":
-                                plt.axis([0, 50, 0.13, 0.3], fontsize = 50)
+                                plt.axis([0, num_iter, 0.10, 0.25], fontsize = 50)
                                 #plt.axis([0, 50, 0.2, 0.4], fontsize = 50)
                           else:
-                                plt.axis([0, 50, 0.15, 0.4], fontsize = 50)
+                                plt.axis([0, num_iter, 0.15, 0.4], fontsize = 50)
                  elif stat_name.startswith('train_E'):
                           if dataset_category == "MovieLen":
                                 #plt.axis([0, 150, 0.49, 1.1], fontsize = 50)
-                                plt.axis([0, 50, 0.4, 2], fontsize = 50)
+                                plt.axis([0, num_iter, 0.4, 1.5], fontsize = 50)
                           else:
-                                plt.axis([0, 50, 0.5, 2], fontsize = 50)
+                                plt.axis([0, num_iter, 0.5, 2], fontsize = 50)
                  else:
 				#plt.axis([0, 150, 0, 0.4], fontsize = 50)
-				plt.axis([0, 50, 0.3, 0.6], fontsize = 50)
+				plt.axis([0, num_iter, 0.3, 0.6], fontsize = 50)
                  linestyle_index = 0
                  legends_symbols = []
                  for stat_name in statistics_name_nested_list[stat_index]:
@@ -697,6 +697,8 @@ def draw_plot_averaged1(directory, outputfile_name):
 		 plt.legend( legends_symbols, fontsize = 30)
 	     		#plt.title(dataset_name, fontsize = 30)
 	#plt.suptitle(dataset_name, fontsize = 50)
+        #plt.tight_layout()
+        plt.subplots_adjust(wspace = .5)
 	#plt.legend(method_names, fontsize = 35)
 	#plt.figlegend([subplot_handle[x] for x in method_names], convertMethodNames(method_names), loc = 'upper right',  fontsize = 50)
 	plt.savefig(output_name, orientation = 'landscape')

@@ -11,8 +11,6 @@ We also have  a list of weights for each pair, like weight_pair = [w1, w2, ...].
 
 For each example in a specific node, we check if it appears as the former point in some critical pair p_i. If so, we get a score of w_i. If as latter point, we
 get a score of -w_i. Add scores for examples in all critical pairs, we get a final score s. If s>=0, we assign +1 to this node as predicted socre, otherwise 0.
-
-Ni has
 """
 
 import numpy as np

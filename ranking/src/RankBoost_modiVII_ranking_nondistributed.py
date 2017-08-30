@@ -1,8 +1,11 @@
 """
-This is the nondistributed version of RankBoost modiVI class.
+This is the nondistributed version of RankBoost modiVII class.
 
 This is for general ranking problem.
 
+RankBoost modiVII is Rankboost modiVI without the removal of identical or opposite rankers.
+
+As a reminder, RankBoost modiVI is:
 This is the algorithm proposed by Prof. Harold, which is based on a hypothesis/ranker space without any identical or opposite rankers on the training dataset.
 If, at any iteration, it picks a weak ranker, that has been used before, we should adjust the coeffficient alpha and weight distribution accordingly. 
 """
@@ -24,12 +27,12 @@ WEAK_CLASSIFIERS = {
 	'stump_ranker': StumpRanker,
 }
 
-class RankBoost_modiVI_ranking(RankBoost_base_ranking):
+class RankBoost_modiVII_ranking(RankBoost_base_ranking):
       def __init__(self, **parameters):
 
             self.Z = []
             self.Z_vanilla = []
-            super(RankBoost_modiVI_ranking, self).__init__(**parameters)
+            super(RankBoost_modiVII_ranking, self).__init__(**parameters)
             self.pre_alphas = []           
 
  
@@ -47,8 +50,8 @@ class RankBoost_modiVI_ranking(RankBoost_base_ranking):
             num_critical_pairs = len(y)
 
             StumpRanker.instantiateAll("continuous", X)
-            StumpRanker.prune(X)
-            import pdb;pdb.set_trace()
+            #StumpRanker.prune(X)
+            #import pdb;pdb.set_trace()
             self.alphas_dict = {} #the dict of total weights for weak rankers so far
 
             #initial critical pair weights, which is a hashtable

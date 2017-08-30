@@ -11,6 +11,7 @@ from RankBoost_modiII_ranking_nondistributed import RankBoost_modiII_ranking
 from RankBoost_modiIII_ranking_nondistributed import RankBoost_modiIII_ranking
 from RankBoost_modiV_ranking_nondistributed import RankBoost_modiV_ranking
 from RankBoost_modiVI_ranking_nondistributed import RankBoost_modiVI_ranking
+from RankBoost_modiVII_ranking_nondistributed import RankBoost_modiVII_ranking
 
 import unittest
 import sys
@@ -29,6 +30,7 @@ CLASSIFIERS = {
     'rankboost_modiIII': RankBoost_modiIII_ranking,  #CrankBoost in the paper
     'rankboost_modiV': RankBoost_modiV_ranking, #a slight variant of CrankBoost in the paper
     'rankboost_modiVI': RankBoost_modiVI_ranking, #a new rankboost algorithm proposed by Harold, which keep track of total weights for any repicked weak ranker
+    'rankboost_modiVII': RankBoost_modiVII_ranking, #rankboost_modiVI without removal of identical and opposite rankers
 }
 
 IDX_DIR = os.path.join('box_counting', 'converted_datasets')
